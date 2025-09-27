@@ -198,30 +198,6 @@ async def get_condition_cpt_codes(condition: str):
         raise HTTPException(status_code=500, detail=f"CPT code lookup error: {str(e)}")
 
 
-@router.get("/cpt/{cpt_code}/fee")
-async def get_cpt_fee(cpt_code: str):
-    """
-    Get fee information for CPT code.
-    
-    Args:
-        cpt_code: CPT code
-        
-    Returns:
-        Fee information
-    """
-    try:
-        fee_info = await rules_service.get_fee_for_cpt(cpt_code)
-        if fee_info:
-            return fee_info
-        else:
-            raise HTTPException(status_code=404, detail="Fee information not found")
-            
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Fee lookup failed: {str(e)}")
-        raise HTTPException(status_code=500, detail=f"Fee lookup error: {str(e)}")
-
 
 @router.post("/pdf")
 async def generate_pdf_report(request: ReportRequest):
