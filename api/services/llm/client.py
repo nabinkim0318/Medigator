@@ -27,9 +27,15 @@ LLM_MODEL = getattr(settings, "LLM_MODEL", getattr(settings, "openai_model", "gp
 LLM_TEMPERATURE = float(
     getattr(settings, "LLM_TEMPERATURE", getattr(settings, "openai_temperature", 0.1)),
 )
+LLM_TOP_P = float(
+    getattr(settings, "LLM_TOP_P", getattr(settings, "openai_top_p", 0.9)),
+)
 LLM_TIMEOUT_S = (
     float(getattr(settings, "LLM_TIMEOUT_MS", getattr(settings, "openai_timeout_ms", 3500)))
     / 1000.0
+)
+LLM_SEED = int(
+    getattr(settings, "LLM_SEED", getattr(settings, "openai_seed", 42)),
 )
 OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", getattr(settings, "openai_api_key", None))
 
@@ -106,9 +112,19 @@ def _ckey(
     model: str,
     temperature: float,
     response_format: dict | None,
+    *,
+    top_p: float | None = None,
+    seed: int | None = None,
 ) -> str:
     blob = json.dumps(
-        {"m": messages, "model": model, "t": temperature, "rf": response_format},
+        {
+            "m": messages,
+            "model": model,
+            "t": temperature,
+            "tp": top_p,
+            "seed": seed,
+            "rf": response_format,
+        },
         sort_keys=True,
     )
     return hashlib.sha256(blob.encode()).hexdigest()
@@ -167,9 +183,10 @@ async def chat_json(
     messages: list[dict],
     model: str = LLM_MODEL,
     temperature: float = LLM_TEMPERATURE,
+    top_p: float = LLM_TOP_P,
     response_schema: dict | None = None,
     timeout_s: float = LLM_TIMEOUT_S,
-    seed: int | None = 42,
+    seed: int | None = LLM_SEED,
     use_cache: bool = True,
     fallback_func: Callable[[], dict[str, Any]] | None = None,
 ) -> dict:
@@ -187,7 +204,7 @@ async def chat_json(
     else:
         rf = {"type": "json_schema", "json_schema": response_schema}  # type: ignore
 
-    key = _ckey(messages, model, temperature, rf)
+    key = _ckey(messages, model, temperature, rf, top_p=top_p, seed=seed)
     if use_cache:
         hit = _cache.get(key)
         if hit is not None:
@@ -199,6 +216,7 @@ async def chat_json(
                 model=model,
                 messages=messages,
                 temperature=temperature,
+                top_p=top_p,
                 response_format=rf,
                 timeout=timeout_s,
                 seed=seed,

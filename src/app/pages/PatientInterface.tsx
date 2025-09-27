@@ -26,27 +26,29 @@ export default function PatientInterface() {
       // content/options can be omitted; the renderer supplies presets
       options: [], // ignored by this renderer; it uses its own options
     } as any);
-
   }, [store]);
 
   // 🔊 Listen for the "dock me" event from the long-answer renderer
   useEffect(() => {
     const handler = () => setDocked(true);
     window.addEventListener("triage:move-bottom-right", handler);
-    return () => window.removeEventListener("triage:move-bottom-right", handler);
+    return () =>
+      window.removeEventListener("triage:move-bottom-right", handler);
   }, []);
 
   // Optionally shrink the chat when docked
   const dockedDimensions = docked
-    ? { height: 700 }      // smaller when docked
-    : { height: 600 };     // larger before docking
+    ? { height: 700 } // smaller when docked
+    : { height: 600 }; // larger before docking
 
   return (
     <div>
-      <FloatingCedarChat stream={false} side={docked ? "right" : "center"} dimensions={dockedDimensions} />
-      {docked ? <div>
-        INSERT GENERATED PDF HERE
-      </div> : <></>}
+      <FloatingCedarChat
+        stream={false}
+        side={docked ? "right" : "center"}
+        dimensions={dockedDimensions}
+      />
+      {docked ? <div>INSERT GENERATED PDF HERE</div> : <></>}
     </div>
   );
 }

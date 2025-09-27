@@ -1,5 +1,5 @@
 // Global type declarations
-declare module 'diff' {
+declare module "diff" {
   export interface Change {
     value: string;
     added?: boolean;
@@ -10,10 +10,10 @@ declare module 'diff' {
   export function diffLines(oldStr: string, newStr: string): Change[];
 }
 
-declare module 'cmdk' {
-  export * from 'cmdk';
+declare module "cmdk" {
+  export * from "cmdk";
 }
 
-declare module '@radix-ui/react-dialog' {
-  export * from '@radix-ui/react-dialog';
+declare module "@radix-ui/react-dialog" {
+  export * from "@radix-ui/react-dialog";
 }

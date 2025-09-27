@@ -15,10 +15,10 @@ type MCOption = { label: string; value: string };
 type MultipleChoiceMsg = CustomMessage<
   "multiple_choice",
   {
-    field?: string;          // e.g., "q1_when", "q2_where", ...
+    field?: string; // e.g., "q1_when", "q2_where", ...
     required?: boolean;
-    content?: string;        // question text (optional; we'll supply one)
-    options: MCOption[];     // not strictly needed when we use our presets
+    content?: string; // question text (optional; we'll supply one)
+    options: MCOption[]; // not strictly needed when we use our presets
   }
 >;
 
@@ -63,8 +63,14 @@ const QUESTIONS: Record<
   q4_worse: {
     title: "What makes it worse?",
     options: [
-      { value: "activity", label: "Physical activity (walking, stairs, exercise)" },
-      { value: "breathing_position", label: "Breathing deeply or changing position" },
+      {
+        value: "activity",
+        label: "Physical activity (walking, stairs, exercise)",
+      },
+      {
+        value: "breathing_position",
+        label: "Breathing deeply or changing position",
+      },
       { value: "eating_drinking", label: "Eating or drinking" },
       { value: "stress_anxiety", label: "Stress or anxiety" },
       { value: "not_sure", label: "Not sure" },
@@ -76,7 +82,10 @@ const QUESTIONS: Record<
     options: [
       { value: "rest", label: "Rest" },
       { value: "stop_activity", label: "Stopping activity" },
-      { value: "medicine", label: "Medicine (nitroglycerin, antacids, painkillers)" },
+      {
+        value: "medicine",
+        label: "Medicine (nitroglycerin, antacids, painkillers)",
+      },
       { value: "nothing_helps", label: "Nothing helps" },
       { value: "not_sure", label: "Not sure" },
       { value: "other", label: "Other / describe" },
@@ -89,7 +98,10 @@ const QUESTIONS: Record<
       { value: "sweating", label: "Sweating" },
       { value: "nausea_vomiting", label: "Nausea or vomiting" },
       { value: "dizziness_fainting", label: "Dizziness or fainting" },
-      { value: "fast_irregular_heartbeat", label: "Fast or irregular heartbeat" },
+      {
+        value: "fast_irregular_heartbeat",
+        label: "Fast or irregular heartbeat",
+      },
       { value: "none", label: "No, none of these" },
       { value: "other", label: "Other / describe" },
     ],
@@ -233,16 +245,14 @@ const LocalMultipleChoiceRenderer: MessageRenderer =
             type: "text",
             content: "Thanks — that’s everything for now.",
           } as any);
-          
+
           window.dispatchEvent(new CustomEvent("triage:move-bottom-right"));
         }
       };
 
       return (
         <div className="space-y-2">
-          <div className="font-medium">
-            {preset.title}
-          </div>
+          <div className="font-medium">{preset.title}</div>
           <div className="flex flex-wrap gap-2">
             {options.map((opt) => (
               <button
