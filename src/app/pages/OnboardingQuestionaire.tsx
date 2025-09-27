@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
 
 export default function OnboardingQuestionnaire() {
@@ -56,8 +57,57 @@ export default function OnboardingQuestionnaire() {
   const currentQuestion = questions[currentStep];
   const currentAnswer =
     answers[currentQuestion.id as keyof typeof answers] || "";
+=======
+"use client";
 
+import React, { useMemo, useState } from "react";
+
+type QId = "medicalHistory" | "familyHistory" | "allergies";
+
+type QA = Record<QId, string>;
+
+type Q = {
+  id: QId;
+  question: string;
+  type: "textarea";
+  placeholder?: string;
+};
+
+const QUESTIONS: Q[] = [
+  {
+    id: "medicalHistory",
+    question:
+      "Have you ever been diagnosed with or treated for any illnesses? (including surgeries or hospitalizations)",
+    type: "textarea",
+    placeholder: "Please include condition, year, and any treatments..."
+  },
+  {
+    id: "familyHistory",
+    question:
+      "Does anyone in your family have similar conditions or major illnesses (e.g., hypertension, diabetes, heart disease, cancer)?",
+    type: "textarea",
+    placeholder: "List relatives and conditions, if known…"
+  },
+  {
+    id: "allergies",
+    question: "Do you have any allergies to medications or food?",
+    type: "textarea",
+    placeholder: "E.g., penicillin (rash), peanuts (anaphylaxis)…"
+  }
+];
+>>>>>>> e3a4d472791ca3e73dd25c1bbb7e4423947a1f5b
+
+const PageShell: React.FC<{
+  step: number;
+  total: number;
+  title: string;
+  children: React.ReactNode;
+  onBack?: () => void;
+  onNext?: () => void;
+  nextDisabled?: boolean;
+}> = ({ step, total, title, children, onBack, onNext, nextDisabled }) => {
   return (
+<<<<<<< HEAD
     <div
       style={{
         padding: "40px 20px",
@@ -169,7 +219,142 @@ export default function OnboardingQuestionnaire() {
             onClick={() => setCurrentStep(index)}
           />
         ))}
+=======
+    <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
+      <div className="mx-auto w-full max-w-3xl text-center">
+        <div className="mb-8 text-gray-400 text-xs">
+          Demo only — Not diagnostic • No PHI
+        </div>
+
+        {/* Logo / Brand */}
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <div className="h-6 w-6 rounded-md bg-orange-400" />
+          <div className="font-semibold text-orange-600">Medigator</div>
+        </div>
+
+        {/* Progress */}
+        <div className="text-gray-500 text-sm mb-2">
+          {step} / {total}
+        </div>
+
+        <h1 className="text-3xl font-semibold text-gray-900 mb-6">
+          {title}
+        </h1>
+
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+          {children}
+        </div>
+
+        <div className="mt-8 flex items-center justify-center gap-3">
+          {onBack && (
+            <button
+              className="px-5 py-3 rounded-xl border border-gray-200 bg-white text-gray-700 hover:bg-gray-50"
+              onClick={onBack}
+            >
+              Back
+            </button>
+          )}
+          {onNext && (
+            <button
+              className={`px-6 py-3 rounded-xl text-white ${
+                nextDisabled
+                  ? "bg-orange-300 cursor-not-allowed"
+                  : "bg-orange-500 hover:bg-orange-600"
+              }`}
+              onClick={onNext}
+              disabled={nextDisabled}
+            >
+              {step === total ? "Complete" : "Next"}
+            </button>
+          )}
+        </div>
+
+        <div className="text-xs text-gray-400 mt-8">
+          © 2025 Medigator. All rights reserved.
+        </div>
+>>>>>>> e3a4d472791ca3e73dd25c1bbb7e4423947a1f5b
       </div>
     </div>
+  );
+};
+
+export default function OnboardingQuestionnaire() {
+  const [currentStep, setCurrentStep] = useState(0);
+  const [answers, setAnswers] = useState<QA>({
+    medicalHistory: "",
+    familyHistory: "",
+    allergies: ""
+  });
+
+  const current = QUESTIONS[currentStep];
+
+  const handleInputChange = (value: string) => {
+    setAnswers((prev) => ({ ...prev, [current.id]: value }));
+  };
+
+  const canProceed = useMemo(() => {
+    const val = answers[current.id]?.trim() ?? "";
+    return val.length > 0;
+  }, [answers, current.id]);
+
+  const goNext = () => {
+    if (currentStep < QUESTIONS.length - 1) {
+      setCurrentStep((s) => s + 1);
+    } else {
+      // Final submit
+      console.log("Onboarding answers:", answers);
+      alert("Thanks! Your responses were captured in the console.");
+    }
+  };
+
+  const goBack = () => setCurrentStep((s) => Math.max(0, s - 1));
+
+  return (
+    <PageShell
+      step={currentStep + 1}
+      total={QUESTIONS.length}
+      title="Medical History Questionnaire"
+      onBack={currentStep > 0 ? goBack : undefined}
+      onNext={goNext}
+      nextDisabled={!canProceed}
+    >
+      {/* Question text */}
+      <h2 className="text-xl font-medium text-gray-900 text-left mb-3">
+        {current.question}
+      </h2>
+      <p className="text-sm text-gray-500 text-left mb-5">
+        Please provide details or write “None” if not applicable.
+      </p>
+
+      {/* Textarea */}
+      <textarea
+        value={answers[current.id]}
+        onChange={(e) => handleInputChange(e.target.value)}
+        placeholder={current.placeholder ?? "Type your answer…"}
+        className="w-full min-h-[160px] rounded-2xl border border-gray-200 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-200 resize-y"
+      />
+
+      {/* Progress dots */}
+      <div className="mt-6 flex items-center justify-center gap-2">
+        {QUESTIONS.map((_, i) => {
+          const isActive = i === currentStep;
+          const isDone = i < currentStep;
+          return (
+            <button
+              key={i}
+              onClick={() => setCurrentStep(i)}
+              className={`h-3 w-3 rounded-full transition ${
+                isActive
+                  ? "bg-orange-500"
+                  : isDone
+                  ? "bg-green-500"
+                  : "bg-gray-300"
+              }`}
+              aria-label={`Go to step ${i + 1}`}
+            />
+          );
+        })}
+      </div>
+    </PageShell>
   );
 }
