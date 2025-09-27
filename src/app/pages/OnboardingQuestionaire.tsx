@@ -65,7 +65,7 @@ export default function OnboardingQuestionnaire() {
         <h2 style={{ fontSize: '18px', marginBottom: '20px', lineHeight: '1.4' }}>
           {currentQuestion.question}
         </h2>
-        
+
         <textarea
           value={currentAnswer}
           onChange={(e) => handleInputChange(e.target.value)}
@@ -85,11 +85,11 @@ export default function OnboardingQuestionnaire() {
       </div>
 
       {/* Navigation Buttons */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'space-between', 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: '40px' 
+        marginBottom: '40px'
       }}>
         <button
           onClick={handleBack}
@@ -124,10 +124,10 @@ export default function OnboardingQuestionnaire() {
       </div>
 
       {/* Progress Dots */}
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        gap: '8px' 
+      <div style={{
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '8px'
       }}>
         {questions.map((_, index) => (
           <div
@@ -136,7 +136,7 @@ export default function OnboardingQuestionnaire() {
               width: '12px',
               height: '12px',
               borderRadius: '50%',
-              backgroundColor: index === currentStep ? '#007bff' : 
+              backgroundColor: index === currentStep ? '#007bff' :
                               index < currentStep ? '#28a745' : '#dee2e6',
               cursor: 'pointer'
             }}
