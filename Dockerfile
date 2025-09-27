@@ -1,5 +1,5 @@
 # Multi-stage build for BBB Medical Report API
-FROM python:3.11-slim as backend
+FROM python:3.12-slim as backend
 
 # Set working directory
 WORKDIR /app
@@ -39,19 +39,19 @@ FROM node:18-alpine as frontend
 WORKDIR /app
 
 # Copy package files
-COPY app/package*.json ./
+COPY package*.json ./
 
-# Install dependencies
-RUN npm ci --only=production
+# Install dependencies (including dev dependencies for build)
+RUN npm ci
 
 # Copy source code
-COPY app/ ./
+COPY . ./
 
 # Build the application
 RUN npm run build
 
 # Production stage
-FROM python:3.11-slim as production
+FROM python:3.12-slim as production
 
 WORKDIR /app
 
