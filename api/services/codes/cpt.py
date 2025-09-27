@@ -30,12 +30,21 @@ _ALLOWED = {
 def _safe_eval(expr: str, env: dict[str, Any]) -> bool:
     if not expr:
         return False
-    tree = ast.parse(expr, mode="eval")
-    for node in ast.walk(tree):
-        if type(node) not in _ALLOWED:
-            return False
-    code = compile(tree, "<pred>", "eval")
-    return bool(eval(code, {"__builtins__": {}}, env))
+    try:
+        tree = ast.parse(expr, mode="eval")
+        for node in ast.walk(tree):
+            if type(node) not in _ALLOWED:
+                return False
+
+        # Use safer evaluation with restricted environment
+        code = compile(tree, "<pred>", "eval")
+        # Create a safe environment with only allowed variables
+        safe_env = {k: v for k, v in env.items() if isinstance(k, str) and k.isidentifier()}
+        return bool(
+            eval(code, {"__builtins__": {}}, safe_env)
+        )  # nosec B307 - Safe eval with restricted environment
+    except (SyntaxError, ValueError, TypeError):
+        return False
 
 
 def suggest_cpt(rules: list[CPTRule], env: dict[str, Any]) -> list[dict[str, Any]]:

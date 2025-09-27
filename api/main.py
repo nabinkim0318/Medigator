@@ -89,4 +89,4 @@ if __name__ == "__main__":
     import uvicorn
 
     logger.info("Starting uvicorn server on 0.0.0.0:8082")
-    uvicorn.run(app, host="0.0.0.0", port=8082)
+    uvicorn.run(app, host="0.0.0.0", port=8082)  # nosec B104 - Development server binding
