@@ -2,24 +2,26 @@
 from __future__ import annotations
 
 import json
-import math
-import re
 import logging
-from dataclasses import dataclass, asdict
+import re
+from collections.abc import Iterable
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Iterable, List, Dict, Any, Tuple
+from typing import Any
 
 import faiss
 import numpy as np
-from sentence_transformers import SentenceTransformer  # pip install sentence-transformers
+from sentence_transformers import (  # pip install sentence-transformers
+    SentenceTransformer,
+)
 
 # Get logger
 logger = logging.getLogger(__name__)
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-DEFAULT_CHUNK_SIZE = 1000         # target characters per chunk
-DEFAULT_CHUNK_OVERLAP = 150       # conservative overlap to avoid boundary loss
-VALID_EXTS = {".txt", ".md"}      # keep it simple for hackathon
+DEFAULT_CHUNK_SIZE = 1000  # target characters per chunk
+DEFAULT_CHUNK_OVERLAP = 150  # conservative overlap to avoid boundary loss
+VALID_EXTS = {".txt", ".md"}  # keep it simple for hackathon
 
 SENTENCE_SPLIT = re.compile(r"(?<=[\.\!\?\n])\s+")
 
@@ -34,9 +36,9 @@ class DocChunk:
     start: int
     end: int
     url: str | None = None
-    year: int | None = None        
-    section: str | None = None      
-    tags_json: Dict[str, Any] | None = None 
+    year: int | None = None
+    section: str | None = None
+    tags_json: dict[str, Any] | None = None
 
 
 def _iter_files(docs_dir: Path) -> Iterable[Path]:
@@ -53,7 +55,7 @@ def _read_file(path: Path) -> str:
         return path.read_text(encoding="latin-1", errors="ignore")
 
 
-def _sentences(text: str) -> List[str]:
+def _sentences(text: str) -> list[str]:
     # light-weight sentence split; keeps punctuation
     text = re.sub(r"\r\n?", "\n", text).strip()
     if not text:
@@ -62,10 +64,10 @@ def _sentences(text: str) -> List[str]:
 
 
 def _chunk_sentences(
-    sents: List[str],
+    sents: list[str],
     chunk_size: int = DEFAULT_CHUNK_SIZE,
     overlap: int = DEFAULT_CHUNK_OVERLAP,
-) -> List[Tuple[str, int, int]]:
+) -> list[tuple[str, int, int]]:
     """
     Return list of (chunk_text, start_char_idx, end_char_idx) on the original joined string.
     Uses char-length packing with sentence boundaries and char-based overlap.
@@ -77,7 +79,7 @@ def _chunk_sentences(
     offsets = []  # sentence start offsets in joined
     for s in sents:
         start = len(joined)
-        joined += (s + " ")
+        joined += s + " "
         offsets.append(start)
     joined = joined.strip()
 
@@ -131,14 +133,14 @@ def build_index(
     chunk_size: int = DEFAULT_CHUNK_SIZE,
     overlap: int = DEFAULT_CHUNK_OVERLAP,
     max_docs: int | None = None,
-) -> Dict[str, Any]:
+) -> dict[str, Any]:
     """
     Build FAISS index and metadata from local docs.
     Returns a small summary dict.
     """
     logger.info(f"Starting RAG index build: docs_dir={docs_dir}, out_dir={out_dir}")
     logger.info(f"Parameters: chunk_size={chunk_size}, overlap={overlap}, max_docs={max_docs}")
-    
+
     docs_path = Path(docs_dir)
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)
@@ -155,18 +157,18 @@ def build_index(
     model = SentenceTransformer(model_name)
     logger.info(f"Loaded model: {model_name}")
 
-    all_chunks: List[DocChunk] = []
-    all_texts: List[str] = []
+    all_chunks: list[DocChunk] = []
+    all_texts: list[str] = []
 
     for fi, f in enumerate(files):
-        logger.info(f"Processing file {fi+1}/{len(files)}: {f.name}")
+        logger.info(f"Processing file {fi + 1}/{len(files)}: {f.name}")
         raw = _read_file(f)
         sents = _sentences(raw)
         chs = _chunk_sentences(sents, chunk_size=chunk_size, overlap=overlap)
         title = _title_from_path(f)
         source = title  # simple source label
         logger.debug(f"File {f.name}: {len(chs)} chunks created")
-        
+
         for ci, (txt, start, end) in enumerate(chs):
             cid = f"{f.stem}__{ci:04d}"
             all_chunks.append(
@@ -179,7 +181,7 @@ def build_index(
                     start=start,
                     end=end,
                     url=None,
-                )
+                ),
             )
             all_texts.append(txt)
 
@@ -197,7 +199,7 @@ def build_index(
 
     d = embeddings.shape[1]
     logger.info(f"Embedding dimension: {d}")
-    
+
     index = faiss.IndexFlatIP(d)  # cosine via normalized vectors
     index.add(embeddings)
     logger.info("FAISS index created and populated")
@@ -207,7 +209,10 @@ def build_index(
     faiss.write_index(index, str(out_path / "index.faiss"))
 
     meta = [asdict(ch) for ch in all_chunks]
-    (out_path / "meta.json").write_text(json.dumps(meta, ensure_ascii=False, indent=2), encoding="utf-8")
+    (out_path / "meta.json").write_text(
+        json.dumps(meta, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
 
     summary = {
         "docs_dir": str(docs_path),
@@ -219,11 +224,14 @@ def build_index(
         "index_path": str(out_path / "index.faiss"),
         "meta_path": str(out_path / "meta.json"),
     }
-    (out_path / "build_summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=2), encoding="utf-8")
+    (out_path / "build_summary.json").write_text(
+        json.dumps(summary, ensure_ascii=False, indent=2),
+        encoding="utf-8",
+    )
     return summary
 
 
-def load_index(out_dir: str = "rag_index") -> tuple[faiss.Index, List[Dict[str, Any]]]:
+def load_index(out_dir: str = "rag_index") -> tuple[faiss.Index, list[dict[str, Any]]]:
     """
     Load FAISS index and metadata list.
     """

@@ -1,7 +1,7 @@
 # api/tests/test_guard.py
-import pytest
 from api.core.config import settings
 from api.services.llm.gate import guard_and_redact
+
 
 def test_redact_phone_in_hipaa(monkeypatch):
     monkeypatch.setattr(settings, "DEMO_MODE", False)

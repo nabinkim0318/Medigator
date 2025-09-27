@@ -1,18 +1,25 @@
 # api/services/intake/tokens.py
-import hmac, base64, os, time, uuid
+import base64
+import hmac
+import os
+import time
 from hashlib import sha256
+
 SECRET = os.getenv("INTAKE_TOKEN_SECRET", "dev-secret").encode()
+
 
 def b64u(b: bytes) -> str:
     return base64.urlsafe_b64encode(b).rstrip(b"=").decode()
 
-def mk_token(session_id: str, ttl_sec: int = 8*3600) -> tuple[str, int]:
+
+def mk_token(session_id: str, ttl_sec: int = 8 * 3600) -> tuple[str, int]:
     iat = int(time.time())
     exp = iat + ttl_sec
     payload = f"{session_id}.{iat}.{os.urandom(8).hex()}".encode()
     sig = hmac.new(SECRET, payload, sha256).digest()
     token = f"{b64u(payload)}.{b64u(sig)}"
     return token, exp
+
 
 def verify(token: str) -> dict | None:
     try:

@@ -23,6 +23,6 @@ First-line therapy:
 ## Complication Prevention
 Regular screening for:
 - Nephropathy: urine microalbumin annually
-- Retinopathy: dilated eye exam annually  
+- Retinopathy: dilated eye exam annually
 - Neuropathy: monofilament testing annually
 - Cardiovascular disease: annual EKG if indicated

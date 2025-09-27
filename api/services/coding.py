@@ -1,5 +1,4 @@
 # api/services/coding.py
-from typing import List, Dict
 
 ICD_RULES = {
     "chest_pain": "R07.9",
@@ -22,7 +21,7 @@ EM_RULES = {
     "new_mod": "99204",
 }
 
-MOCK_FEES: Dict[str, int] = {
+MOCK_FEES: dict[str, int] = {
     "93000": 35,
     "84484": 22,
     "83036": 14,
@@ -35,8 +34,9 @@ MOCK_FEES: Dict[str, int] = {
     "99204": 210,
 }
 
+
 # ---- Mapping helpers ----
-def map_icd(flags, text_hint: str = "") -> List[str]:
+def map_icd(flags, text_hint: str = "") -> list[str]:
     out = []
     t = text_hint.lower()
     if flags.ischemic_features or ("chest" in t and "pain" in t):
@@ -45,7 +45,8 @@ def map_icd(flags, text_hint: str = "") -> List[str]:
         out.append(ICD_RULES["t2dm_followup"])
     return sorted(set(out)) or ["Z13.9"]  # fallback
 
-def map_cpt(flags, ros, text_hint: str = "") -> List[str]:
+
+def map_cpt(flags, ros, text_hint: str = "") -> list[str]:
     out = []
     if flags.ischemic_features:
         out += [CPT_RULES["ecg_if_ischemic"], CPT_RULES["troponin"]]
@@ -56,17 +57,21 @@ def map_cpt(flags, ros, text_hint: str = "") -> List[str]:
     out += [CPT_RULES["lipid"], CPT_RULES["bmp"]]
     return sorted(set(out)) or ["99999"]
 
+
 def map_em(flags) -> str:
     return EM_RULES["moderate"] if flags.ischemic_features else EM_RULES["low"]
 
-def estimate_costs(cpts: List[str]) -> Dict:
+
+def estimate_costs(cpts: list[str]) -> dict:
     items, lo, hi = [], 0, 0
     for c in cpts:
         fee = MOCK_FEES.get(c, {"min": 50, "max": 150})
         if isinstance(fee, dict):  # structured fee
             items.append({"cpt": c, **fee})
-            lo += fee["min"]; hi += fee["max"]
+            lo += fee["min"]
+            hi += fee["max"]
         else:  # simple int fallback
             items.append({"cpt": c, "min": fee, "max": fee})
-            lo += fee; hi += fee
+            lo += fee
+            hi += fee
     return {"range_min": lo, "range_max": hi, "items": items}

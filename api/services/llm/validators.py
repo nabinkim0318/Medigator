@@ -1,10 +1,15 @@
 # api/services/llm/validators.py
-import json, re
-from pydantic import ValidationError
+import json
+import re
+
 from api.core.schemas import SummaryOut
 
-FORBIDDEN = re.compile(r"(diagnos|treat|prescrib|admit|discharge|risk\s*%|riskpercent|risk\s*percent|probabilit)", re.I)
-SENTENCE_SPLIT = re.compile(r'(?<=[\.\!\?])\s+')
+FORBIDDEN = re.compile(
+    r"(diagnos|treat|prescrib|admit|discharge|risk\s*%|riskpercent|risk\s*percent|probabilit)",
+    re.IGNORECASE,
+)
+SENTENCE_SPLIT = re.compile(r"(?<=[\.\!\?])\s+")
+
 
 def parse_and_validate(text: str) -> SummaryOut:
     data = json.loads(text or "{}")

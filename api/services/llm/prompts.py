@@ -1,5 +1,6 @@
 # api/services/llm/prompts.py
-SYSTEM = ("""
+SYSTEM = (
+    """
 You convert structured intake JSON into a clinician-ready HPI/ROS summary with flags.
 
 Return ONLY a JSON object EXACTLY matching the schema. No extra keys, no comments, no prose outside JSON.

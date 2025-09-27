@@ -1,5 +1,6 @@
 # api/services/rag/types.py
-from typing import List, TypedDict
+from typing import TypedDict
+
 
 class DocChunk(TypedDict):
     id: str
@@ -8,9 +9,11 @@ class DocChunk(TypedDict):
     text: str
     url: str | None
 
+
 class Retrieval(TypedDict):
     chunk: DocChunk
     score: float
+
 
 class EvidenceCard(TypedDict):
     title: str

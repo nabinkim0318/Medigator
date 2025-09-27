@@ -11,7 +11,7 @@ python-multipart==0.0.9
 
 # --- PDF / templating ---
 Jinja2==3.1.4
-reportlab==4.2.2     
+reportlab==4.2.2
 
 # --- Cost/Code pipeline helpers ---
 cachetools==5.5.0
@@ -25,7 +25,7 @@ torch==2.8.0
 transformers==4.56.2
 scikit-learn==1.7.2
 numpy==2.3.3
-rank-bm25==0.2.2  
+rank-bm25==0.2.2
 
 # --- LLM SDK ---
 openai==1.46.0

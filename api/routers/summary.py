@@ -1,5 +1,7 @@
-from fastapi import APIRouter
 import logging
+
+from fastapi import APIRouter
+
 from api.core.schemas import SummaryIn, SummaryOut
 from api.services.llm.tasks.summarize import run as summarize_run
 
@@ -7,6 +9,7 @@ from api.services.llm.tasks.summarize import run as summarize_run
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/summary", tags=["summary"])
+
 
 @router.post("", response_model=SummaryOut)
 async def summarize_endpoint(body: SummaryIn):
@@ -16,5 +19,5 @@ async def summarize_endpoint(body: SummaryIn):
         logger.info("Summary generated successfully")
         return result
     except Exception as e:
-        logger.error(f"Summary generation failed: {str(e)}")
+        logger.error(f"Summary generation failed: {e!s}")
         raise

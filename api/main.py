@@ -3,22 +3,27 @@ FastAPI main application
 Medical report generation and analysis API server
 """
 
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-import sys
 import logging
 import logging.config
+import os
+import sys
+
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+
 from api.core.config import settings
 from api.middleware.log_sanitizer import NoBodyLoggingFilter, RedactLogsMiddleware
 from api.middleware.performance import PerformanceMiddleware
-from api.routers import report, llm, summary, evidence, codes, rag
-import os
+from api.routers import codes, evidence, llm, rag, report, summary
+
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
+from api.core.exceptions import setup_exception_handlers
 
 # Configure structured logging
 from api.core.logging_config import setup_logging
 from api.core.startup import perform_startup_checks
-from api.core.exceptions import setup_exception_handlers
+
 logger = setup_logging()
 
 # Perform startup health checks
@@ -30,7 +35,7 @@ app = FastAPI(
     description="Medical report generation and analysis API",
     version="1.0.0",
     docs_url="/docs",
-    redoc_url="/redoc"
+    redoc_url="/redoc",
 )
 
 logger.info("Starting BBB Medical Report API")
@@ -65,15 +70,13 @@ app.add_middleware(PerformanceMiddleware)
 # Setup global exception handlers
 setup_exception_handlers(app)
 
+
 @app.get("/")
 async def root():
     """Root endpoint"""
     logger.info("Root endpoint accessed")
-    return {
-        "message": "BBB Medical Report API",
-        "version": "1.0.0",
-        "docs": "/docs"
-    }
+    return {"message": "BBB Medical Report API", "version": "1.0.0", "docs": "/docs"}
+
 
 @app.get("/health")
 async def health_check():
@@ -81,7 +84,9 @@ async def health_check():
     logger.info("Health check requested")
     return {"status": "healthy"}
 
+
 if __name__ == "__main__":
     import uvicorn
+
     logger.info("Starting uvicorn server on 0.0.0.0:8082")
     uvicorn.run(app, host="0.0.0.0", port=8082)

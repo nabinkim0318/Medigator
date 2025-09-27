@@ -1,8 +1,11 @@
 # api/middleware/log_sanitizer.py
-import logging, json
+import logging
+
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
+
 from api.core.config import settings
+
 
 class NoBodyLoggingFilter(logging.Filter):
     def filter(self, record):
@@ -20,16 +23,22 @@ class NoBodyLoggingFilter(logging.Filter):
                 else:
                     sanitized_args.append(arg)
             record.args = tuple(sanitized_args)
-        
+
         # Also sanitize the message itself
         if hasattr(record, "msg") and isinstance(record.msg, str):
             # Remove common PHI patterns
             import re
-            record.msg = re.sub(r'\b\d{3}-\d{2}-\d{4}\b', '[SSN]', record.msg)  # SSN
-            record.msg = re.sub(r'\b\d{10,}\b', '[ID]', record.msg)  # Long numbers
-            record.msg = re.sub(r'\b[A-Za-z]+@[A-Za-z]+\.[A-Za-z]+\b', '[EMAIL]', record.msg)  # Email
-        
+
+            record.msg = re.sub(r"\b\d{3}-\d{2}-\d{4}\b", "[SSN]", record.msg)  # SSN
+            record.msg = re.sub(r"\b\d{10,}\b", "[ID]", record.msg)  # Long numbers
+            record.msg = re.sub(
+                r"\b[A-Za-z]+@[A-Za-z]+\.[A-Za-z]+\b",
+                "[EMAIL]",
+                record.msg,
+            )  # Email
+
         return True
+
 
 class RedactLogsMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
@@ -40,9 +49,9 @@ class RedactLogsMiddleware(BaseHTTPMiddleware):
             logger.info(f"{request.method} {request.url.path} [PHI REDACTED]")
         else:
             logger.info(f"{request.method} {request.url.path}")
-        
+
         response = await call_next(request)
-        
+
         if settings.HIPAA_MODE:
             # add security headers
             response.headers["X-Content-Type-Options"] = "nosniff"
@@ -50,5 +59,5 @@ class RedactLogsMiddleware(BaseHTTPMiddleware):
             response.headers["Referrer-Policy"] = "no-referrer"
             response.headers["X-XSS-Protection"] = "1; mode=block"
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
-        
+
         return response

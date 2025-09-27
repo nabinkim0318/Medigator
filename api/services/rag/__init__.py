@@ -8,20 +8,20 @@ This module provides:
 - Evidence retrieval for medical summaries
 """
 
-from .retrieve import retrieve, init_retriever, make_query
 from .index import build_index
+from .retrieve import init_retriever, make_query, retrieve
 from .store import RAGStore
 from .summarize import to_cards
-from .types import DocChunk, Retrieval, EvidenceCard
+from .types import DocChunk, EvidenceCard, Retrieval
 
 __all__ = [
-    "retrieve",
-    "init_retriever", 
-    "make_query",
-    "build_index",
-    "RAGStore",
-    "to_cards",
     "DocChunk",
-    "Retrieval", 
-    "EvidenceCard"
+    "EvidenceCard",
+    "RAGStore",
+    "Retrieval",
+    "build_index",
+    "init_retriever",
+    "make_query",
+    "retrieve",
+    "to_cards",
 ]

@@ -11,7 +11,8 @@ DB_URL := sqlite:///$(API_DIR)/copilot.db
 
 # ====== Phony ======
 .PHONY: help setup venv deps ui-deps seed dev api ui test lint fmt type precommit ci \
-        build-frontend build-backend build pdf demo-clean clean distclean
+        build-frontend build-backend build pdf demo-clean clean distclean \
+        docker-build docker-up docker-down docker-logs docker-shell
 
 help:
 	@echo "Targets:"
@@ -28,6 +29,11 @@ help:
 	@echo "  ci             Lint + type + tests (CI quick gate)"
 	@echo "  build          Build prod UI + check API import"
 	@echo "  pdf            Generate a sample PDF report (api/reports/)"
+	@echo "  docker-build   Build Docker images"
+	@echo "  docker-up      Start services with Docker Compose"
+	@echo "  docker-down    Stop Docker services"
+	@echo "  docker-logs    Show Docker logs"
+	@echo "  docker-shell   Open shell in running container"
 	@echo "  clean          Remove __pycache__, caches, build artifacts"
 	@echo "  distclean      Also remove venv and node_modules"
 
@@ -106,6 +112,29 @@ pdf:
 	@curl -sSf http://localhost:8080/report/demo/pdf -o $(API_DIR)/reports/demo.pdf || \
 	 (echo "API must be running: make api & then re-run make pdf"; exit 1)
 	@echo "📄 Saved: $(API_DIR)/reports/demo.pdf"
+
+# ====== Docker ======
+docker-build:
+	@echo "🐳 Building Docker images..."
+	@docker build -t bbb-medical-api .
+	@docker build -f Dockerfile.frontend -t bbb-medical-frontend .
+	@echo "✅ Docker images built."
+
+docker-up:
+	@echo "🐳 Starting services with Docker Compose..."
+	@docker-compose up -d
+	@echo "✅ Services started. API: http://localhost:8082, UI: http://localhost:5173"
+
+docker-down:
+	@echo "🐳 Stopping Docker services..."
+	@docker-compose down
+	@echo "✅ Services stopped."
+
+docker-logs:
+	@docker-compose logs -f
+
+docker-shell:
+	@docker-compose exec api bash
 
 # ====== Housekeeping ======
 demo-clean:

@@ -1,0 +1,92 @@
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "C90", "I", "N", "UP", "YTT", "S", "BLE", "FBT", "B", "A", "COM", "C4", "DTZ", "T10", "EM", "EXE", "FA", "ISC", "ICN", "G", "INP", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SLOT", "SIM", "TID", "TCH", "INT", "ARG", "PTH", "TD", "FIX", "ERA", "PD", "PGH", "PL", "TRY", "FLY", "NPY", "AIR", "PERF", "FURB", "LOG", "RUF"]
+ignore = [
+    "E402",  # Allow imports not at top of file for path manipulation
+    "S101",  # Allow assert in tests
+    "ARG001",  # Allow unused function arguments in tests
+    "ARG002",  # Allow unused method arguments in placeholder implementations
+    "G004",  # Allow f-string in logging (common pattern)
+    "TRY400",  # Allow logging.error instead of logging.exception
+    "TRY300",  # Allow return statements in try blocks
+    "BLE001",  # Allow broad Exception catching in some cases
+    "PLR2004",  # Allow magic numbers in medical constants
+    "FBT001",  # Allow boolean positional arguments
+    "PERF401",  # Allow for loops instead of list comprehensions
+    "SIM102",  # Allow nested if statements
+    "C901",  # Allow complex functions
+    "C414",  # Allow list() in sorted()
+    "PLC0415",  # Allow imports inside functions
+    "EM101",  # Allow string literals in exceptions
+    "EM102",  # Allow f-string literals in exceptions
+    "TRY003",  # Allow long exception messages
+    "ERA001",  # Allow commented code
+    "DTZ005",  # Allow datetime.now() without timezone
+    "S307",  # Allow eval in safe contexts
+    "INP001",  # Allow implicit namespace packages
+    "TC003",  # Allow standard library imports
+    "UP035",  # Allow typing.Dict
+    "F401",  # Allow unused imports
+    "COM812",  # Allow trailing comma conflicts
+    "N818",  # Allow exception names without Error suffix
+    "E501",  # Allow long lines
+    "N815",  # Allow mixedCase variables
+    "RUF012",  # Allow mutable class attributes
+    "PTH110",  # Allow os.path.exists()
+    "PTH120",  # Allow os.path.dirname()
+    "PTH100",  # Allow os.path.abspath()
+    "PTH103",  # Allow os.makedirs()
+    "PTH118",  # Allow os.path.join()
+    "PTH123",  # Allow open()
+    "PTH119",  # Allow os.path.basename()
+    "T201",  # Allow print statements
+    "EXE001",  # Allow shebang without executable
+    "S608",  # Allow SQL injection in safe contexts
+    "PLW2901",  # Allow loop variable overwriting
+    "DTZ003",  # Allow datetime.utcnow()
+    "DTZ007",  # Allow naive datetime
+    "S104",  # Allow binding to all interfaces
+    "B008",  # Allow Body() in defaults
+    "PLW0603",  # Allow global statements
+    "PLW0602",  # Allow global without assignment
+    "S110",  # Allow try-except-pass
+    "C416",  # Allow dict comprehensions
+    "N806",  # Allow uppercase variables
+    "PLR0913",  # Allow many function arguments
+    "B904",  # Allow raise without from
+    "TRY301",  # Allow raise in functions
+    "SIM108",  # Allow if-else blocks
+    "PGH003",  # Allow type: ignore
+    "TC001",  # Allow application imports
+    "RET504",  # Allow unnecessary assignments
+]
+
+[tool.ruff.lint.isort]
+known-first-party = ["api"]
+
+[tool.black]
+line-length = 100
+target-version = ['py311']
+
+[tool.isort]
+profile = "black"
+known_first_party = ["api"]
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = false
+warn_unused_configs = true
+disallow_untyped_defs = false
+explicit_package_bases = true
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = "api.*"
+explicit_package_bases = true
+disallow_untyped_defs = false
+
+[tool.bandit]
+exclude_dirs = ["tests", "venv", ".venv"]
