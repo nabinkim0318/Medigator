@@ -1,110 +1,41 @@
-# ----------------------------
-# OS / Editor cruft
-# ----------------------------
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
+
+# misc
 .DS_Store
-Thumbs.db
-*.swp
-*.swo
-*.orig
-*.log
-*.tmp
-*.bak
-*.lock
-.idea/
-.vscode/*
-!.vscode/extensions.json
-!.vscode/settings.json
+*.pem
 
-# ----------------------------
-# Node / Frontend (Vite/React)
-# ----------------------------
-node_modules/
-app/node_modules/
-app/dist/
-app/.vite/
-app/.cache/
-app/.parcel-cache/
-app/coverage/
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
 
-# ----------------------------
-# Python / Backend (FastAPI)
-# ----------------------------
-__pycache__/
-*.py[cod]
-*.pyc
-*.pyo
-*.pyd
-*.pytest_cache/
-api/.mypy_cache/
-api/.ruff_cache/
-api/.pytest_cache/
-api/.coverage
-api/htmlcov/
-.eggs/
-*.egg-info/
+# env files (can opt-in for committing if needed)
+.env*
 
-# ----------------------------
-# Environments / Secrets
-# ----------------------------
-.env
-.env.*
-api/.env
-api/.env.*
-# keep example files
-!*.env.example
+# vercel
+.vercel
 
-# ----------------------------
-# SQLite / Local state
-# ----------------------------
-*.db
-*.db-journal
-*.sqlite
-*.sqlite3
-api/copilot.db
-api/*.db
-api/*.sqlite*
-# keep seed SQL/CSV/JSON under /data/
-!data/**
-
-# ----------------------------
-# Build artifacts / Binaries
-# ----------------------------
-dist/
-build/
-*.exe
-*.out
-*.a
-*.so
-*.dll
-
-# ----------------------------
-# Reports / Generated assets
-# ----------------------------
-reports/**
-!reports/.gitkeep
-api/reports/**
-!api/reports/.gitkeep
-
-# ----------------------------
-# Caches
-# ----------------------------
-.cache/
-api/.cache/
-app/.cache/
-
-# ----------------------------
-# Docker
-# ----------------------------
-*.tar
-**/.docker/*
-docker/*.pid
-
-# ----------------------------
-# Images/Media (optional)
-# ----------------------------
-# Ignore large runtime captures but keep design assets in docs/
-captures/**
-recordings/**
-screenshots/**
-!docs/**
-!docs/**/*
+# typescript
+*.tsbuildinfo
+next-env.d.ts
