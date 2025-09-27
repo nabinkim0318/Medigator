@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🏥 BBB Medical Report API
 
 AI-powered medical report generation and analysis system with RAG (Retrieval-Augmented Generation) capabilities.
