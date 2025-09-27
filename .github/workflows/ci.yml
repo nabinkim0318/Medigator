@@ -72,31 +72,26 @@ jobs:
       with:
         node-version: '18'
         cache: 'npm'
-        cache-dependency-path: app/package-lock.json
+        cache-dependency-path: package-lock.json
 
     - name: Install dependencies
       run: |
-        cd app
         npm ci
 
     - name: Run linting
       run: |
-        cd app
         npm run lint
 
     - name: Run type checking
       run: |
-        cd app
         npm run type-check
 
     - name: Run tests
       run: |
-        cd app
         npm run test:ci
 
     - name: Build application
       run: |
-        cd app
         npm run build
 
   # Security Scanning
