@@ -1,4 +1,4 @@
-import { CedarCaptionChat } from "@/cedar/components/chatComponents/CedarCaptionChat";
+import { FloatingCedarChat } from "@/cedar/components/chatComponents/FloatingCedarChat";
 
 export default function PatientInterface() {
     return <div>
@@ -8,6 +8,6 @@ export default function PatientInterface() {
             }}>
             Sign in
         </button>
-        <CedarCaptionChat />
+        <FloatingCedarChat resizable={false}  />
     </div>;
 }
