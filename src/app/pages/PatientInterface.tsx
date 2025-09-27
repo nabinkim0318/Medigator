@@ -21,14 +21,12 @@ export default function PatientInterface() {
     store.addMessage({
       role: "assistant",
       type: "multiple_choice",
-      field: "painScore",
+      field: "q1_when", // 👈 start here
       required: true,
-      content: "On a scale from 1–10, how bad is the pain right now?",
-      options: Array.from({ length: 10 }, (_, i) => {
-        const v = String(i + 1);
-        return { value: v, label: v };
-      }),
+      // content/options can be omitted; the renderer supplies presets
+      options: [], // ignored by this renderer; it uses its own options
     } as any);
+
   }, [store]);
 
   // 🔊 Listen for the "dock me" event from the long-answer renderer

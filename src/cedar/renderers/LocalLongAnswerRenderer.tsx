@@ -39,7 +39,6 @@ const LocalLongAnswerRenderer: MessageRenderer = createMessageRenderer<LongAnswe
         content: "Thanks — your description has been recorded.",
       } as any);
 
-      window.dispatchEvent(new CustomEvent("triage:move-bottom-right"));
     };
 
     return (
