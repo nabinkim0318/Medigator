@@ -11,7 +11,7 @@ from .icd import suggest_icd
 # Get logger
 logger = logging.getLogger(__name__)
 
-RULES_DIR = Path("data/rules")
+RULES_DIR = Path("/Users/adils/Desktop/Github/BBB/data/rules")
 _icd = load_icd_rules(str(RULES_DIR / "symptom_icd.csv"))
 _cpt = load_cpt_rules(str(RULES_DIR / "trigger_cpt.csv"))
 _em = load_em_rules(str(RULES_DIR / "em_rules.csv"))

@@ -2,8 +2,8 @@ import logging
 
 from fastapi import APIRouter
 
-from api.core.schemas import SummaryIn, SummaryOut
-from api.services.llm.tasks.summarize import run as summarize_run
+from core.schemas import SummaryIn, SummaryOut
+from services.llm.tasks.summarize import run as summarize_run
 
 # Get logger
 logger = logging.getLogger(__name__)

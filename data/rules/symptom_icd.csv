@@ -1,0 +1,4 @@
+symptom,pattern,icd_code,icd_label,weight,excludes,requires_flag,rationale_key
+Cough,.*cough.*,R05,Cough,1.0,,,"respiratory_rationale"
+Fever,.*fever.*,R50,Fever,0.8,.*cold.*,, "infection_rationale"
+Chest Pain,.*chest pain.*,R07.9,Chest pain,1.2,,requires_ecg,"cardiac_rationale"

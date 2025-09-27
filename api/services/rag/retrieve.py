@@ -19,7 +19,7 @@ except Exception:  # pragma: no cover
     BM25Okapi = None  # type: ignore
 
 # Import settings to use consistent RAG flag
-from api.core.config import settings
+from core.config import settings
 
 from .store import RAGStore
 

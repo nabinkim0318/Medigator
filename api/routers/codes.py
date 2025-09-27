@@ -4,7 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter, Body
 
-from api.services.codes import generate_codes
+from services.codes import generate_codes
 
 # Get logger
 logger = logging.getLogger(__name__)

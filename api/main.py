@@ -11,18 +11,18 @@ import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from api.core.config import settings
-from api.middleware.log_sanitizer import NoBodyLoggingFilter, RedactLogsMiddleware
-from api.middleware.performance import PerformanceMiddleware
-from api.routers import codes, evidence, llm, rag, report, summary
+from core.config import settings
+from middleware.log_sanitizer import NoBodyLoggingFilter, RedactLogsMiddleware
+from middleware.performance import PerformanceMiddleware
+from routers import codes, evidence, llm, rag, report, summary
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from api.core.exceptions import setup_exception_handlers
+from core.exceptions import setup_exception_handlers
 
 # Configure structured logging
-from api.core.logging_config import setup_logging
-from api.core.startup import perform_startup_checks
+from core.logging_config import setup_logging
+from core.startup import perform_startup_checks
 
 logger = setup_logging()
 

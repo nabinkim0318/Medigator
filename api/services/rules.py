@@ -6,7 +6,7 @@ Manage medical rules and policies.
 import sqlite3
 from typing import Any
 
-from api.core.config import settings
+from core.config import settings
 
 
 class RulesService:

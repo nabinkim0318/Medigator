@@ -5,9 +5,9 @@ from typing import Any
 from fastapi import APIRouter
 from pydantic import BaseModel
 
-from api.core.exceptions import RAGServiceException
-from api.services.rag import build_index, init_retriever, make_query, retrieve
-from api.services.rag.retrieve import USE_RAG
+from core.exceptions import RAGServiceException
+from services.rag import build_index, init_retriever, make_query, retrieve
+from services.rag.retrieve import USE_RAG
 
 # Get logger
 logger = logging.getLogger(__name__)

@@ -2,7 +2,7 @@
 import json
 import re
 
-from api.core.schemas import SummaryOut
+from core.schemas import SummaryOut
 
 FORBIDDEN = re.compile(
     r"(diagnos|treat|prescrib|admit|discharge|risk\s*%|riskpercent|risk\s*percent|probabilit)",
