@@ -43,6 +43,12 @@ api/htmlcov/
 .eggs/
 *.egg-info/
 
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+
 # ----------------------------
 # Environments / Secrets
 # ----------------------------
