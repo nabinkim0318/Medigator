@@ -1,0 +1,10 @@
+{
+  "docs_dir": "docs",
+  "out_dir": "rag_index",
+  "model": "sentence-transformers/all-MiniLM-L6-v2",
+  "chunks": 2,
+  "dim": 384,
+  "files_indexed": 3,
+  "index_path": "rag_index/index.faiss",
+  "meta_path": "rag_index/meta.json"
+}

@@ -1,0 +1,30 @@
+{
+    "resourceType": "Bundle",
+    "type": "collection",
+    "entry": [
+      { "resource": { "resourceType": "Patient", "id": "p1", "gender": "male", "birthDate": "1970-06-15" } },
+      { "resource": { "resourceType": "Encounter", "id": "e1", "status": "in-progress",
+        "class": { "code": "AMB" }, "subject": { "reference": "Patient/p1" } } },
+      { "resource": { "resourceType": "QuestionnaireResponse", "id": "qr1",
+        "questionnaire": "Questionnaire/chest-pain-intake-v1",
+        "status": "completed",
+        "subject": { "reference": "Patient/p1" },
+        "item": [
+          { "linkId": "cc", "answer":[{"valueString":"Chest pain"}] },
+          { "linkId": "onset", "answer":[{"valueString":"2 days"}] },
+          { "linkId": "quality", "answer":[{"valueString":"pressure"}] },
+          { "linkId": "exertion", "answer":[{"valueBoolean": true}] },
+          { "linkId": "reliefRest", "answer":[{"valueBoolean": true}] },
+          { "linkId": "assoc", "answer":[{"valueString":"dyspnea, diaphoresis"}] },
+          { "linkId": "radiation", "answer":[{"valueString":"left arm"}] }
+        ] } },
+      { "resource": { "resourceType": "Observation", "id": "o1",
+        "code": { "text": "Vital signs" },
+        "subject": { "reference": "Patient/p1" },
+        "component": [
+          { "code": { "text": "BP" }, "valueQuantity": { "value": 148, "unit": "mmHg" } },
+          { "code": { "text": "HR" }, "valueQuantity": { "value": 96, "unit": "bpm" } }
+        ] } }
+    ]
+  }
+  

@@ -1,0 +1,2 @@
+-- emr_1.jsonl - chest pain example
+{"id":"cp001","age":55,"sex":"M","cc":"chest pain","onset":"2d","quality":"pressure","aggravating":"exertion","relieving":"rest","associated":["dyspnea","diaphoresis"],"radiation":"left arm","pmh":["htn"],"meds":["amlodipine"]}

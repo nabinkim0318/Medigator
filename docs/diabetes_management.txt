@@ -1,0 +1,28 @@
+# Diabetes Management Guidelines
+
+## Type 2 Diabetes Monitoring
+Regular monitoring is essential for diabetes management:
+- HbA1c every 3-6 months (target <7%)
+- Annual eye exam (diabetic retinopathy screening)
+- Annual foot exam for neuropathy
+- Blood pressure monitoring (target <130/80)
+- Lipid panel annually
+
+## Medication Management
+First-line therapy:
+- Metformin 500mg twice daily
+- Titrate to maximum tolerated dose
+- Add SGLT2 inhibitors or GLP-1 agonists if needed
+
+## Lifestyle Modifications
+- Weight loss of 5-10% if overweight
+- Regular physical activity (150 min/week)
+- Carbohydrate counting education
+- Blood glucose monitoring frequency based on medication
+
+## Complication Prevention
+Regular screening for:
+- Nephropathy: urine microalbumin annually
+- Retinopathy: dilated eye exam annually  
+- Neuropathy: monofilament testing annually
+- Cardiovascular disease: annual EKG if indicated

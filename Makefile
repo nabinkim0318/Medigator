@@ -1,8 +1,8 @@
 # ====== Variables ======
-PY := .venv/bin/python
-PIP := .venv/bin/pip
-UVICORN := .venv/bin/uvicorn
-PRECOMMIT := .venv/bin/pre-commit
+PY := $(PWD)/.venv/bin/python
+PIP := $(PWD)/.venv/bin/pip
+UVICORN := $(PWD)/.venv/bin/uvicorn
+PRECOMMIT := $(PWD)/.venv/bin/pre-commit
 ROOT := $(PWD)
 
 API_DIR := api
@@ -55,21 +55,21 @@ seed:
 
 # ====== Run ======
 dev:
-	@echo "ℹ️  Starting API : http://localhost:8080"
+	@echo "ℹ️  Starting API : http://localhost:8082"
 	@echo "ℹ️  Starting UI  : http://localhost:5173"
-	@( cd $(API_DIR) && $(UVICORN) main:app --reload --port 8080 ) & \
+	@( cd $(API_DIR) && $(PY) -m uvicorn main:app --reload --port 8082 ) & \
 	( cd $(APP_DIR) && npm run dev )
 	@echo "⛔ Stopped dev."
 
 api:
-	@cd $(API_DIR) && $(UVICORN) main:app --reload --port 8080
+	@cd $(API_DIR) && $(PY) -m uvicorn main:app --reload --port 8082
 
 ui:
 	@cd $(APP_DIR) && npm run dev
 
 # ====== Quality ======
 test:
-	@cd $(API_DIR) && pytest -q
+	@cd $(ROOT) && PYTHONPATH=$(ROOT) $(PY) -m pytest api/tests -v
 
 lint:
 	@cd $(API_DIR) && ruff --fix .

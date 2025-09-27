@@ -1,0 +1,17 @@
+{
+    "encounterId": "e1",
+    "patient": { "age": 55, "sex": "M" },
+    "answers": {
+      "cc": "chest pain",
+      "onset": "2 days",
+      "quality": "pressure",
+      "exertion": true,
+      "relievedByRest": true,
+      "associated": ["dyspnea", "diaphoresis"],
+      "radiation": "left arm",
+      "pmh": ["hypertension"],
+      "meds": ["amlodipine"]
+    },
+    "vitals": { "bp_sys": 148, "hr": 96 }
+  }
+  

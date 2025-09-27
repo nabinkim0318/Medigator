@@ -3,16 +3,22 @@ Report API router
 Medical report generation and management API endpoints
 """
 
-from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks, Body
 from fastapi.responses import FileResponse
 from typing import Dict, List, Any, Optional
 from pydantic import BaseModel
 from datetime import datetime
 import os
+import logging
 
 from api.services.llm import llm_service
 from api.services.pdf import pdf_service
 from api.services.rules import rules_service
+from api.core.persistence import write_guard
+from api.core.exceptions import MedicalAPIException, LLMServiceException
+
+# Get logger
+logger = logging.getLogger(__name__)
 
 
 # Pydantic model definition
@@ -83,6 +89,7 @@ async def generate_report(request: ReportRequest):
     Returns:
         Created report information
     """
+    logger.info(f"Generating report for patient: {request.patient.name}")
     try:
         # Use LLM to generate report
         report_content = await llm_service.generate_report(
@@ -104,7 +111,7 @@ async def generate_report(request: ReportRequest):
         # Report ID creation
         report_id = f"RPT_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         
-        return ReportResponse(
+        response = ReportResponse(
             report_id=report_id,
             status="completed",
             content=report_content,
@@ -112,9 +119,16 @@ async def generate_report(request: ReportRequest):
             treatment_plan=treatment.get('medications', ''),
             created_at=datetime.now().isoformat()
         )
+        logger.info(f"Report generated successfully: {report_id}")
+        return response
         
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Report creation error: {str(e)}")
+        logger.error(f"Report generation failed: {str(e)}")
+        raise MedicalAPIException(
+            message="Report generation failed",
+            status_code=500,
+            details={"error": str(e), "patient_name": request.patient.name}
+        )
 
 
 @router.post("/analyze", response_model=AnalysisResponse)
@@ -140,6 +154,7 @@ async def analyze_symptoms(request: AnalysisRequest):
         )
         
     except Exception as e:
+        logger.error(f"Symptom analysis failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Symptom analysis error: {str(e)}")
 
 
@@ -159,6 +174,7 @@ async def get_symptom_icd_mapping(symptom: str):
         return {"symptom": symptom, "mappings": mappings}
         
     except Exception as e:
+        logger.error(f"ICD mapping lookup failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"ICD mapping lookup error: {str(e)}")
 
 
@@ -178,6 +194,7 @@ async def get_condition_cpt_codes(condition: str):
         return {"condition": condition, "cpt_codes": cpt_codes}
         
     except Exception as e:
+        logger.error(f"CPT code lookup failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"CPT code lookup error: {str(e)}")
 
 
@@ -202,6 +219,7 @@ async def get_cpt_fee(cpt_code: str):
     except HTTPException:
         raise
     except Exception as e:
+        logger.error(f"Fee lookup failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Fee lookup error: {str(e)}")
 
 
@@ -216,6 +234,7 @@ async def generate_pdf_report(request: ReportRequest):
     Returns:
         Created PDF file
     """
+    write_guard()  # if DEMO_MODE, RuntimeError
     try:
         # Prepare report data
         report_data = {
@@ -244,6 +263,7 @@ async def generate_pdf_report(request: ReportRequest):
         )
         
     except Exception as e:
+        logger.error(f"PDF generation failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"PDF generation error: {str(e)}")
 
 
@@ -255,6 +275,7 @@ async def generate_demo_pdf():
     Returns:
         Demo PDF file
     """
+    write_guard()  # RuntimeError if DEMO_MODE
     try:
         pdf_path = await pdf_service.generate_demo_pdf()
         
@@ -268,6 +289,7 @@ async def generate_demo_pdf():
         )
         
     except Exception as e:
+        logger.error(f"Demo PDF generation failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Demo PDF generation error: {str(e)}")
 
 
@@ -284,14 +306,15 @@ async def get_active_rules():
         return {"rules": rules}
         
     except Exception as e:
+        logger.error(f"Rule lookup failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Rule lookup error: {str(e)}")
 
 
 @router.post("/rules/evaluate")
 async def evaluate_rules(
-    patient_data: PatientData,
-    symptoms: List[str],
-    vital_signs: Optional[Dict[str, Any]] = None
+    patient_data: PatientData = Body(...),
+    symptoms: List[str] = Body(...),
+    vital_signs: Optional[Dict[str, Any]] = Body(default=None)
 ):
     """
     Evaluate rules for patient data.
@@ -314,6 +337,7 @@ async def evaluate_rules(
         return {"applied_rules": applied_rules}
         
     except Exception as e:
+        logger.error(f"Rule evaluation failed: {str(e)}")
         raise HTTPException(status_code=500, detail=f"Rule evaluation error: {str(e)}")
 
 

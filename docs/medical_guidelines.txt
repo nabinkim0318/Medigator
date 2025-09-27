@@ -1,0 +1,30 @@
+# Medical Guidelines for Chest Pain Assessment
+
+## Acute Coronary Syndrome (ACS)
+Chest pain that worsens with exertion and improves with rest is highly suggestive of acute coronary syndrome. Key features include:
+- Radiation to left arm, jaw, or back
+- Associated symptoms: diaphoresis, nausea, vomiting
+- Risk factors: age >65, diabetes, hypertension, smoking
+- Immediate ECG and cardiac enzymes required
+
+## Treatment Protocol
+For suspected ACS:
+1. Aspirin 325mg immediately
+2. Nitroglycerin if systolic BP >100mmHg
+3. Morphine for pain control
+4. Beta-blockers if no contraindications
+5. Consider PCI or thrombolytics based on presentation
+
+## Risk Stratification
+High risk features:
+- ST elevation on ECG
+- Elevated troponins
+- Hemodynamic instability
+- New onset heart failure
+
+## Follow-up
+All patients with chest pain should have:
+- Cardiac stress testing within 72 hours
+- Echocardiogram if indicated
+- Lipid panel and HbA1c if diabetes
+- Smoking cessation counseling

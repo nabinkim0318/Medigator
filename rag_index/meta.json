@@ -1,0 +1,22 @@
+[
+  {
+    "id": "diabetes_management__0000",
+    "title": "Diabetes Management",
+    "source": "Diabetes Management",
+    "text": "# Diabetes Management Guidelines ## Type 2 Diabetes Monitoring\nRegular monitoring is essential for diabetes management:\n- HbA1c every 3-6 months (target <7%)\n- Annual eye exam (diabetic retinopathy screening)\n- Annual foot exam for neuropathy\n- Blood pressure monitoring (target <130/80)\n- Lipid panel annually ## Medication Management\nFirst-line therapy:\n- Metformin 500mg twice daily\n- Titrate to maximum tolerated dose\n- Add SGLT2 inhibitors or GLP-1 agonists if needed ## Lifestyle Modifications\n- Weight loss of 5-10% if overweight\n- Regular physical activity (150 min/week)\n- Carbohydrate counting education\n- Blood glucose monitoring frequency based on medication ## Complication Prevention\nRegular screening for:\n- Nephropathy: urine microalbumin annually\n- Retinopathy: dilated eye exam annually  \n- Neuropathy: monofilament testing annually\n- Cardiovascular disease: annual EKG if indicated",
+    "file": "diabetes_management.txt",
+    "start": 0,
+    "end": 900,
+    "url": null
+  },
+  {
+    "id": "medical_guidelines__0000",
+    "title": "Medical Guidelines",
+    "source": "Medical Guidelines",
+    "text": "# Medical Guidelines for Chest Pain Assessment ## Acute Coronary Syndrome (ACS)\nChest pain that worsens with exertion and improves with rest is highly suggestive of acute coronary syndrome. Key features include:\n- Radiation to left arm, jaw, or back\n- Associated symptoms: diaphoresis, nausea, vomiting\n- Risk factors: age >65, diabetes, hypertension, smoking\n- Immediate ECG and cardiac enzymes required ## Treatment Protocol\nFor suspected ACS:\n1. Aspirin 325mg immediately\n2. Nitroglycerin if systolic BP >100mmHg\n3. Morphine for pain control\n4. Beta-blockers if no contraindications\n5. Consider PCI or thrombolytics based on presentation ## Risk Stratification\nHigh risk features:\n- ST elevation on ECG\n- Elevated troponins\n- Hemodynamic instability\n- New onset heart failure ## Follow-up\nAll patients with chest pain should have:\n- Cardiac stress testing within 72 hours\n- Echocardiogram if indicated\n- Lipid panel and HbA1c if diabetes\n- Smoking cessation counseling",
+    "file": "medical_guidelines.txt",
+    "start": 0,
+    "end": 971,
+    "url": null
+  }
+]

@@ -104,3 +104,21 @@ CREATE INDEX IF NOT EXISTS idx_trigger_cpt_cpt_code ON trigger_cpt(cpt_code);
 CREATE INDEX IF NOT EXISTS idx_fees_cpt_code ON fees(cpt_code);
 CREATE INDEX IF NOT EXISTS idx_em_rules_active ON em_rules(is_active);
 CREATE INDEX IF NOT EXISTS idx_report_logs_report_id ON report_logs(report_id);
+
+
+-- Link Creation Table
+CREATE TABLE intake_session(
+  id TEXT PRIMARY KEY,                -- uuid
+  token TEXT UNIQUE NOT NULL,
+  status TEXT NOT NULL CHECK(status IN ('PENDING','SUBMITTED','EXPIRED')),
+  patient_hint TEXT,                  -- patient hint (optional)
+  created_at TEXT NOT NULL DEFAULT (datetime('now')),
+  expires_at TEXT NOT NULL,           -- ISO
+  submitted_at TEXT
+);
+
+CREATE TABLE intake_payload(
+  session_id TEXT PRIMARY KEY REFERENCES intake_session(id) ON DELETE CASCADE,
+  answers_json TEXT NOT NULL         -- form response (non-PHI only)
+);
+CREATE INDEX idx_intake_token ON intake_session(token);

@@ -4,9 +4,10 @@ Medical report PDF generation service
 """
 
 import os
+import logging
 from typing import Dict, Any, Optional
 from datetime import datetime
-from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.pagesizes import letter
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
@@ -14,14 +15,29 @@ from reportlab.lib import colors
 from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from api.core.config import settings
 
+# Get logger
+logger = logging.getLogger(__name__)
+
+# Disclaimer text based on demo mode
+DISCLAIMER = "DEMO — NOT FOR DIAGNOSIS OR TREATMENT" if settings.DEMO_MODE else "For clinical use. See audit log."
+
+
+def add_watermark(canvas):
+    """Add watermark to PDF based on demo mode"""
+    canvas.setFont("Helvetica-Bold", 10)
+    canvas.setFillGray(0.7, 0.7)
+    canvas.rotate(45)
+    canvas.drawString(100, 0, DISCLAIMER)
+
 
 class PDFService:
     """PDF generation service class"""
     
     def __init__(self):
         """PDF service initialization"""
-        self.output_dir = settings.pdf_output_dir
+        self.output_dir = settings.PDF_OUTPUT_DIR
         os.makedirs(self.output_dir, exist_ok=True)
+        logger.info(f"PDF service initialized with output directory: {self.output_dir}")
         
         # Style settings
         self.styles = getSampleStyleSheet()
@@ -87,7 +103,7 @@ class PDFService:
         filepath = os.path.join(self.output_dir, filename)
         
         # PDF document creation
-        doc = SimpleDocTemplate(filepath, pagesize=A4)
+        doc = SimpleDocTemplate(filepath, pagesize=letter)
         story = []
         
         # Add header
@@ -123,8 +139,8 @@ class PDFService:
         story.append(Spacer(1, 30))
         story.append(self._create_footer())
         
-        # PDF generation
-        doc.build(story)
+        # PDF generation with watermark
+        doc.build(story, onFirstPage=add_watermark, onLaterPages=add_watermark)
         
         return filepath
     

@@ -1,0 +1,17 @@
+{
+    "encounterId": "E-001",
+    "patient": { "age": 55, "sex": "M" },
+    "answers": {
+      "cc": "chest pain",
+      "onset": "2 hours",
+      "quality": "pressure",
+      "exertion": true,
+      "relievedByRest": true,
+      "radiation": "left arm",
+      "associated": ["diaphoresis","dyspnea"],
+      "pmh": ["hypertension"],
+      "meds": ["lisinopril"]
+    },
+    "vitals": { "bp_sys": 148, "bp_dia": 92, "hr": 96 }
+  }
+  

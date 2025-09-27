@@ -1,0 +1,16 @@
+{
+    "hpi": "55-year-old male with 2-day history of exertional chest pressure...",
+    "ros": {
+      "cardiovascular": { "positive": ["chest pain","radiation"], "negative": ["palpitations"] },
+      "respiratory": { "positive": ["dyspnea"], "negative": ["cough"] },
+      "constitutional": { "positive": ["diaphoresis"], "negative": ["fever"] }
+    },
+    "pmh": ["hypertension"],
+    "meds": ["amlodipine"],
+    "flags": {
+      "ischemic_features": true,
+      "dm_followup": false,
+      "labs_a1c_needed": false
+    }
+  }
+  

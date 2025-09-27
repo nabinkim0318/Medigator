@@ -1,0 +1,2 @@
+-- emr_2.jsonl - diabetes example
+{"id":"dm001","age":62,"sex":"F","cc":"dm follow-up","onset":"chronic","quality":"n/a","aggravating":"n/a","relieving":"n/a","associated":["polyuria"],"radiation":"none","pmh":["t2dm","hld"],"meds":["metformin"]}
