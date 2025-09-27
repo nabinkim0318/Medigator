@@ -18,7 +18,7 @@ export default function Home() {
       // userId="user-123"   // recommended if you want per-user persistence
       // threadId="thread-abc"
     >
-      <OnboardingQuestionnaire />
+      <SignIn />
     </CedarCopilot>
   );
 }
