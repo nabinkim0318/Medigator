@@ -1,0 +1,56 @@
+repos:
+  # basic hygiene
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-json
+      - id: detect-private-key
+
+  # Python format/lint
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.6.9
+    hooks:
+      - id: ruff  # lint + auto-fix(--fix)
+        args: ["--fix", "api/"]
+      - id: ruff-format
+        args: ["api/"]
+
+  - repo: https://github.com/psf/black
+    rev: 24.8.0
+    hooks:
+      - id: black
+        args: ["--line-length=100", "api/"]
+
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+        args: ["--profile", "black", "api/"]
+
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v1.11.2
+    hooks:
+      - id: mypy
+        args: ["--strict", "api/"]
+        additional_dependencies:
+          - pydantic>=2
+          - types-requests
+
+  # security scanning(simple)
+  - repo: https://github.com/PyCQA/bandit
+    rev: 1.7.9
+    hooks:
+      - id: bandit
+        args: ["-r", "api/", "-lll"]
+
+  # frontend format(Prettier)
+  - repo: https://github.com/pre-commit/mirrors-prettier
+    rev: v3.3.3
+    hooks:
+      - id: prettier
+        additional_dependencies:
+          - prettier@3.3.3
+        files: ^app/(src|.*)\.(ts|tsx|js|jsx|json|css|md)$
