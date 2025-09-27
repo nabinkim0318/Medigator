@@ -37,14 +37,14 @@ def create_database():
     cursor.executescript(schema_sql)
     conn.commit()
 
-    print(f"✅ Database created: {db_path}")
+    print(f"[SUCCESS] Database created: {db_path}")
     return conn
 
 
 def load_csv_data(conn, table_name, csv_path, columns_mapping=None):
     """Load CSV file into database."""
     if not os.path.exists(csv_path):
-        print(f"⚠️  CSV file does not exist: {csv_path}")
+        print(f"[WARNING] CSV file does not exist: {csv_path}")
         return
 
     cursor = conn.cursor()
@@ -54,7 +54,7 @@ def load_csv_data(conn, table_name, csv_path, columns_mapping=None):
         rows = list(reader)
 
     if not rows:
-        print(f"⚠️  CSV file is empty: {csv_path}")
+        print(f"[WARNING] CSV file is empty: {csv_path}")
         return
 
     # Apply column mapping if exists
@@ -82,28 +82,28 @@ def load_csv_data(conn, table_name, csv_path, columns_mapping=None):
                 values,
             )
         except Exception as e:
-            print(f"❌ {table_name} insert error: {e}")
+            print(f"[ERROR] {table_name} insert error: {e}")
             print(f"   Data: {row}")
 
     conn.commit()
-    print(f"✅ {table_name} data loaded: {len(rows)} rows")
+    print(f"[SUCCESS] {table_name} data loaded: {len(rows)} rows")
 
 
 def load_json_data(conn, table_name, json_path):
     """Load JSON file into database."""
     if not os.path.exists(json_path):
-        print(f"⚠️  JSON file does not exist: {json_path}")
+        print(f"[WARNING] JSON file does not exist: {json_path}")
         return
 
     try:
         with open(json_path, encoding="utf-8") as f:
             content = f.read().strip()
             if not content:
-                print(f"⚠️  JSON file is empty: {json_path}")
+                print(f"[WARNING] JSON file is empty: {json_path}")
                 return
             data = json.loads(content)
     except json.JSONDecodeError as e:
-        print(f"⚠️  JSON parsing error: {json_path} - {e}")
+        print(f"[WARNING] JSON parsing error: {json_path} - {e}")
         return
 
     cursor = conn.cursor()
@@ -125,7 +125,7 @@ def load_json_data(conn, table_name, json_path):
                 insert_patient_data(cursor, patient_data)
 
     conn.commit()
-    print(f"✅ {table_name} JSON data loaded")
+    print(f"[SUCCESS] {table_name} JSON data loaded")
 
 
 def extract_patient_name(patient_resource):
@@ -166,7 +166,7 @@ def insert_patient_data(cursor, patient_data):
             ),
         )
     except Exception as e:
-        print(f"❌ Patient data insert error: {e}")
+        print(f"[ERROR] Patient data insert error: {e}")
 
 
 def create_sample_data(conn):
@@ -276,12 +276,12 @@ def create_sample_data(conn):
         )
 
     conn.commit()
-    print("✅ Sample data created")
+    print("[SUCCESS] Sample data created")
 
 
 def main():
     """Main seed function"""
-    print("🌱 Database seed started...")
+    print("[INFO] Database seed started...")
 
     # Create database
     conn = create_database()
@@ -312,10 +312,10 @@ def main():
         # Create sample data (if CSV files are empty)
         create_sample_data(conn)
 
-        print("✅ Database seed completed!")
+        print("[SUCCESS] Database seed completed!")
 
     except Exception as e:
-        print(f"❌ Seed error: {e}")
+        print(f"[ERROR] Seed error: {e}")
         raise
     finally:
         conn.close()

@@ -19,7 +19,7 @@ from sentence_transformers import (  # pip install sentence-transformers
 logger = logging.getLogger(__name__)
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-# 4. prevent token length 초과 방지 - MiniLM 입력 길이 고려
+# 4. Token length overflow prevention - MiniLM input length consideration
 DEFAULT_CHUNK_SIZE = 800  # target characters per chunk (≈256 tokens)
 DEFAULT_CHUNK_OVERLAP = 200  # overlap for context preservation
 VALID_EXTS = {".txt", ".md"}  # keep it simple for hackathon
@@ -170,13 +170,13 @@ def build_index(
         source = title  # simple source label
         logger.debug(f"File {f.name}: {len(chs)} chunks created")
 
-        # 5. 메타 필드 채우기 (연도/섹션/태그)
+        # 5. Fill metadata fields (year/section/tags)
         year = None
         m = re.search(r"(19|20)\d{2}", f.name)
         if m:
             year = int(m.group(0))
 
-        # 파일명 기반 태그 추론
+        # Tag inference based on filename
         tags_json = {"type": "guideline" if "guideline" in f.name.lower() else "document"}
 
         for ci, (txt, start, end) in enumerate(chs):
