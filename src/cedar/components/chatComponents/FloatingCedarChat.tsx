@@ -11,7 +11,7 @@ import { X } from 'lucide-react';
 import { AnimatePresence } from 'motion/react';
 import React from 'react';
 interface FloatingCedarChatProps {
-	side?: 'left' | 'right';
+	side?: 'left' | 'right' | 'center';
 	title?: string;
 	collapsedLabel?: string;
 	companyLogo?: React.ReactNode;
@@ -29,9 +29,8 @@ interface FloatingCedarChatProps {
 }
 
 export const FloatingCedarChat: React.FC<FloatingCedarChatProps> = ({
-	side = 'right',
-	title = 'Cedar Chat',
-	collapsedLabel = 'How can I help you today?',
+	side = 'center',
+	title = 'HealthWise',
 	companyLogo,
 	dimensions = {
 		minWidth: 350,
@@ -42,25 +41,14 @@ export const FloatingCedarChat: React.FC<FloatingCedarChatProps> = ({
 	stream = true,
 }) => {
 	// Get showChat state and setShowChat from store
-	const showChat = useCedarStore((state) => state.showChat);
-	const setShowChat = useCedarStore((state) => state.setShowChat);
+	// const showChat = useCedarStore((state) => state.showChat);
+	// const setShowChat = useCedarStore((state) => state.setShowChat);
 
 	return (
 		<>
-			<AnimatePresence mode='wait'>
-				{!showChat && (
-					<CollapsedButton
-						side={side}
-						label={collapsedLabel}
-						layoutId='cedar-floating-chat'
-						position='fixed'
-					/>
-				)}
-			</AnimatePresence>
-
 			<FloatingContainer
-				isActive={showChat}
-				position={side === 'left' ? 'bottom-left' : 'bottom-right'}
+				isActive={true}
+				position={side === 'left' ? 'bottom-left' : side == 'right' ? 'bottom-right' : 'bottom-center'}
 				dimensions={dimensions}
 				resizable={resizable}
 				className='cedar-floating-chat'>
@@ -78,12 +66,6 @@ export const FloatingCedarChat: React.FC<FloatingCedarChatProps> = ({
 							</div>
 							<div className='flex items-center gap-1 flex-shrink-0'>
 								{showThreadController && <ChatThreadController />}
-								<button
-									className='p-1.5 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md transition-colors'
-									onClick={() => setShowChat(false)}
-									aria-label='Close chat'>
-									<X className='h-4 w-4' strokeWidth={2.5} />
-								</button>
 							</div>
 						</div>
 					</div>
