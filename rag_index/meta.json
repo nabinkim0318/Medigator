@@ -3,20 +3,735 @@
     "id": "diabetes_management__0000",
     "title": "Diabetes Management",
     "source": "Diabetes Management",
-    "text": "# Diabetes Management Guidelines ## Type 2 Diabetes Monitoring\nRegular monitoring is essential for diabetes management:\n- HbA1c every 3-6 months (target <7%)\n- Annual eye exam (diabetic retinopathy screening)\n- Annual foot exam for neuropathy\n- Blood pressure monitoring (target <130/80)\n- Lipid panel annually ## Medication Management\nFirst-line therapy:\n- Metformin 500mg twice daily\n- Titrate to maximum tolerated dose\n- Add SGLT2 inhibitors or GLP-1 agonists if needed ## Lifestyle Modifications\n- Weight loss of 5-10% if overweight\n- Regular physical activity (150 min/week)\n- Carbohydrate counting education\n- Blood glucose monitoring frequency based on medication ## Complication Prevention\nRegular screening for:\n- Nephropathy: urine microalbumin annually\n- Retinopathy: dilated eye exam annually  \n- Neuropathy: monofilament testing annually\n- Cardiovascular disease: annual EKG if indicated",
+    "text": "# Diabetes Management Guidelines ## Type 2 Diabetes Monitoring\nRegular monitoring is essential for diabetes management:\n- HbA1c every 3-6 months (target <7%)\n- Annual eye exam (diabetic retinopathy screening)\n- Annual foot exam for neuropathy\n- Blood pressure monitoring (target <130/80)\n- Lipid panel annually ## Medication Management\nFirst-line therapy:\n- Metformin 500mg twice daily\n- Titrate to maximum tolerated dose\n- Add SGLT2 inhibitors or GLP-1 agonists if needed ## Lifestyle Modifications\n- Weight loss of 5-10% if overweight\n- Regular physical activity (150 min/week)\n- Carbohydrate counting education\n- Blood glucose monitoring frequency based on medication",
     "file": "diabetes_management.txt",
     "start": 0,
-    "end": 900,
-    "url": null
+    "end": 670,
+    "url": null,
+    "year": null,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "diabetes_management__0001",
+    "title": "Diabetes Management",
+    "source": "Diabetes Management",
+    "text": "## Lifestyle Modifications\n- Weight loss of 5-10% if overweight\n- Regular physical activity (150 min/week)\n- Carbohydrate counting education\n- Blood glucose monitoring frequency based on medication ## Complication Prevention\nRegular screening for:\n- Nephropathy: urine microalbumin annually\n- Retinopathy: dilated eye exam annually\n- Neuropathy: monofilament testing annually\n- Cardiovascular disease: annual EKG if indicated",
+    "file": "diabetes_management.txt",
+    "start": 473,
+    "end": 898,
+    "url": null,
+    "year": null,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
   },
   {
     "id": "medical_guidelines__0000",
     "title": "Medical Guidelines",
     "source": "Medical Guidelines",
-    "text": "# Medical Guidelines for Chest Pain Assessment ## Acute Coronary Syndrome (ACS)\nChest pain that worsens with exertion and improves with rest is highly suggestive of acute coronary syndrome. Key features include:\n- Radiation to left arm, jaw, or back\n- Associated symptoms: diaphoresis, nausea, vomiting\n- Risk factors: age >65, diabetes, hypertension, smoking\n- Immediate ECG and cardiac enzymes required ## Treatment Protocol\nFor suspected ACS:\n1. Aspirin 325mg immediately\n2. Nitroglycerin if systolic BP >100mmHg\n3. Morphine for pain control\n4. Beta-blockers if no contraindications\n5. Consider PCI or thrombolytics based on presentation ## Risk Stratification\nHigh risk features:\n- ST elevation on ECG\n- Elevated troponins\n- Hemodynamic instability\n- New onset heart failure ## Follow-up\nAll patients with chest pain should have:\n- Cardiac stress testing within 72 hours\n- Echocardiogram if indicated\n- Lipid panel and HbA1c if diabetes\n- Smoking cessation counseling",
+    "text": "# Medical Guidelines for Chest Pain Assessment ## Acute Coronary Syndrome (ACS)\nChest pain that worsens with exertion and improves with rest is highly suggestive of acute coronary syndrome. Key features include:\n- Radiation to left arm, jaw, or back\n- Associated symptoms: diaphoresis, nausea, vomiting\n- Risk factors: age >65, diabetes, hypertension, smoking\n- Immediate ECG and cardiac enzymes required ## Treatment Protocol\nFor suspected ACS:\n1. Aspirin 325mg immediately\n2. Nitroglycerin if systolic BP >100mmHg\n3. Morphine for pain control\n4. Beta-blockers if no contraindications\n5. Consider PCI or thrombolytics based on presentation ## Risk Stratification\nHigh risk features:\n- ST elevation on ECG\n- Elevated troponins\n- Hemodynamic instability\n- New onset heart failure",
     "file": "medical_guidelines.txt",
     "start": 0,
+    "end": 778,
+    "url": null,
+    "year": null,
+    "section": null,
+    "tags_json": {
+      "type": "guideline"
+    }
+  },
+  {
+    "id": "medical_guidelines__0001",
+    "title": "Medical Guidelines",
+    "source": "Medical Guidelines",
+    "text": "Consider PCI or thrombolytics based on presentation ## Risk Stratification\nHigh risk features:\n- ST elevation on ECG\n- Elevated troponins\n- Hemodynamic instability\n- New onset heart failure ## Follow-up\nAll patients with chest pain should have:\n- Cardiac stress testing within 72 hours\n- Echocardiogram if indicated\n- Lipid panel and HbA1c if diabetes\n- Smoking cessation counseling",
+    "file": "medical_guidelines.txt",
+    "start": 589,
     "end": 971,
-    "url": null
+    "url": null,
+    "year": null,
+    "section": null,
+    "tags_json": {
+      "type": "guideline"
+    }
+  },
+  {
+    "id": "2016_NICE_NG95_Chest-Pain__0000",
+    "title": "2016 Nice Ng95 Chest Pain",
+    "source": "2016 Nice Ng95 Chest Pain",
+    "text": "Title: NICE CG95 Chest Pain Guideline (Recent Onset)\nSource: NICE (National Institute for Health and Care Excellence)\nYear: 2016 (update of 2010 guideline)\nSection: Recommendations (acute & stable chest pain)\nURL: https://www.nice.org.uk/guidance/cg95\nTags: guideline, chest-pain, ACS, troponin, ECG, angina, diagnosis ## Overview\nThis guideline covers assessing and diagnosing recent chest pain in adults (≥18). It focuses on both **acute chest pain suspected of ACS** and **stable chest pain suspected of angina**, aiming for rapid, accurate diagnosis and management. ---\n## Key Recommendations (Acute Chest Pain)\n- **Immediate assessment:** Check pain status; refer to hospital urgently if ACS suspected and pain in last 12h with abnormal or unavailable ECG.",
+    "file": "rag/guidelines/2016_NICE_NG95_Chest-Pain.md",
+    "start": 0,
+    "end": 761,
+    "url": null,
+    "year": 2016,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2016_NICE_NG95_Chest-Pain__0001",
+    "title": "2016 Nice Ng95 Chest Pain",
+    "source": "2016 Nice Ng95 Chest Pain",
+    "text": "---\n## Key Recommendations (Acute Chest Pain)\n- **Immediate assessment:** Check pain status; refer to hospital urgently if ACS suspected and pain in last 12h with abnormal or unavailable ECG. - **Symptoms suggesting ACS:** Chest pain >15min, associated with nausea, sweating, breathlessness, or haemodynamic instability. - **ECG:** Take 12-lead ECG immediately; do not delay transfer. Repeat serial ECGs if suspicion persists. - **Troponin testing:** Use high-sensitivity troponin (hs-cTn). A single undetectable value at presentation can rule out NSTEMI in low-risk patients. Always interpret in clinical context. - **Do not rely on GTN response** for diagnosis. Do not exclude ACS if ECG normal.",
+    "file": "rag/guidelines/2016_NICE_NG95_Chest-Pain.md",
+    "start": 570,
+    "end": 1267,
+    "url": null,
+    "year": 2016,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2016_NICE_NG95_Chest-Pain__0002",
+    "title": "2016 Nice Ng95 Chest Pain",
+    "source": "2016 Nice Ng95 Chest Pain",
+    "text": "Always interpret in clinical context. - **Do not rely on GTN response** for diagnosis. Do not exclude ACS if ECG normal. - **Immediate management:** Provide aspirin 300mg, pain relief (GTN, opioids if MI suspected), avoid routine oxygen unless SpO₂ <94%. - **Differential:** If ACS excluded, consider PE, aortic dissection, pneumonia, pneumothorax. ---\n## Key Recommendations (Stable Chest Pain)\n- **Clinical assessment:** Document pain characteristics, history, CV risk factors, perform physical exam. - **Angina classification:** - Typical = 3 features (constricting discomfort, exertional, relieved by rest/GTN). - Atypical = 2 features. - Non-anginal = 0–1 feature. - **Testing:** - Offer CT coronary angiography (≥64-slice) for typical/atypical angina or non-anginal with abnormal ECG.",
+    "file": "rag/guidelines/2016_NICE_NG95_Chest-Pain.md",
+    "start": 1147,
+    "end": 1937,
+    "url": null,
+    "year": 2016,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2016_NICE_NG95_Chest-Pain__0003",
+    "title": "2016 Nice Ng95 Chest Pain",
+    "source": "2016 Nice Ng95 Chest Pain",
+    "text": "- Atypical = 2 features. - Non-anginal = 0–1 feature. - **Testing:** - Offer CT coronary angiography (≥64-slice) for typical/atypical angina or non-anginal with abnormal ECG. - Use functional imaging (MPS, stress echo, MR perfusion) if CT shows uncertain disease. - Invasive coronary angiography reserved if non-invasive inconclusive. - **Do not use exercise ECG to diagnose/exclude stable angina in people without known CAD.**\n- **Consider other diagnoses:** musculoskeletal, GI, anxiety if pain non-anginal. ---\n## Implementation Notes\n- Use **universal MI definition**: troponin rise/fall + symptoms/ECG/imaging evidence. - Recognize sex differences in troponin thresholds (99th percentile). - Provide clear information to patients, address anxiety, explain uncertainty.",
+    "file": "rag/guidelines/2016_NICE_NG95_Chest-Pain.md",
+    "start": 1763,
+    "end": 2536,
+    "url": null,
+    "year": 2016,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2016_NICE_NG95_Chest-Pain__0004",
+    "title": "2016 Nice Ng95 Chest Pain",
+    "source": "2016 Nice Ng95 Chest Pain",
+    "text": "- Recognize sex differences in troponin thresholds (99th percentile). - Provide clear information to patients, address anxiety, explain uncertainty. - Avoid unnecessary radiation; consider CT only when clinically appropriate. ---\n## Summary Snippets for Cards\n- *\"Initial ECG within 10 minutes of presentation; do not exclude ACS with a normal ECG.\"*\n- *\"Use hs-troponin 0/1h strategy; a single undetectable value can rule out NSTEMI in low-risk patients.\"*\n- *\"Offer CT coronary angiography (≥64-slice) first-line for stable angina assessment.\"*\n- *\"Do not use response to GTN as diagnostic; exclude other life-threatening causes if ACS unlikely.\"*",
+    "file": "rag/guidelines/2016_NICE_NG95_Chest-Pain.md",
+    "start": 2388,
+    "end": 3037,
+    "url": null,
+    "year": 2016,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2018_ACEP_Chest-Pain-Policy__0000",
+    "title": "2018 Acep Chest Pain Policy",
+    "source": "2018 Acep Chest Pain Policy",
+    "text": "Title: ACEP Clinical Policy (2018) – Suspected Non–ST-Elevation ACS in the ED\nSource: American College of Emergency Physicians (Ann Emerg Med)\nYear: 2018\nSection: Critical Issues & Recommendations\nURL: https://www.acep.org/siteassets/sites/acep/blocks/equal/webinar_chestpainw2_aceppolicy.pdf\nTags: guideline, chest-pain, ACS, NSTEMI, troponin, HEART, TIMI, ED, risk-stratification --- ## Key Clinical Questions & Recommendations ### 1. Risk Stratification at Presentation\n- **Q:** In adults without ST-elevation ACS, can initial risk scores predict 30-day MACE? - **A:** - **Level B:** HEART score (<3) is reliable to identify very low-risk patients (30-day MACE miss ≤2%). - **Level C:** TIMI score can also be used but less specific. --- ### 2.",
+    "file": "rag/guidelines/2018_ACEP_Chest-Pain-Policy.md",
+    "start": 0,
+    "end": 747,
+    "url": null,
+    "year": 2018,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2018_ACEP_Chest-Pain-Policy__0001",
+    "title": "2018 Acep Chest Pain Policy",
+    "source": "2018 Acep Chest Pain Policy",
+    "text": "- **A:** - **Level B:** HEART score (<3) is reliable to identify very low-risk patients (30-day MACE miss ≤2%). - **Level C:** TIMI score can also be used but less specific. --- ### 2. Troponin Testing (0–3h)\n- **Q:** Can troponin testing within 3h predict low 30-day MACE? - **A:** - **Level C:** - Conventional troponin at 0 & 3h in low-risk (HEART ≤3) → safe rule-out. - A single hs-cTn below limit of detection at arrival, or negative 0 & 2h hs-cTn, predicts low MACE. - Validated accelerated diagnostic pathways (ADPs) with non-ischemic ECG + negative serial hs-cTn at 0 & 2h allow **early discharge**. --- ### 3. Further Diagnostic Testing Before Discharge\n- **Q:** In low-risk patients with MI ruled out, does routine stress testing or CCTA reduce 30-day MACE? - **A:**",
+    "file": "rag/guidelines/2018_ACEP_Chest-Pain-Policy.md",
+    "start": 563,
+    "end": 1339,
+    "url": null,
+    "year": 2018,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2018_ACEP_Chest-Pain-Policy__0002",
+    "title": "2018 Acep Chest Pain Policy",
+    "source": "2018 Acep Chest Pain Policy",
+    "text": "--- ### 3. Further Diagnostic Testing Before Discharge\n- **Q:** In low-risk patients with MI ruled out, does routine stress testing or CCTA reduce 30-day MACE? - **A:** - **Level B:** **Do NOT routinely use** further testing prior to discharge. - **Level C:** Safe discharge with follow-up in 1–2 weeks. If no follow-up available → consider testing or observation. --- ### 4. Antiplatelet Therapy in NSTEMI\n- **Q:** Should NSTEMI patients receive immediate antiplatelet therapy (P2Y12, GP IIb/IIIa) in ED in addition to aspirin? - **A:** - **Level C:** P2Y12 inhibitors and GP IIb/IIIa may be given in ED **or deferred** until cath. - Evidence: - **Clopidogrel** reduces MI but increases bleeding. - **Prasugrel early**: no 30-day MACE reduction, ↑ bleeding.",
+    "file": "rag/guidelines/2018_ACEP_Chest-Pain-Policy.md",
+    "start": 1171,
+    "end": 1929,
+    "url": null,
+    "year": 2018,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2018_ACEP_Chest-Pain-Policy__0003",
+    "title": "2018 Acep Chest Pain Policy",
+    "source": "2018 Acep Chest Pain Policy",
+    "text": "- Evidence: - **Clopidogrel** reduces MI but increases bleeding. - **Prasugrel early**: no 30-day MACE reduction, ↑ bleeding. - **GPIIb/IIIa inhibitors**: no clear benefit, ↑ bleeding. --- ## Practical Take-Home Points\n- HEART ≤3 + negative troponin (0 & 3h, or 0 & 2h if hs-cTn) → ≤2% 30-day MACE. - Acceptable “miss rate” for MACE: ~1% (benchmark). - Low-risk patients can be **safely discharged without stress testing** if follow-up assured. - Antiplatelet beyond aspirin can be deferred if bleeding risk high. - Key: structured ADPs, risk score + serial troponin + ECG. ---",
+    "file": "rag/guidelines/2018_ACEP_Chest-Pain-Policy.md",
+    "start": 1804,
+    "end": 2381,
+    "url": null,
+    "year": 2018,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2021_ACC-AHA_Chest-Pain_exec__0000",
+    "title": "2021 Acc Aha Chest Pain Exec",
+    "source": "2021 Acc Aha Chest Pain Exec",
+    "text": "Title: 2021 ACC/AHA Chest Pain Guideline (Executive Summary)\nSource: Journal of the American College of Cardiology / Circulation\nYear: 2021\nSection: Recommendations & Algorithms\nURL: https://doi.org/10.1016/j.jacc.2021.07.052\nTags: guideline, chest-pain, hs-troponin, ECG, ACS, HEART, ED, risk-stratification --- ## Top 10 Take-Home Messages\n1. **Chest Pain ≠ Chest Only** Consider pain/pressure in chest, shoulders, arms, neck, back, abdomen, jaw; also SOB/fatigue. 2. **hs-Troponin is Preferred** Use hs-cTn assays for MI diagnosis/exclusion; serial testing recommended. 3. **Early Care** Obtain ECG within 10 min for acute symptoms. Call EMS early. 4. **Shared Decision-Making** Stable patients should be involved in testing/admission decisions. 5. **Low-Risk → No Urgent Testing**",
+    "file": "rag/guidelines/2021_ACC-AHA_Chest-Pain_exec.md",
+    "start": 0,
+    "end": 784,
+    "url": null,
+    "year": 2021,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2021_ACC-AHA_Chest-Pain_exec__0001",
+    "title": "2021 Acc Aha Chest Pain Exec",
+    "source": "2021 Acc Aha Chest Pain Exec",
+    "text": "Obtain ECG within 10 min for acute symptoms. Call EMS early. 4. **Shared Decision-Making** Stable patients should be involved in testing/admission decisions. 5. **Low-Risk → No Urgent Testing** If 30-day MACE risk <1%, no urgent diagnostic testing is needed. 6. **Pathways Are Key** Use structured Clinical Decision Pathways (CDPs) routinely in ED/outpatient. 7. **Women Often Have Atypical Symptoms** Nausea, SOB, fatigue more common; risk of underdiagnosis. 8. **Test Patients Most Likely to Benefit** Intermediate/high-risk groups gain from imaging & further testing. 9. **Say “Noncardiac”, Not “Atypical”** Avoid “atypical chest pain” terminology. 10. **Structured Risk Assessment** HEART, EDACS, TIMI etc. to be applied systematically. ---",
+    "file": "rag/guidelines/2021_ACC-AHA_Chest-Pain_exec.md",
+    "start": 591,
+    "end": 1335,
+    "url": null,
+    "year": 2021,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2021_ACC-AHA_Chest-Pain_exec__0002",
+    "title": "2021 Acc Aha Chest Pain Exec",
+    "source": "2021 Acc Aha Chest Pain Exec",
+    "text": "9. **Say “Noncardiac”, Not “Atypical”** Avoid “atypical chest pain” terminology. 10. **Structured Risk Assessment** HEART, EDACS, TIMI etc. to be applied systematically. --- ## Initial Evaluation\n- **History:** Include onset, duration, triggers, associated features; avoid “atypical.”  \n- **Physical Exam:** Focused CV exam to identify ACS, aortic dissection, PE. - **Diagnostic Testing:** - ECG in ≤10 min for acute chest pain. - Serial hs-cTn at 0h & 1–3h (or 3–6h if conventional troponin). - CXR if other thoracic causes suspected. --- ## Risk Stratification (ACS, Non-STEMI)\n- **Low-risk:** <1% 30-day MACE → safe for discharge, no urgent testing. - **Intermediate-risk:** - TTE useful bedside test. - CCTA reasonable for no known CAD; stress imaging if prior CAD. - **High-risk:**",
+    "file": "rag/guidelines/2021_ACC-AHA_Chest-Pain_exec.md",
+    "start": 1162,
+    "end": 1948,
+    "url": null,
+    "year": 2021,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2021_ACC-AHA_Chest-Pain_exec__0003",
+    "title": "2021 Acc Aha Chest Pain Exec",
+    "source": "2021 Acc Aha Chest Pain Exec",
+    "text": "- **Intermediate-risk:** - TTE useful bedside test. - CCTA reasonable for no known CAD; stress imaging if prior CAD. - **High-risk:** - Ischemic ECG, troponin-positive, LV dysfunction, high CDP → invasive coronary angiography. --- ## Special Populations\n- **Women:** Emphasize accompanying symptoms; underdiagnosis risk. - **Older adults (>75):** Consider ACS if SOB, syncope, delirium, unexplained fall. - **Diverse backgrounds:** Use interpreters & culturally competent care. - **Dialysis:** Unremitting chest pain → EMS transfer. - **Substance use:** Cocaine/methamphetamine → consider as etiology. --- ## Algorithms & Tools Referenced\n- HEART, EDACS, TIMI pathways compared (Table 5). - ESC hs-cTn 0/1h integrated into CDPs. - “Warranty period”: normal angiogram (2y), normal stress test (1y).",
+    "file": "rag/guidelines/2021_ACC-AHA_Chest-Pain_exec.md",
+    "start": 1815,
+    "end": 2612,
+    "url": null,
+    "year": 2021,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2021_ACC-AHA_Chest-Pain_exec__0004",
+    "title": "2021 Acc Aha Chest Pain Exec",
+    "source": "2021 Acc Aha Chest Pain Exec",
+    "text": "--- ## Algorithms & Tools Referenced\n- HEART, EDACS, TIMI pathways compared (Table 5). - ESC hs-cTn 0/1h integrated into CDPs. - “Warranty period”: normal angiogram (2y), normal stress test (1y). - Patient-centric algorithm (Figure 7) for acute chest pain. --- ## Key Cutoffs / Action Items\n- **hs-cTn:** - Repeat at 1–3h (hs-cTn) or 3–6h (conventional). - A single hs-cTn below limit of detection at ≥3h onset can rule out MI. - **ECG:** Repeat serially if suspicion persists. - **Low-risk discharge:** HEART ≤3, EDACS <16, TIMI 0 + negative troponins. ---",
+    "file": "rag/guidelines/2021_ACC-AHA_Chest-Pain_exec.md",
+    "start": 2417,
+    "end": 2974,
+    "url": null,
+    "year": 2021,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2025_ESC_0-1h-hsTroponin__0000",
+    "title": "2025 Esc 0 1H Hstroponin",
+    "source": "2025 Esc 0 1H Hstroponin",
+    "text": "Title: ESC 0/1h hs-Troponin Algorithm (with AnZhen 0/1h Adaptation)\nSource: npj Cardiovascular Health (2025) – Chen et al. DOI: https://doi.org/10.1038/s44325-025-00080-8\nTags: guideline, ESC, chest-pain, troponin, ACS, NSTEMI, diagnosis ## Overview\nThe **European Society of Cardiology (ESC)** 2020 guidelines recommend a **0/1h algorithm** using high-sensitivity cardiac troponin (hs-cTn) for rapid triage of suspected **non-ST-elevation myocardial infarction (NSTEMI)** in the emergency department. This paper validates and adapts the algorithm for a Chinese population (AnZhen cohort). ---\n## ESC 0/1h Algorithm (Standard)\n- **Rule-in criteria:** - 0h hs-cTnI ≥ 50 pg/mL **OR** - Δ1h (change after 1h) ≥ 15 pg/mL\n- **Rule-out criteria:** - 0h hs-cTnI < 4 pg/mL (if chest pain onset >3h) **OR**",
+    "file": "rag/guidelines/2025_ESC_0-1h-hsTroponin.md",
+    "start": 0,
+    "end": 797,
+    "url": null,
+    "year": 2025,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2025_ESC_0-1h-hsTroponin__0001",
+    "title": "2025 Esc 0 1H Hstroponin",
+    "source": "2025 Esc 0 1H Hstroponin",
+    "text": "- 0h hs-cTnI ≥ 50 pg/mL **OR** - Δ1h (change after 1h) ≥ 15 pg/mL\n- **Rule-out criteria:** - 0h hs-cTnI < 4 pg/mL (if chest pain onset >3h) **OR** - 0h < 5 pg/mL **AND** Δ1h < 4 pg/mL\n- **Observation:** Patients not meeting rule-in or rule-out stay for further 3h monitoring. **Performance (ESC standard applied to Chinese cohort):**\n- NPV: 98.1%  \n- Sensitivity: 95.2%  \n- PPV: 85.4%  \n- Specificity: 95.8%【52†s44325-025-00080-8†L300-L315】 ---\n## AnZhen 0/1h Adaptation (Chinese cohort)\nTo improve accuracy, adjusted cut-offs were tested: - **Rule-in:** 0h ≥ 50 pg/mL OR Δ1h ≥ 18 pg/mL  \n- **Rule-out:** 0h < 3–4 pg/mL (if onset >3h) OR Δ1h < 3 pg/mL",
+    "file": "rag/guidelines/2025_ESC_0-1h-hsTroponin.md",
+    "start": 651,
+    "end": 1302,
+    "url": null,
+    "year": 2025,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2025_ESC_0-1h-hsTroponin__0002",
+    "title": "2025 Esc 0 1H Hstroponin",
+    "source": "2025 Esc 0 1H Hstroponin",
+    "text": "- **Rule-in:** 0h ≥ 50 pg/mL OR Δ1h ≥ 18 pg/mL  \n- **Rule-out:** 0h < 3–4 pg/mL (if onset >3h) OR Δ1h < 3 pg/mL **Performance (AnZhen-02 terminal version):**\n- NPV: 99.5%  \n- Sensitivity: 98.8%  \n- PPV: 86.4%  \n- Specificity: 96.1%【52†s44325-025-00080-8†L400-L418】 ---\n## Clinical Notes\n- **Strengths:** Faster discharge, reduced ED length of stay, high diagnostic accuracy. - **Observation group:** Use 3h values (Δ3h ≥ 17.5 pg/mL) for additional triage. - **Limitations:** Ethnic and assay-dependent cut-offs, small sample size, renal function confounding. - **Follow-up prognosis:** Higher MACCE rates in rule-in and observe groups vs. rule-out【52†s44325-025-00080-8†L500-L515】.",
+    "file": "rag/guidelines/2025_ESC_0-1h-hsTroponin.md",
+    "start": 1191,
+    "end": 1872,
+    "url": null,
+    "year": 2025,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2025_ESC_0-1h-hsTroponin__0003",
+    "title": "2025 Esc 0 1H Hstroponin",
+    "source": "2025 Esc 0 1H Hstroponin",
+    "text": "- **Follow-up prognosis:** Higher MACCE rates in rule-in and observe groups vs. rule-out【52†s44325-025-00080-8†L500-L515】. ---\n## Summary Snippets for Hackathon Cards\n- *\"ESC 0/1h hs-troponin algorithm: Rule-in ≥50 pg/mL or Δ1h ≥15 pg/mL; Rule-out <5 pg/mL and Δ1h <4 pg/mL.\"*\n- *\"AnZhen 0/1h adaptation improved NPV (99.5%) and PPV (86.4%) in Chinese patients.\"*\n- *\"Observation group requires 3h repeat troponin testing to avoid missed diagnoses.\"*",
+    "file": "rag/guidelines/2025_ESC_0-1h-hsTroponin.md",
+    "start": 1750,
+    "end": 2200,
+    "url": null,
+    "year": 2025,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2000_TIMI-UA-NSTEMI__0000",
+    "title": "2000 Timi Ua Nstemi",
+    "source": "2000 Timi Ua Nstemi",
+    "text": "Title: TIMI Risk Score for Unstable Angina / NSTEMI  \nSource: Antman EM et al., JAMA (2000); Cleveland Clinic summary (Cardiovascular Medicine PDF)  \nDOI: 10.1001/jama.284.7.835  \nTags: TIMI, NSTEMI, UA, ACS, risk-score, prognosis ## Overview\nThe **TIMI (Thrombolysis In Myocardial Infarction) Risk Score** was developed for patients with **Unstable Angina (UA) and Non–ST-elevation Myocardial Infarction (NSTEMI)**. It predicts the risk of **all-cause mortality, new/recurrent MI, or urgent revascularization** within 14 days. ---\n## TIMI Score Components (1 point each)\n1. Age ≥65 years  \n2. ≥3 risk factors for CAD (e.g., HTN, DM, smoking, hyperlipidemia, family history)  \n3. Known CAD with stenosis ≥50%  \n4. ST-segment deviation ≥0.5 mm  \n5. ≥2 anginal events in past 24h  \n6.",
+    "file": "rag/reviews/2000_TIMI-UA-NSTEMI.md",
+    "start": 0,
+    "end": 782,
+    "url": null,
+    "year": 2000,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2000_TIMI-UA-NSTEMI__0001",
+    "title": "2000 Timi Ua Nstemi",
+    "source": "2000 Timi Ua Nstemi",
+    "text": "≥3 risk factors for CAD (e.g., HTN, DM, smoking, hyperlipidemia, family history)  \n3. Known CAD with stenosis ≥50%  \n4. ST-segment deviation ≥0.5 mm  \n5. ≥2 anginal events in past 24h  \n6. Aspirin use in past 7 days  \n7. Elevated cardiac biomarkers (e.g., troponin, CK-MB) **Total:** 0–7 points. ---\n## Results & Prognosis\n- **Risk increases with higher scores:** - Score 0–1 → ~4.7% event rate - Score 2 → ~8.3% - Score 3 → ~13.2% - Score 4 → ~19.9% - Score 5 → ~26.2% - Score 6–7 → ~40.9%【94†Cardiovascular-NSTEMI-CD.pdf†L151-L159】 - Provides a **simple bedside tool** to stratify risk in UA/NSTEMI patients. - Higher scores strongly associated with need for early invasive management. ---\n## Clinical Notes\n- Widely validated and incorporated into **ACC/AHA and ESC guidelines**.",
+    "file": "rag/reviews/2000_TIMI-UA-NSTEMI.md",
+    "start": 594,
+    "end": 1376,
+    "url": null,
+    "year": 2000,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2000_TIMI-UA-NSTEMI__0002",
+    "title": "2000 Timi Ua Nstemi",
+    "source": "2000 Timi Ua Nstemi",
+    "text": "- Higher scores strongly associated with need for early invasive management. ---\n## Clinical Notes\n- Widely validated and incorporated into **ACC/AHA and ESC guidelines**. - Easy to use, requires only basic clinical and lab data. - Helps guide decisions regarding **admission, monitoring, antiplatelet/anticoagulation, and early angiography**. - Not intended for ST-elevation MI (STEMI). ---\n## Summary Snippets for Hackathon Cards\n- *\"TIMI risk score (0–7): predicts 14-day mortality/MI/urgent revascularization in UA/NSTEMI.\"*  \n- *\"Components: age ≥65, ≥3 CAD risks, known CAD, ST deviation, recurrent angina, aspirin use, elevated biomarkers.\"*  \n- *\"Event risk rises from 5% (score 0–1) to ~41% (score 6–7).\"*",
+    "file": "rag/reviews/2000_TIMI-UA-NSTEMI.md",
+    "start": 1205,
+    "end": 1919,
+    "url": null,
+    "year": 2000,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2013_HEART-Score__0000",
+    "title": "2013 Heart Score",
+    "source": "2013 Heart Score",
+    "text": "Title: A Prospective Validation of the HEART Score for Chest Pain Patients at the Emergency Department  \nSource: International Journal of Cardiology (2013) – Backus et al. DOI: https://doi.org/10.1016/j.ijcard.2013.01.255  \nTags: HEART, chest-pain, ACS, risk-score, emergency ## Overview\nThe **HEART score** (History, ECG, Age, Risk factors, Troponin) was designed to stratify risk in patients presenting with **acute chest pain** in the emergency department (ED). This multicenter, prospective validation study included **2,440 unselected patients** across 10 Dutch hospitals. The primary endpoint was **major adverse cardiac events (MACE)** within 6 weeks.",
+    "file": "rag/reviews/2013_HEART-Score.md",
+    "start": 0,
+    "end": 658,
+    "url": null,
+    "year": 2013,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2013_HEART-Score__0001",
+    "title": "2013 Heart Score",
+    "source": "2013 Heart Score",
+    "text": "This multicenter, prospective validation study included **2,440 unselected patients** across 10 Dutch hospitals. The primary endpoint was **major adverse cardiac events (MACE)** within 6 weeks. ---\n## HEART Score Components\n- **History:** Highly suspicious (2), Moderately (1), Slight/none (0)  \n- **ECG:** ST-depression (2), Nonspecific (1), Normal (0)  \n- **Age:** ≥65 (2), 45–64 (1), ≤45 (0)  \n- **Risk factors:** ≥3 or known atherosclerosis (2), 1–2 (1), None (0)  \n- **Troponin:** ≥3× ULN (2), 1–3× ULN (1), ≤ULN (0) **Total:** 0–10 points. ---\n## Results\n- **Low risk (0–3):** 36.4% of patients, **MACE 1.7%** (NPV >98%). - **Intermediate (4–6):** 46.1% of patients, **MACE 16.6%**. - **High risk (7–10):** 17.5% of patients, **MACE 50.1%**.",
+    "file": "rag/reviews/2013_HEART-Score.md",
+    "start": 465,
+    "end": 1212,
+    "url": null,
+    "year": 2013,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2013_HEART-Score__0002",
+    "title": "2013 Heart Score",
+    "source": "2013 Heart Score",
+    "text": "- **Intermediate (4–6):** 46.1% of patients, **MACE 16.6%**. - **High risk (7–10):** 17.5% of patients, **MACE 50.1%**. - **Discrimination:** C-statistic 0.83 (HEART) vs TIMI 0.75, GRACE 0.70【87†PIIS016752731300315X.pdf†L2155-L2158】. ---\n## Clinical Notes\n- HEART outperformed TIMI and GRACE in chest pain cohorts. - Quick to calculate, based on admission data (ECG, troponin, history, risk factors, age). - **Low-risk group**: candidates for early discharge. - **High-risk group**: aggressive management advised. - **Intermediate-risk group**: requires further testing and monitoring. - HEART has advantages over TIMI/GRACE as it was designed specifically for undifferentiated ED chest pain.",
+    "file": "rag/reviews/2013_HEART-Score.md",
+    "start": 1093,
+    "end": 1785,
+    "url": null,
+    "year": 2013,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2013_HEART-Score__0003",
+    "title": "2013 Heart Score",
+    "source": "2013 Heart Score",
+    "text": "- **Intermediate-risk group**: requires further testing and monitoring. - HEART has advantages over TIMI/GRACE as it was designed specifically for undifferentiated ED chest pain. ---\n## Summary Snippets for Hackathon Cards\n- *\"HEART = History, ECG, Age, Risk factors, Troponin; scored 0–10.\"*  \n- *\"Low-risk (0–3): 1.7% MACE; High-risk (7–10): 50% MACE.\"*  \n- *\"Outperforms TIMI and GRACE for chest pain patients in the ED.\"*",
+    "file": "rag/reviews/2013_HEART-Score.md",
+    "start": 1607,
+    "end": 2032,
+    "url": null,
+    "year": 2013,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2014_EDACS-Score__0000",
+    "title": "2014 Edacs Score",
+    "source": "2014 Edacs Score",
+    "text": "Title: EDACS (Emergency Department Assessment of Chest Pain Score)\nSource: Than MP et al., Development and validation of EDACS and 2-hour ADP\nDOI: 10.1016/j.annemergmed.2014.02.010\nTags: risk-score, ED, chest-pain, ACS, troponin, HEART, discharge, ADP ## Overview\nThe **EDACS** was developed to identify low-risk chest pain patients suitable for **early discharge** from the emergency department. It combines a clinical score (EDACS) with ECG and serial troponin testing to form the **EDACS-Accelerated Diagnostic Protocol (ADP)**. ---\n## EDACS Score Components\n- **Age (10 groups, 2–20 pts):** 18–45 (+2) up to ≥86 (+20)\n- **Male sex:** +6\n- **18–50y with ≥3 CAD risk factors or prior CAD:** +4\n- **Symptoms/Signs:** - Diaphoresis: +3 - Radiation to arm/shoulder: +5 - Pain with inspiration: −4",
+    "file": "rag/reviews/2014_EDACS-Score.md",
+    "start": 0,
+    "end": 795,
+    "url": null,
+    "year": 2014,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2014_EDACS-Score__0001",
+    "title": "2014 Edacs Score",
+    "source": "2014 Edacs Score",
+    "text": "- Diaphoresis: +3 - Radiation to arm/shoulder: +5 - Pain with inspiration: −4 - Pain reproducible on palpation: −6 **Cut-off:** **EDACS <16** → potential low-risk (when combined with negative troponins & non-ischemic ECG). ---\n## EDACS-ADP (Accelerated Diagnostic Protocol)\nCriteria for safe early discharge:\n1. **EDACS <16**  \n2. **No new ischemic changes on ECG**  \n3. **Negative 0h and 2h troponins** If all met → classify as **low risk**, suitable for discharge with follow-up. ---\n## Validation Results\n- **Derivation cohort (n=1974):** - Low risk: 42.2% - Sensitivity: 99.0% - Specificity: 49.9% - **Validation cohort (n=608):** - Low risk: 51.3% - Sensitivity: 100% - Specificity: 59% - Interrater reliability: ICC = 0.87",
+    "file": "rag/reviews/2014_EDACS-Score.md",
+    "start": 718,
+    "end": 1446,
+    "url": null,
+    "year": 2014,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2014_EDACS-Score__0002",
+    "title": "2014 Edacs Score",
+    "source": "2014 Edacs Score",
+    "text": "- Low risk: 42.2% - Sensitivity: 99.0% - Specificity: 49.9% - **Validation cohort (n=608):** - Low risk: 51.3% - Sensitivity: 100% - Specificity: 59% - Interrater reliability: ICC = 0.87 ---\n## Clinical Notes\n- Identifies **~50%** of ED chest pain patients as safe for early discharge. - Maintains **≥99% sensitivity** for major adverse cardiac events (MACE) at 30 days. - Reduces unnecessary admissions and testing, improves ED flow. - Further RCTs suggested before widespread implementation. ---\n## Summary Snippets for Hackathon Cards\n- *\"EDACS <16 + negative ECG/troponins → early discharge safe, 30-day MACE <1%.\"*\n- *\"Validation: 51% patients classified low risk with 100% sensitivity for MACE.\"*\n- *\"EDACS-ADP halves admissions compared to prior rules while maintaining safety.\"*",
+    "file": "rag/reviews/2014_EDACS-Score.md",
+    "start": 1260,
+    "end": 2046,
+    "url": null,
+    "year": 2014,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2020_PERC-Wells__0000",
+    "title": "2020 Perc Wells",
+    "source": "2020 Perc Wells",
+    "text": "Title: Pulmonary Embolism Rule-out Criteria (PERC) & Wells Score  \nSource: NCBI Bookshelf – Evidence review (2020)  \nURL: https://www.ncbi.nlm.nih.gov/books/NBK556663/  \nTags: PERC, Wells, PE, risk-score, emergency, rule-out ## Overview\nThe **Wells score** and **Pulmonary Embolism Rule-out Criteria (PERC)** are widely used to guide decision-making for suspected **pulmonary embolism (PE)** in the emergency setting. They help clinicians safely exclude PE in low-risk patients without the need for imaging or D-dimer testing. ---\n## Wells Score (for PE)\nAssigns points based on clinical features:",
+    "file": "rag/reviews/2020_PERC-Wells.md",
+    "start": 0,
+    "end": 597,
+    "url": null,
+    "year": 2020,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2020_PERC-Wells__0001",
+    "title": "2020 Perc Wells",
+    "source": "2020 Perc Wells",
+    "text": "They help clinicians safely exclude PE in low-risk patients without the need for imaging or D-dimer testing. ---\n## Wells Score (for PE)\nAssigns points based on clinical features: - Clinical signs of DVT: **+3**  \n- PE more likely than alternative: **+3**  \n- HR >100 bpm: **+1.5**  \n- Immobilization ≥3d or surgery <4w: **+1.5**  \n- Previous DVT/PE: **+1.5**  \n- Hemoptysis: **+1**  \n- Malignancy (active or recent): **+1** **Interpretation:**  \n- >6 = High probability (~78%)  \n- 2–6 = Moderate (~28%)  \n- <2 = Low (~3.4%)【102†Bookshelf_NBK556663.pdf†L100-L110】 ---\n## PERC Rule (8 Criteria)\nApplies to **low clinical suspicion (<15%)** cases. If **all criteria negative**, PE can be ruled out without further testing. Criteria (must all be “No”):  \n1. Age ≥50 years  \n2. HR ≥100 bpm  \n3.",
+    "file": "rag/reviews/2020_PERC-Wells.md",
+    "start": 418,
+    "end": 1208,
+    "url": null,
+    "year": 2020,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2020_PERC-Wells__0002",
+    "title": "2020 Perc Wells",
+    "source": "2020 Perc Wells",
+    "text": "If **all criteria negative**, PE can be ruled out without further testing. Criteria (must all be “No”):  \n1. Age ≥50 years  \n2. HR ≥100 bpm  \n3. O₂ sat <95% (room air)  \n4. Hemoptysis  \n5. Estrogen use  \n6. Prior DVT/PE  \n7. Recent surgery/trauma (≤4w)  \n8. Unilateral leg swelling **If all negative → PE can be safely excluded.** ---\n## Clinical Notes\n- **Wells:** Risk stratification; combined with D-dimer testing for intermediate/low risk. - **PERC:** Avoids unnecessary testing in very low-risk patients. - Both validated in multiple cohorts, recommended in guidelines. - Overuse of imaging (CTPA) can be reduced by correct application. - Not a substitute for clinical judgment.",
+    "file": "rag/reviews/2020_PERC-Wells.md",
+    "start": 1064,
+    "end": 1747,
+    "url": null,
+    "year": 2020,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2020_PERC-Wells__0003",
+    "title": "2020 Perc Wells",
+    "source": "2020 Perc Wells",
+    "text": "- Both validated in multiple cohorts, recommended in guidelines. - Overuse of imaging (CTPA) can be reduced by correct application. - Not a substitute for clinical judgment. ---\n## Summary Snippets for Hackathon Cards\n- *\"Wells score ≥6 = high risk (78% PE); <2 = low risk (3.4%).\"*  \n- *\"PERC: 8 bedside criteria; if all negative and low suspicion, PE safely excluded.\"*  \n- *\"Use Wells + D-dimer for moderate risk; PERC for very low risk to avoid over-testing.\"*",
+    "file": "rag/reviews/2020_PERC-Wells.md",
+    "start": 1574,
+    "end": 2038,
+    "url": null,
+    "year": 2020,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2010_Noncardiac-Chest-Pain_Overview__0000",
+    "title": "2010 Noncardiac Chest Pain Overview",
+    "source": "2010 Noncardiac Chest Pain Overview",
+    "text": "Title: Noncardiac Chest Pain – Differential Overview (MSK, GERD, Anxiety, etc.)\nSource: Narrative review (Open Access, PMC)\nURL: https://pmc.ncbi.nlm.nih.gov/articles/PMC3093002/\nTags: noncardiac‑chest‑pain, musculoskeletal, GERD, anxiety, differential, primary‑care ## Overview\nA substantial proportion of chest‑pain presentations are **noncardiac**. This summary highlights common etiologies and bedside clues to help differentiate from ACS, guiding safe discharge and targeted follow‑up. ---\n## Common Etiologies & Bedside Clues\n- **Musculoskeletal (costochondritis, strain):** Localized tenderness reproducible on palpation; pain with movement or deep inspiration; normal ECG/troponin.",
+    "file": "rag/tools/2010_Noncardiac-Chest-Pain_Overview.md",
+    "start": 0,
+    "end": 689,
+    "url": null,
+    "year": 2010,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2010_Noncardiac-Chest-Pain_Overview__0001",
+    "title": "2010 Noncardiac Chest Pain Overview",
+    "source": "2010 Noncardiac Chest Pain Overview",
+    "text": "---\n## Common Etiologies & Bedside Clues\n- **Musculoskeletal (costochondritis, strain):** Localized tenderness reproducible on palpation; pain with movement or deep inspiration; normal ECG/troponin. - **GERD/esophageal spasm:** Burning/retrosternal discomfort, post‑prandial, recumbency‑related; relief with antacids/PPIs. - **Anxiety/panic:** Pleuritic/atypical chest tightness, hyperventilation, paresthesias; normal cardiac workup. - **Pulmonary (pneumonia, pneumothorax):** Pleuritic pain, fever/cough or sudden dyspnea; abnormal CXR/US. - **Herpes zoster (pre‑eruptive):** Dermatomal burning pain preceding rash. - **Pericarditis:** Sharp, pleuritic pain improved by sitting forward; diffuse ST‑elevation/PR‑depression.",
+    "file": "rag/tools/2010_Noncardiac-Chest-Pain_Overview.md",
+    "start": 491,
+    "end": 1215,
+    "url": null,
+    "year": 2010,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2010_Noncardiac-Chest-Pain_Overview__0002",
+    "title": "2010 Noncardiac Chest Pain Overview",
+    "source": "2010 Noncardiac Chest Pain Overview",
+    "text": "- **Herpes zoster (pre‑eruptive):** Dermatomal burning pain preceding rash. - **Pericarditis:** Sharp, pleuritic pain improved by sitting forward; diffuse ST‑elevation/PR‑depression. ---\n## Management Pointers\n- Rule out life‑threatening causes (ACS, PE, aortic syndromes, tension PTX) first. - Provide **clear discharge instructions**: return if pain worsens, syncope, dyspnea, or new symptoms. - Trial **PPI** for suspected GERD; **NSAIDs + rest** for MSK pain; address **anxiety** with brief counseling and follow‑up. ---\n## Summary Snippets for Hackathon Cards\n- *\"Reproducible chest wall tenderness → favors musculoskeletal cause.\"*\n- *\"Post‑prandial burning pain responding to antacids → suggests GERD.\"*\n- *\"Always exclude time‑critical diagnoses (ACS/PE/aortic) before labeling noncardiac.\"*",
+    "file": "rag/tools/2010_Noncardiac-Chest-Pain_Overview.md",
+    "start": 1033,
+    "end": 1832,
+    "url": null,
+    "year": 2010,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2022_ACC_Ambulatory-LowRisk-Pathways__0000",
+    "title": "2022 Acc Ambulatory Lowrisk Pathways",
+    "source": "2022 Acc Ambulatory Lowrisk Pathways",
+    "text": "Title: Ambulatory / Low‑Risk Chest Pain Pathways\nSource: 2022 ACC Expert Consensus Decision Pathway (Open Access, PMC)\nURL: https://pmc.ncbi.nlm.nih.gov/articles/PMC10691881/\nTags: pathway, low‑risk, ambulatory, CDP, ED‑discharge, follow‑up ## Overview\nThe **2022 ACC Expert Consensus Decision Pathway** provides structured **outpatient/low‑risk** evaluation strategies for chest‑pain patients, integrating **hs‑cTn algorithms, ECG, and clinical scores** to support safe ED discharge and timely follow‑up. ---\n## Key Elements\n- **Risk definition:** Anticipated **30‑day MACE <1%** (e.g., HEART ≤3, EDACS <16, non‑ischemic ECG, negative serial hs‑cTn). - **Discharge bundle:** Clear return precautions, **follow‑up within 72h–1 week**, medication review (e.g., aspirin only if indicated).",
+    "file": "rag/tools/2022_ACC_Ambulatory-LowRisk-Pathways.md",
+    "start": 0,
+    "end": 787,
+    "url": null,
+    "year": 2022,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2022_ACC_Ambulatory-LowRisk-Pathways__0001",
+    "title": "2022 Acc Ambulatory Lowrisk Pathways",
+    "source": "2022 Acc Ambulatory Lowrisk Pathways",
+    "text": "- **Discharge bundle:** Clear return precautions, **follow‑up within 72h–1 week**, medication review (e.g., aspirin only if indicated). - **Testing strategy:** - **No urgent testing** for very low risk. - **CCTA** favored for no‑known CAD when testing needed. - **Functional imaging** if prior CAD or equivocal CCTA. - **Equity & access:** Use shared decision‑making; provide language‑appropriate instructions. ---\n## Operational Tips\n- Implement **order sets** and **CDPs** embedding 0/1h or 0/2h protocols. - Track miss rates and bounce‑backs; aim for **ED LOS reduction** without compromising safety. - Document **assay names** and **cut‑offs** in the pathway to avoid threshold errors.",
+    "file": "rag/tools/2022_ACC_Ambulatory-LowRisk-Pathways.md",
+    "start": 652,
+    "end": 1341,
+    "url": null,
+    "year": 2022,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2022_ACC_Ambulatory-LowRisk-Pathways__0002",
+    "title": "2022 Acc Ambulatory Lowrisk Pathways",
+    "source": "2022 Acc Ambulatory Lowrisk Pathways",
+    "text": "- Track miss rates and bounce‑backs; aim for **ED LOS reduction** without compromising safety. - Document **assay names** and **cut‑offs** in the pathway to avoid threshold errors. ---\n## Summary Snippets for Hackathon Cards\n- *\"Low‑risk (30‑day MACE <1%) → no urgent testing; arrange follow‑up within 1 week.\"*\n- *\"Prefer CCTA for no‑known CAD when testing is needed; use functional imaging for known CAD.\"*\n- *\"Use standardized CDPs with hs‑cTn and ECG to enable safe ED discharge.\"*",
+    "file": "rag/tools/2022_ACC_Ambulatory-LowRisk-Pathways.md",
+    "start": 1161,
+    "end": 1646,
+    "url": null,
+    "year": 2022,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2022_hsTroponin_0-1h_MetaReview__0000",
+    "title": "2022 Hstroponin 0 1H Metareview",
+    "source": "2022 Hstroponin 0 1H Metareview",
+    "text": "Title: Diagnostic Accuracy of 0/1‑Hour hs‑Troponin Algorithms (Systematic Review & Meta‑analysis)\nSource: Systematic review / meta‑analysis (Open Access, PMC)\nURL: https://pmc.ncbi.nlm.nih.gov/articles/PMC9168511/\nTags: hs‑troponin, 0/1‑hour, rule‑out, meta‑analysis, ED, ACS, NSTEMI ## Overview\nThis systematic review/meta‑analysis evaluates the **0/1‑hour algorithm** using **high‑sensitivity cardiac troponin (hs‑cTn)** for ruling out **NSTEMI** in ED chest‑pain patients. It summarizes pooled diagnostic performance and compares assay‑specific thresholds and delta criteria.",
+    "file": "rag/tools/2022_hsTroponin_0-1h_MetaReview.md",
+    "start": 0,
+    "end": 578,
+    "url": null,
+    "year": 2022,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2022_hsTroponin_0-1h_MetaReview__0001",
+    "title": "2022 Hstroponin 0 1H Metareview",
+    "source": "2022 Hstroponin 0 1H Metareview",
+    "text": "It summarizes pooled diagnostic performance and compares assay‑specific thresholds and delta criteria. ---\n## Algorithms & Cut‑offs (Typical Patterns)\n- **Rule‑out:** very low 0h hs‑cTn (often <LoD or low absolute value) and/or **Δ1h** below a small threshold, with symptom onset typically **>3h** for single‑sample strategies. - **Rule‑in:** markedly elevated 0h hs‑cTn and/or **Δ1h** above a higher threshold. - **Observe:** values between rule‑in and rule‑out → extended sampling (e.g., 3h). > Assay‑specific cut‑offs (e.g., Abbott Architect hs‑cTnI, Roche hs‑cTnT) differ; local lab validation is essential. ---\n## Key Findings (High‑level)\n- **Rule‑out safety:** Pooled **NPV is very high** (≈99% or higher) with low miss rates when applied appropriately to low‑intermediate risk ED cohorts.",
+    "file": "rag/tools/2022_hsTroponin_0-1h_MetaReview.md",
+    "start": 476,
+    "end": 1272,
+    "url": null,
+    "year": 2022,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2022_hsTroponin_0-1h_MetaReview__0002",
+    "title": "2022 Hstroponin 0 1H Metareview",
+    "source": "2022 Hstroponin 0 1H Metareview",
+    "text": "---\n## Key Findings (High‑level)\n- **Rule‑out safety:** Pooled **NPV is very high** (≈99% or higher) with low miss rates when applied appropriately to low‑intermediate risk ED cohorts. - **Speed:** Substantial reduction in ED length‑of‑stay using 0/1h vs. conventional 3–6h protocols. - **Assay & timing:** Performance depends on the assay used and time from symptom onset; single‑sample strategies generally require ≥3h from onset. - **Integration:** Best used within structured **Clinical Decision Pathways (CDPs)** alongside ECG and clinical risk scores (HEART/EDACS). ---\n## Clinical Notes\n- **Serial sampling matters:** 0/1h (or 0/2h) serial testing is safer than single‑sample approaches in early presenters.",
+    "file": "rag/tools/2022_hsTroponin_0-1h_MetaReview.md",
+    "start": 1088,
+    "end": 1802,
+    "url": null,
+    "year": 2022,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2022_hsTroponin_0-1h_MetaReview__0003",
+    "title": "2022 Hstroponin 0 1H Metareview",
+    "source": "2022 Hstroponin 0 1H Metareview",
+    "text": "---\n## Clinical Notes\n- **Serial sampling matters:** 0/1h (or 0/2h) serial testing is safer than single‑sample approaches in early presenters. - **Renal dysfunction & chronic myocardial injury** can elevate baseline hs‑cTn → interpret deltas and clinical context. - **Sex‑specific 99th percentiles** may improve accuracy in some settings. - **Document assay name and units** in every pathway to avoid threshold errors. ---\n## Summary Snippets for Hackathon Cards\n- *\"0/1‑h hs‑troponin algorithms achieve ≈99% NPV for MI rule‑out in appropriate ED cohorts.\"*\n- *\"Use assay‑specific cut‑offs and Δ1h; extend to 3h if in the observe zone or early presenters.\"*\n- *\"Embed within CDPs with ECG + HEART/EDACS to minimize misses and unnecessary admissions.\"*",
+    "file": "rag/tools/2022_hsTroponin_0-1h_MetaReview.md",
+    "start": 1660,
+    "end": 2411,
+    "url": null,
+    "year": 2022,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2023_ECG_Initial-Serial_Guidance__0000",
+    "title": "2023 Ecg Initial Serial Guidance",
+    "source": "2023 Ecg Initial Serial Guidance",
+    "text": "Title: Initial & Serial ECG in ED Chest Pain – Practical Guidance\nSource: Review section (Open Access) – hs‑cTn/ED evaluation articles with ECG timing guidance\nURL: https://pmc.ncbi.nlm.nih.gov/articles/PMC10324464/\nTags: ECG, serial‑ECG, ischemia, ED, chest‑pain, ACS ## Overview\nEarly and repeated 12‑lead **ECG** is central to ED chest‑pain evaluation. This summary compiles practical timing and interpretation points frequently cited across ED evaluation reviews and guidelines. ---\n## Initial ECG\n- **Timing:** Acquire a **12‑lead ECG within 10 minutes** of arrival for suspected ACS. - **Content:** Look for **ST‑elevation** (STEMI), **new ischemic changes** (ST‑depression/T‑wave inversion), **new LBBB**, ventricular arrhythmias.",
+    "file": "rag/tools/2023_ECG_Initial-Serial_Guidance.md",
+    "start": 0,
+    "end": 737,
+    "url": null,
+    "year": 2023,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2023_ECG_Initial-Serial_Guidance__0001",
+    "title": "2023 Ecg Initial Serial Guidance",
+    "source": "2023 Ecg Initial Serial Guidance",
+    "text": "- **Content:** Look for **ST‑elevation** (STEMI), **new ischemic changes** (ST‑depression/T‑wave inversion), **new LBBB**, ventricular arrhythmias. - **Pitfalls:** A **normal initial ECG does not exclude ACS**—especially with ongoing symptoms or high clinical suspicion. ---\n## Repeat / Serial ECG\n- **When to repeat:** Persistent/recurring symptoms, initial nondiagnostic ECG, dynamic pain, or rising hs‑cTn. - **Intervals:** Commonly at **15–30 minutes** if symptoms evolve; otherwise pair with troponin sampling (**0/1–2–3h**). - **Leads:** Consider **posterior (V7–V9) and right‑sided** leads for suspected posterior/right ventricular ischemia. - **Special cases:** LBBB/paced rhythm—use **Sgarbossa/modified Sgarbossa** criteria.",
+    "file": "rag/tools/2023_ECG_Initial-Serial_Guidance.md",
+    "start": 590,
+    "end": 1324,
+    "url": null,
+    "year": 2023,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
+  },
+  {
+    "id": "2023_ECG_Initial-Serial_Guidance__0002",
+    "title": "2023 Ecg Initial Serial Guidance",
+    "source": "2023 Ecg Initial Serial Guidance",
+    "text": "- **Special cases:** LBBB/paced rhythm—use **Sgarbossa/modified Sgarbossa** criteria. ---\n## Clinical Notes\n- Combine ECG evolution with **hs‑cTn deltas** to distinguish acute injury from chronic elevation. - In **PE, pericarditis, early repolarization**, ECG abnormalities may mimic ischemia—interpret with clinical context. - **Documentation:** Include timing stamps for each ECG to correlate with hs‑cTn draws. ---\n## Summary Snippets for Hackathon Cards\n- *\"Obtain 12‑lead ECG within 10 minutes; normal ECG ≠ rule‑out ACS.\"*\n- *\"Repeat ECG at 15–30 min if symptoms evolve or initial tracing is nondiagnostic.\"*\n- *\"Use posterior/right‑sided leads when indicated; apply (modified) Sgarbossa in LBBB/paced rhythms.\"*",
+    "file": "rag/tools/2023_ECG_Initial-Serial_Guidance.md",
+    "start": 1239,
+    "end": 1957,
+    "url": null,
+    "year": 2023,
+    "section": null,
+    "tags_json": {
+      "type": "document"
+    }
   }
 ]

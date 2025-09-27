@@ -1,6 +1,6 @@
 [tool.ruff]
 line-length = 100
-target-version = "py311"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W", "C90", "I", "N", "UP", "YTT", "S", "BLE", "FBT", "B", "A", "COM", "C4", "DTZ", "T10", "EM", "EXE", "FA", "ISC", "ICN", "G", "INP", "PIE", "T20", "PYI", "PT", "Q", "RSE", "RET", "SLF", "SLOT", "SIM", "TID", "TCH", "INT", "ARG", "PTH", "TD", "FIX", "ERA", "PD", "PGH", "PL", "TRY", "FLY", "NPY", "AIR", "PERF", "FURB", "LOG", "RUF"]
@@ -45,6 +45,7 @@ ignore = [
     "T201",  # Allow print statements
     "EXE001",  # Allow shebang without executable
     "S608",  # Allow SQL injection in safe contexts
+    "S311",  # Allow random for jitter (non-cryptographic use)
     "PLW2901",  # Allow loop variable overwriting
     "DTZ003",  # Allow datetime.utcnow()
     "DTZ007",  # Allow naive datetime
@@ -61,7 +62,8 @@ ignore = [
     "SIM108",  # Allow if-else blocks
     "PGH003",  # Allow type: ignore
     "TC001",  # Allow application imports
-    "RET504",  # Allow unnecessary assignments
+        "RET504",
+        "PLR0915",  # Allow unnecessary assignments
 ]
 
 [tool.ruff.lint.isort]

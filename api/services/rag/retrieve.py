@@ -4,10 +4,17 @@ from __future__ import annotations
 import logging
 import os
 import re
+from pathlib import Path
 from typing import Any
 
 from sentence_transformers import SentenceTransformer
 
+from .query_expand import (
+    bm25_or_clause,
+    boost_key_terms,
+    expand_query_text,
+    load_synonyms,
+)
 from .types import Retrieval
 
 # Get logger
@@ -28,6 +35,10 @@ RAG_INDEX_DIR = os.getenv("RAG_INDEX_DIR", "rag_index")
 RAG_TOPK = int(os.getenv("RAG_TOPK", "4"))
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+# Load synonyms for query expansion
+SYN_PATH = Path(__file__).parent.parent.parent.parent / "rag_index" / "synonyms.json"
+SYN = load_synonyms(str(SYN_PATH))
 
 # Lazy singletons
 _model: SentenceTransformer | None = None
@@ -79,8 +90,8 @@ def init_retriever() -> bool:
     return True
 
 
-def make_query(summary: dict[str, Any]) -> str:
-    """create query from flags + codes/labels + HPI/ROS (domain-tagged)"""
+def make_query(summary: dict[str, Any]) -> dict[str, str]:
+    """create expanded query from flags + codes/labels + HPI/ROS (domain-tagged)"""
     parts: list[str] = []
     flags = summary.get("flags", {}) or {}
 
@@ -120,7 +131,19 @@ def make_query(summary: dict[str, Any]) -> str:
         hpi = (summary.get("hpi") or "")[:140]
         parts = [hpi] if hpi else ["primary care evaluation"]
 
-    return " ".join(parts)
+    base_query = " ".join(parts)
+
+    # Query expansion for better retrieval
+    embed_query = expand_query_text(base_query, SYN, max_total=40)
+    bm25_query = bm25_or_clause(base_query, SYN, max_per_term=6)
+
+    # Boost key terms for ischemic features
+    key_terms = (
+        ["troponin", "ecg", "chest pain", "ischemia"] if flags.get("ischemic_features") else []
+    )
+    boosted_query = boost_key_terms(embed_query, SYN, key_terms)
+
+    return {"base": base_query, "embed": boosted_query, "bm25": bm25_query}
 
 
 def _minmax_norm(scores: list[float]) -> list[float]:
@@ -185,20 +208,28 @@ def retrieve(summary: dict[str, Any], k: int = RAG_TOPK) -> list[Retrieval]:
         return []
 
     try:
-        # 1) embedding ANN
-        q = make_query(summary)
-        logger.debug(f"Generated query: {q}")
-        q_emb = _get_model().encode([q], normalize_embeddings=True)
+        # 1) Generate expanded queries
+        query_dict = make_query(summary)
+        embed_query = query_dict["embed"]
+        bm25_query = query_dict["bm25"]
+
+        logger.debug(f"Base query: {query_dict['base']}")
+        logger.debug(f"Embed query: {embed_query}")
+        logger.debug(f"BM25 query: {bm25_query}")
+
+        # 2) embedding ANN with expanded query
+        q_emb = _get_model().encode([embed_query], normalize_embeddings=True)
         emb_hits: list[tuple[int, float]] = _store.search(
             q_emb,
             top_k=max(8, k * 2),
         )  # [(idx, score)]
         logger.info(f"Embedding search returned {len(emb_hits)} hits")
 
-        # 2) BM25 (optional)
+        # 3) BM25 with expanded query (optional)
         bm_hits: list[tuple[int, float]] = []
         if _bm25 is not None and _tokenized is not None:
-            q_tokens = _tokenize(q)  # use improved tokenizer
+            # Use expanded BM25 query for better keyword matching
+            q_tokens = _tokenize(bm25_query)  # use expanded query
             # BM25 scores are generated for all documents → take top n
             scores = _bm25.get_scores(q_tokens)  # type: ignore[union-attr]
             bm_hits = sorted(list(enumerate(scores)), key=lambda x: x[1], reverse=True)[

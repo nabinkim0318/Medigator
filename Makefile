@@ -91,6 +91,16 @@ type:
 precommit:
 	@$(PRECOMMIT) run --all-files
 
+precommit-changed:
+	@$(PRECOMMIT) run
+
+precommit-fix:
+	@$(PRECOMMIT) run --all-files
+	@echo "✅ Pre-commit checks completed"
+
+check: precommit
+	@echo "✅ All checks passed - ready to commit!"
+
 ci: lint type test
 	@echo "✅ CI gate passed."
 

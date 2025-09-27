@@ -19,8 +19,9 @@ from sentence_transformers import (  # pip install sentence-transformers
 logger = logging.getLogger(__name__)
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
-DEFAULT_CHUNK_SIZE = 1000  # target characters per chunk
-DEFAULT_CHUNK_OVERLAP = 150  # conservative overlap to avoid boundary loss
+# 4. Token length overflow prevention - MiniLM input length consideration
+DEFAULT_CHUNK_SIZE = 800  # target characters per chunk (≈256 tokens)
+DEFAULT_CHUNK_OVERLAP = 200  # overlap for context preservation
 VALID_EXTS = {".txt", ".md"}  # keep it simple for hackathon
 
 SENTENCE_SPLIT = re.compile(r"(?<=[\.\!\?\n])\s+")
@@ -169,6 +170,15 @@ def build_index(
         source = title  # simple source label
         logger.debug(f"File {f.name}: {len(chs)} chunks created")
 
+        # 5. Fill metadata fields (year/section/tags)
+        year = None
+        m = re.search(r"(19|20)\d{2}", f.name)
+        if m:
+            year = int(m.group(0))
+
+        # Tag inference based on filename
+        tags_json = {"type": "guideline" if "guideline" in f.name.lower() else "document"}
+
         for ci, (txt, start, end) in enumerate(chs):
             cid = f"{f.stem}__{ci:04d}"
             all_chunks.append(
@@ -181,6 +191,9 @@ def build_index(
                     start=start,
                     end=end,
                     url=None,
+                    year=year,
+                    section=None,
+                    tags_json=tags_json,
                 ),
             )
             all_texts.append(txt)
