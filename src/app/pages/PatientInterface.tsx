@@ -1,13 +1,17 @@
 // app/pages/PatientInterface.tsx
 "use client";
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useCedarStore } from "cedar-os";
 import { FloatingCedarChat } from "@/cedar/components/chatComponents/FloatingCedarChat";
+import { AnimatePresence } from "framer-motion";
 
 export default function PatientInterface() {
   const store = useCedarStore();
   const seeded = useRef(false);
+
+  // 👇 Will flip to true after long-answer is submitted
+  const [docked, setDocked] = useState(false);
 
   // Seed Q1 (pain 1–10) immediately
   useEffect(() => {
@@ -27,9 +31,24 @@ export default function PatientInterface() {
     } as any);
   }, [store]);
 
+  // 🔊 Listen for the "dock me" event from the long-answer renderer
+  useEffect(() => {
+    const handler = () => setDocked(true);
+    window.addEventListener("triage:move-bottom-right", handler);
+    return () => window.removeEventListener("triage:move-bottom-right", handler);
+  }, []);
+
+  // Optionally shrink the chat when docked
+  const dockedDimensions = docked
+    ? { height: 700 }      // smaller when docked
+    : { height: 600 };     // larger before docking
+
   return (
     <div>
-      <FloatingCedarChat stream={false} />
+      <FloatingCedarChat stream={false} side={docked ? "right" : "center"} dimensions={dockedDimensions} />
+      {docked ? <div>
+        INSERT GENERATED PDF HERE
+      </div> : <></>}
     </div>
   );
 }

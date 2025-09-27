@@ -77,7 +77,7 @@ const LocalMultipleChoiceRenderer: MessageRenderer =
           // Next: long-answer text prompt
           addMessage({
             role: "assistant",
-            type: "text",
+            type: "long_answer",
             // marker so we know the next user message is the long answer
             field: "detailsPrompt",
             content:

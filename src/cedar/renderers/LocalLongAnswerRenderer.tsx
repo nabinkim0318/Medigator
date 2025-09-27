@@ -38,6 +38,8 @@ const LocalLongAnswerRenderer: MessageRenderer = createMessageRenderer<LongAnswe
         type: "text",
         content: "Thanks — your description has been recorded.",
       } as any);
+
+      window.dispatchEvent(new CustomEvent("triage:move-bottom-right"));
     };
 
     return (
