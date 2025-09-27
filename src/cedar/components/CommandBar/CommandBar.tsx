@@ -529,7 +529,7 @@ export const CommandBar: React.FC<CommandBarProps> = ({
 							? allItemsForNavigation[selectedIndex].id
 							: ''
 					}
-					onValueChange={(value) => {
+					onValueChange={(value: string) => {
 						// Find the index of the selected item
 						const index = allItemsForNavigation.findIndex(
 							(item) => item.id === value
@@ -538,7 +538,7 @@ export const CommandBar: React.FC<CommandBarProps> = ({
 							setSelectedIndex(index);
 						}
 					}}
-					onKeyDown={(e) => {
+					onKeyDown={(e: React.KeyboardEvent) => {
 						// Only prevent cmdk's navigation when we're in the fixed bottom group
 						if (
 							isFocused &&
