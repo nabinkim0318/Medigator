@@ -1,10 +1,16 @@
-import { FloatingCedarChat } from "@/cedar/components/chatComponents/FloatingCedarChat";
+"use client";
+
+import { CedarCopilot } from 'cedar-os';
+import PatientInterface from './pages/PatientInterface';
 
 export default function Home() {
-  return (
-    <div className="h-screen">
-      {/* This automatically works */}
-      <FloatingCedarChat />
-    </div>
-  );
+	return (
+		<CedarCopilot
+			llmProvider={{
+				provider: 'openai',
+				apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY ?? '',
+			}}>
+			<PatientInterface />
+		</CedarCopilot>
+	);
 }
