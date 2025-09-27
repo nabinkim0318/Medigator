@@ -1,0 +1,71 @@
+{
+    "Q1_When_did_the_pain_start": [
+      "Just now (within the last hour)",
+      "Earlier today",
+      "Yesterday",
+      "Several days ago",
+      "Other / describe"
+    ],
+    "Q2_Where_is_the_pain": [
+      "Middle of chest",
+      "Left side of chest",
+      "Right side of chest",
+      "Spreads to left arm / jaw / neck / back",
+      "Other / describe"
+    ],
+    "Q3_Pain_character": [
+      "Pressure or squeezing",
+      "Sharp or stabbing",
+      "Burning",
+      "Tightness / heaviness",
+      "Other / describe"
+    ],
+    "Q4_Worse_with": [
+      "Physical activity (walking, climbing stairs, exercise)",
+      "Breathing deeply or changing position",
+      "Eating or drinking",
+      "Stress or anxiety",
+      "Not sure",
+      "Other / describe"
+    ],
+    "Q5_Better_with": [
+      "Rest",
+      "Stopping activity",
+      "Medicine (nitroglycerin, antacids, painkillers)",
+      "Nothing helps",
+      "Not sure",
+      "Other / describe"
+    ],
+    "Q6_Associated_symptoms": [
+      "Shortness of breath",
+      "Sweating",
+      "Nausea or vomiting",
+      "Dizziness or fainting",
+      "Fast or irregular heartbeat",
+      "No, none of these",
+      "Other / describe"
+    ],
+    "Q7_Duration": [
+      "A few seconds",
+      "1–5 minutes",
+      "5–30 minutes",
+      "More than 30 minutes",
+      "Hours",
+      "Other / describe"
+    ],
+    "Q8_Frequency": [
+      "Only once",
+      "A few times a day",
+      "Daily",
+      "A few times a week",
+      "Less than once a week",
+      "Other / describe"
+    ],
+    "Q9_Severity_0_10": [
+      "0–2 (mild)",
+      "3–5 (moderate)",
+      "6–7 (severe)",
+      "8–10 (very severe / worst ever)",
+      "Other / describe"
+    ]
+  }

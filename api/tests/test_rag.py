@@ -27,4 +27,4 @@ def _summary(flags):
 def test_chest_pain_cards(client):
     body = _summary({"ischemic_features": True, "dm_followup": False, "labs_a1c_needed": False})
     resp = client.post("/api/v1/evidence", json=body).json()
-    assert resp["evidence"], "should return at least one evidence card"
+    assert resp["items"], "should return at least one evidence card"

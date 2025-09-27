@@ -1,0 +1,17 @@
+{
+  "chest pain": ["chest discomfort", "chest pressure", "chest tightness", "angina"],
+  "diabetes": ["diabetes mellitus", "DM", "diabetic", "blood sugar"],
+  "hypertension": ["high blood pressure", "HTN", "elevated blood pressure"],
+  "heart attack": ["myocardial infarction", "MI", "acute coronary syndrome", "ACS"],
+  "stroke": ["cerebrovascular accident", "CVA", "brain attack"],
+  "pneumonia": ["lung infection", "respiratory infection"],
+  "asthma": ["bronchial asthma", "reactive airway disease"],
+  "depression": ["major depressive disorder", "MDD", "clinical depression"],
+  "anxiety": ["anxiety disorder", "generalized anxiety", "panic disorder"],
+  "obesity": ["excessive weight", "overweight", "BMI elevated"],
+  "guideline": ["recommendation", "best practice", "standard", "protocol"],
+  "treatment": ["therapy", "intervention", "management", "care"],
+  "diagnosis": ["assessment", "evaluation", "identification"],
+  "symptom": ["sign", "manifestation", "indication"],
+  "patient": ["individual", "person", "case"]
+}

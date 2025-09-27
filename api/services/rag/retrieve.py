@@ -37,7 +37,7 @@ RAG_TOPK = int(os.getenv("RAG_TOPK", "4"))
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 
 # Load synonyms for query expansion
-SYN_PATH = Path(__file__).parent.parent.parent / "rag_index" / "synonyms.json"
+SYN_PATH = Path(__file__).parent.parent.parent.parent / "rag_index" / "synonyms.json"
 SYN = load_synonyms(str(SYN_PATH))
 
 # Lazy singletons
