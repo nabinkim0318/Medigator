@@ -4,6 +4,7 @@ from __future__ import annotations
 import json
 import math
 import re
+import logging
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Iterable, List, Dict, Any, Tuple
@@ -11,6 +12,9 @@ from typing import Iterable, List, Dict, Any, Tuple
 import faiss
 import numpy as np
 from sentence_transformers import SentenceTransformer  # pip install sentence-transformers
+
+# Get logger
+logger = logging.getLogger(__name__)
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 DEFAULT_CHUNK_SIZE = 1000         # target characters per chunk
@@ -132,6 +136,9 @@ def build_index(
     Build FAISS index and metadata from local docs.
     Returns a small summary dict.
     """
+    logger.info(f"Starting RAG index build: docs_dir={docs_dir}, out_dir={out_dir}")
+    logger.info(f"Parameters: chunk_size={chunk_size}, overlap={overlap}, max_docs={max_docs}")
+    
     docs_path = Path(docs_dir)
     out_path = Path(out_dir)
     out_path.mkdir(parents=True, exist_ok=True)
@@ -141,19 +148,25 @@ def build_index(
         files = files[:max_docs]
 
     if not files:
+        logger.error(f"No documents found under {docs_path} (expected .txt/.md)")
         raise RuntimeError(f"No documents found under {docs_path} (expected .txt/.md)")
 
+    logger.info(f"Found {len(files)} documents to process")
     model = SentenceTransformer(model_name)
+    logger.info(f"Loaded model: {model_name}")
 
     all_chunks: List[DocChunk] = []
     all_texts: List[str] = []
 
     for fi, f in enumerate(files):
+        logger.info(f"Processing file {fi+1}/{len(files)}: {f.name}")
         raw = _read_file(f)
         sents = _sentences(raw)
         chs = _chunk_sentences(sents, chunk_size=chunk_size, overlap=overlap)
         title = _title_from_path(f)
         source = title  # simple source label
+        logger.debug(f"File {f.name}: {len(chs)} chunks created")
+        
         for ci, (txt, start, end) in enumerate(chs):
             cid = f"{f.stem}__{ci:04d}"
             all_chunks.append(
@@ -171,7 +184,11 @@ def build_index(
             all_texts.append(txt)
 
     if not all_texts:
+        logger.error("No chunks produced. Check your documents or chunking parameters.")
         raise RuntimeError("No chunks produced. Check your documents or chunking parameters.")
+
+    logger.info(f"Total chunks created: {len(all_chunks)}")
+    logger.info("Generating embeddings...")
 
     # Embeddings
     embeddings = model.encode(all_texts, batch_size=64, show_progress_bar=True)
@@ -179,10 +196,14 @@ def build_index(
     embeddings = _normalize(embeddings)
 
     d = embeddings.shape[1]
+    logger.info(f"Embedding dimension: {d}")
+    
     index = faiss.IndexFlatIP(d)  # cosine via normalized vectors
     index.add(embeddings)
+    logger.info("FAISS index created and populated")
 
     # Persist
+    logger.info("Saving index and metadata...")
     faiss.write_index(index, str(out_path / "index.faiss"))
 
     meta = [asdict(ch) for ch in all_chunks]

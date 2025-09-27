@@ -2,6 +2,10 @@
 from __future__ import annotations
 from typing import List, Dict
 import re
+import logging
+
+# Get logger
+logger = logging.getLogger(__name__)
 
 MAX_CHARS = 220
 WS = re.compile(r"\s+")
@@ -11,6 +15,7 @@ def _clean(text: str) -> str:
     return text[:MAX_CHARS].rstrip()
 
 def to_cards(rets: List[Dict], max_cards: int = 2) -> List[Dict[str, str]]:
+    logger.info(f"Converting {len(rets)} RAG results to {max_cards} evidence cards")
     seen = set()
     cards = []
     for r in rets:
@@ -19,6 +24,7 @@ def to_cards(rets: List[Dict], max_cards: int = 2) -> List[Dict[str, str]]:
         source = (chunk.get("source") or "").strip()
         key = (title, source)
         if key in seen:
+            logger.debug(f"Skipping duplicate card: {title}")
             continue
         seen.add(key)
         
@@ -45,4 +51,6 @@ def to_cards(rets: List[Dict], max_cards: int = 2) -> List[Dict[str, str]]:
         })
         if len(cards) >= max_cards:
             break
+    
+    logger.info(f"Generated {len(cards)} evidence cards")
     return cards
