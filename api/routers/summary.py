@@ -1,23 +1,20 @@
-import logging
+# api/routers/summary.py
+from __future__ import annotations
 
-from fastapi import APIRouter
+from typing import Any, Dict
 
-from api.core.schemas import SummaryIn, SummaryOut
-from api.services.llm.tasks.summarize import run as summarize_run
+from fastapi import APIRouter, Body, HTTPException
 
-# Get logger
-logger = logging.getLogger(__name__)
+from api.services.llm.service import llm_service
 
 router = APIRouter(prefix="/summary", tags=["summary"])
 
 
-@router.post("", response_model=SummaryOut)
-async def summarize_endpoint(body: SummaryIn):
-    logger.info("Summary request received")
+@router.post("")
+async def summarize(intake: dict[str, Any] = Body(...)):
+    """Structured intake → HPI/ROS/flags JSON (다이어그램의 LLM Summarizer API)"""
     try:
-        result = await summarize_run(body)
-        logger.info("Summary generated successfully")
-        return result
+        data = await llm_service.summary(intake)
+        return {"summary": data}
     except Exception as e:
-        logger.error(f"Summary generation failed: {e!s}")
-        raise
+        raise HTTPException(status_code=500, detail=f"summary failed: {e!s}")
