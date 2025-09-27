@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useState } from 'react';
 import { MultipleChoiceMessage, useCedarStore, cn } from 'cedar-os';
 import Flat3dButton from '@/cedar/components/containers/Flat3dButton';

@@ -1,3 +1,5 @@
+"use client"
+
 import { ShimmerText } from '@/cedar/components/text/ShimmerText';
 import { cn, useCedarStore, useThreadMessages } from 'cedar-os';
 import { AnimatePresence, motion } from 'motion/react';

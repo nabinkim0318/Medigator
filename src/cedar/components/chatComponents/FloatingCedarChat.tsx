@@ -1,3 +1,5 @@
+"use client"
+
 import { ChatInput } from '@/cedar/components/chatInput/ChatInput';
 import ChatBubbles from '@/cedar/components/chatMessages/ChatBubbles';
 import { CollapsedButton } from '@/cedar/components/chatMessages/structural/CollapsedChatButton';
