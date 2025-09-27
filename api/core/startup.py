@@ -8,8 +8,8 @@ import os
 import sqlite3
 from pathlib import Path
 
-from api.core.config import settings
-from api.services.rag.retrieve import USE_RAG, init_retriever
+from core.config import settings
+from services.rag.retrieve import USE_RAG, init_retriever
 
 logger = logging.getLogger(__name__)
 

@@ -15,6 +15,7 @@ from core.config import settings
 from middleware.log_sanitizer import NoBodyLoggingFilter, RedactLogsMiddleware
 from middleware.performance import PerformanceMiddleware
 from routers import codes, evidence, llm, rag, report, summary
+from routers import auth
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -50,6 +51,7 @@ app.include_router(summary.router, prefix="/api/v1", tags=["summary"])
 app.include_router(evidence.router, prefix="/api/v1", tags=["evidence"])
 app.include_router(codes.router, prefix="/api/v1", tags=["codes"])
 app.include_router(rag.router, prefix="/api/v1", tags=["rag"])
+app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
 logger.info("API routers registered successfully")
 
 # Configure logging with PHI protection
