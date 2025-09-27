@@ -4,6 +4,7 @@ import { CedarCopilot } from "cedar-os";
 import PatientInterface from "./pages/PatientInterface";
 import LocalMultipleChoiceRenderer from "@/cedar/renderers/LocalMultipleChoiceRenderer";
 import SignIn from "./pages/SignIn";
+import OnboardingQuestionnaire from "./pages/OnboardingQuestionaire";
 
 export default function Home() {
   return (
@@ -17,7 +18,7 @@ export default function Home() {
       // userId="user-123"   // recommended if you want per-user persistence
       // threadId="thread-abc"
     >
-      <SignIn />
+      <OnboardingQuestionnaire />
     </CedarCopilot>
   );
 }
