@@ -24,3 +24,22 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
 }
+
+/* Make typed text black everywhere */
+input, textarea, select, [contenteditable="true"] {
+  color: #000 !important;
+  caret-color: #000;
+}
+
+/* Optional: keep placeholders whatever you want (black too if desired) */
+input::placeholder,
+textarea::placeholder {
+  color: #9ca3af;          /* change to #000 if you want black placeholders */
+}
+
+/* Optional: ensure disabled inputs still show black text (if you want) */
+input:disabled, textarea:disabled, select:disabled {
+  color: #000;
+  -webkit-text-fill-color: #000; /* Safari */
+}
+

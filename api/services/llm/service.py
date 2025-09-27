@@ -20,40 +20,83 @@ class LLMService:
         self.model = model
 
     async def summary(self, intake: dict[str, Any]) -> dict[str, Any]:
-        """Structured intake(JSON) → HPI/ROS/flags JSON"""
-        # 1) PHI 보호
-        safe = guard_and_redact(intake)
+        """Structured intake(JSON) → HPI/ROS/flags JSON with hardening"""
+        log.info("Starting hardened summary generation")
 
-        # 2) 메시지 구성
-        sys = SYSTEM
-        usr = sys.replace("{INPUT_JSON}", json.dumps(safe, ensure_ascii=False))
-        messages = [
-            {"role": "system", "content": "You are a precise clinical summarizer."},
-            {"role": "user", "content": usr},
-        ]
-
-        # 3) LLM 호출 + 폴백
-        def _fallback():
-            return fallback_summary(intake)  # type: ignore
-
-        raw = await chat_json(
-            messages=messages,
-            model=self.model,
-            temperature=0.1,
-            response_schema=SUMMARY_JSON_SCHEMA,
-            timeout_s=3.5,
-            seed=42,
-            use_cache=True,
-            fallback_func=_fallback,
-        )
-
-        # 4) 검증/정화 → pydantic 모델로 보정
         try:
-            text = json.dumps(raw, ensure_ascii=False)
-            out = validate_out(text)  # SummaryOut → dict로 반환
-            return out.model_dump()
+            # 1) PHI protection
+            safe = guard_and_redact(intake)
+            log.debug("PHI redaction completed")
+
+            # 2) Data normalization
+            normalized_intake, normalization_log = medical_normalizer.normalize_intake_data(safe)
+            log.info(f"Data normalization applied: {len(normalization_log)} fields processed")
+
+            # 3) Negation processing
+            processed_intake, negation_log = negation_processor.process_intake_negation(
+                normalized_intake
+            )
+            log.info(f"Negation processing completed: {negation_log}")
+
+            # 4) Message construction with hardened prompts
+            sys = SYSTEM.replace("{INPUT_JSON}", json.dumps(processed_intake, ensure_ascii=False))
+            messages = [
+                {"role": "system", "content": sys},
+                {"role": "user", "content": json.dumps(processed_intake, ensure_ascii=False)},
+            ]
+
+            # 5) LLM call with stabilized parameters
+            def _fallback():
+                log.warning("Using fallback summary generation")
+                return fallback_summary(intake)  # type: ignore
+
+            raw = await chat_json(
+                messages=messages,
+                model=self.model,
+                temperature=0.1,  # Low temperature for stability
+                top_p=0.9,  # Controlled randomness
+                response_schema=SUMMARY_JSON_SCHEMA,
+                timeout_s=3.5,
+                seed=42,  # Fixed seed for reproducibility
+                use_cache=True,
+                fallback_func=_fallback,
+            )
+            log.info("LLM response received")
+
+            # 6) Enhanced validation with retry logic
+            try:
+                text = json.dumps(raw, ensure_ascii=False)
+                out = validate_out(text)  # SummaryOut → dict로 반환
+                summary_data = out.model_dump()
+                log.info("JSON validation successful")
+            except Exception as e:
+                log.warning(f"Initial validation failed, attempting correction: {e}")
+                summary_data = retry_with_correction(raw)
+                log.info("JSON correction successful")
+
+            # 7) External flag calculation with rule engine
+            log.info("Starting external flag calculation")
+            calculated_flags, flag_justifications = clinical_rule_engine.calculate_flags(
+                processed_intake, summary_data
+            )
+
+            # Update flags in summary
+            summary_data["flags"] = calculated_flags
+
+            # Add justification metadata for audit
+            summary_data["_metadata"] = {
+                "normalization_log": normalization_log,
+                "negation_log": negation_log,
+                "flag_justifications": flag_justifications,
+                "processing_timestamp": json.dumps({"timestamp": "now"}),  # Simplified for demo
+            }
+
+            log.info(f"Summary generation completed with flags: {calculated_flags}")
+            return summary_data
+
         except Exception as e:
-            log.warning(f"validation failed, using fallback: {e}")
+            log.error(f"Summary generation failed: {e}")
+            log.warning("Falling back to basic summary")
             return fallback_summary(intake)  # type: ignore
 
     # Placeholder methods for compatibility (hackathon scope)

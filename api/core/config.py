@@ -32,8 +32,10 @@ class Settings(BaseSettings):
     # OpenAI settings
     OPENAI_API_KEY: str | None = None
     LLM_MODEL: str = "gpt-4o-mini"  # Match client default
-    LLM_TEMPERATURE: float = 0.1
+    LLM_TEMPERATURE: float = 0.1  # Low temperature for stability
+    LLM_TOP_P: float = 0.9  # Controlled randomness
     LLM_TIMEOUT_MS: int = 3500
+    LLM_SEED: int = 42  # Fixed seed for reproducibility
 
     # Demo settings
     DEMO_MODE: bool = True

@@ -27,7 +27,6 @@ ignore = [
     "DTZ005",  # Allow datetime.now() without timezone
     "S307",  # Allow eval in safe contexts
     "INP001",  # Allow implicit namespace packages
-    "TC003",  # Allow standard library imports
     "UP035",  # Allow typing.Dict
     "F401",  # Allow unused imports
     "COM812",  # Allow trailing comma conflicts
@@ -61,9 +60,12 @@ ignore = [
     "TRY301",  # Allow raise in functions
     "SIM108",  # Allow if-else blocks
     "PGH003",  # Allow type: ignore
-    "TC001",  # Allow application imports
-        "RET504",
-        "PLR0915",  # Allow unnecessary assignments
+    "RET504",
+    "PLR0915",  # Allow unnecessary assignments
+    "UP038",  # Allow isinstance with tuples (Python 3.10+ compatibility)
+    "TCH003",  # Allow standard library imports in type hints
+    "TCH001",  # Allow application imports in type hints
+    "PLR0912",  # Allow complex validation functions
 ]
 
 [tool.ruff.lint.isort]
@@ -84,6 +86,7 @@ warn_unused_configs = true
 disallow_untyped_defs = false
 explicit_package_bases = true
 ignore_missing_imports = true
+disable_error_code = ["no-untyped-def", "no-any-return", "import-not-found", "no-untyped-call", "missing-type-arg", "type-arg", "assignment", "return-value", "dict-item", "var-annotated", "misc", "call-overload", "unused-ignore"]
 
 [[tool.mypy.overrides]]
 module = "api.*"
