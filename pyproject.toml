@@ -45,6 +45,7 @@ ignore = [
     "T201",  # Allow print statements
     "EXE001",  # Allow shebang without executable
     "S608",  # Allow SQL injection in safe contexts
+    "S311",  # Allow random for jitter (non-cryptographic use)
     "PLW2901",  # Allow loop variable overwriting
     "DTZ003",  # Allow datetime.utcnow()
     "DTZ007",  # Allow naive datetime

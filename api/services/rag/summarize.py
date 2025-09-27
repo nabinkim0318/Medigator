@@ -17,15 +17,24 @@ def _clean(text: str) -> str:
     return text[:MAX_CHARS].rstrip()
 
 
-def to_cards(rets: list[dict], max_cards: int = 2) -> list[dict[str, Any]]:
+def to_cards(
+    rets: list[dict], max_cards: int = 2, keywords: list[str] | None = None
+) -> list[dict[str, Any]]:
     logger.info(f"Converting {len(rets)} RAG results to {max_cards} evidence cards")
+
+    # 1. sort bsed on score
+    ranked = sorted(rets, key=lambda x: x.get("score", 0), reverse=True)
+
     seen = set()
     cards = []
-    for r in rets:
+
+    for rank, r in enumerate(ranked, start=1):
         chunk = r.get("chunk", {})
         title = (chunk.get("title") or "").strip()
         source = (chunk.get("source") or "").strip()
-        key = (title, source)
+
+        # duplicate check (title, year, section combination)
+        key = (title.lower(), str(chunk.get("year", "")), chunk.get("section", "").lower())
         if key in seen:
             logger.debug(f"Skipping duplicate card: {title}")
             continue
@@ -44,17 +53,27 @@ def to_cards(rets: list[dict], max_cards: int = 2) -> list[dict[str, Any]]:
         except (json.JSONDecodeError, TypeError):
             tags = {}
 
+        # keyword highlight (optional)
+        snippet = _clean(chunk.get("text") or "")
+        if keywords:
+            for kw in keywords:
+                if kw.lower() in snippet.lower():
+                    snippet = snippet.replace(kw, f"**{kw}**")
+
         cards.append(
             {
+                "rank": rank,
+                "score": float(r.get("score", 0.0)),
                 "title": title or source or "Evidence",
-                "snippet": _clean(chunk.get("text") or ""),
+                "snippet": snippet,
                 "source": source or title or "",
                 "link": chunk.get("url") or "",
-                "year": chunk.get("year") or "",  # NEW
-                "section": chunk.get("section") or "",  # NEW
-                "tags": tags,  # NEW (for frontend chips)
-            },
+                "year": chunk.get("year") or "",
+                "section": chunk.get("section") or "",
+                "tags": tags,
+            }
         )
+
         if len(cards) >= max_cards:
             break
 
