@@ -10,6 +10,7 @@ import sys
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from api.core.config import settings
 from api.middleware.log_sanitizer import NoBodyLoggingFilter, RedactLogsMiddleware
@@ -88,6 +89,12 @@ app.add_middleware(PerformanceMiddleware)
 
 # Setup global exception handlers
 setup_exception_handlers(app)
+
+# Mount static files for frontend
+try:
+    app.mount("/", StaticFiles(directory="app/dist", html=True), name="frontend")
+except Exception as e:
+    logger.warning(f"Could not mount static files: {e}")
 
 
 @app.get("/")

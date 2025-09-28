@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # Backend API
+  # Backend API with Frontend
   api:
     build: .
     ports:
@@ -24,22 +24,16 @@ services:
       retries: 3
       start_period: 40s
     restart: unless-stopped
+    depends_on:
+      - frontend
 
-  # Frontend (development)
+  # Frontend (production build)
   frontend:
     build:
       context: .
       dockerfile: Dockerfile.frontend
-    ports:
-      - "5173:5173"
-    volumes:
-      - .:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_URL=http://localhost:8082
-    depends_on:
-      - api
-    restart: unless-stopped
+    # No ports needed - this is just for building
+    # The built files will be copied to the main container
 
   # Database (optional - for production)
   # postgres:
