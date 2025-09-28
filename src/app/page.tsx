@@ -11,6 +11,6 @@ import OnboardingThankYou from "./pages/OnboardingThankYou";
 
 export default function Home() {
   return (
-    <DoctorDashboard />
+    <SignIn />
   );
 }
