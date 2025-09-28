@@ -12,54 +12,12 @@ type Choice = {
   isExclusive?: boolean;
 };
 
-<<<<<<< HEAD
-  // 👇 Will flip to true after long-answer is submitted
-  const [docked, setDocked] = useState(false);
-
-  // Seed Q1 (pain 1–10) immediately
-  useEffect(() => {
-    if (seeded.current) return;
-    seeded.current = true;
-
-    store.addMessage({
-      role: "assistant",
-      type: "multiple_choice",
-      field: "q1_when", // 👈 start here
-      required: true,
-      // content/options can be omitted; the renderer supplies presets
-      options: [], // ignored by this renderer; it uses its own options
-    } as any);
-  }, [store]);
-
-  // 🔊 Listen for the "dock me" event from the long-answer renderer
-  useEffect(() => {
-    const handler = () => setDocked(true);
-    window.addEventListener("triage:move-bottom-right", handler);
-    return () =>
-      window.removeEventListener("triage:move-bottom-right", handler);
-  }, []);
-
-  // Optionally shrink the chat when docked
-  const dockedDimensions = docked
-    ? { height: 700 } // smaller when docked
-    : { height: 600 }; // larger before docking
-=======
 type MultiAnswer = { selected: string[]; otherText?: string };
 type SingleAnswer = { selected?: string; otherText?: string };
->>>>>>> e3a4d472791ca3e73dd25c1bbb7e4423947a1f5b
 
 // --- Small UI atoms
 const PageShell: React.FC<{ step: number; total: number; title: string; subtitle?: string; children: React.ReactNode; onBack?: () => void; onNext?: () => void; nextDisabled?: boolean; }> = ({ step, total, title, subtitle, children, onBack, onNext, nextDisabled }) => {
   return (
-<<<<<<< HEAD
-    <div>
-      <FloatingCedarChat
-        stream={false}
-        side={docked ? "right" : "center"}
-        dimensions={dockedDimensions}
-      />
-      {docked ? <div>INSERT GENERATED PDF HERE</div> : <></>}
-=======
     <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
       <div className="mx-auto w-full max-w-3xl text-center">
         <div className="mb-8 text-gray-400 text-xs">Demo only — Not diagnostic • No PHI</div>
@@ -102,7 +60,6 @@ const PageShell: React.FC<{ step: number; total: number; title: string; subtitle
 
         <div className="text-xs text-gray-400 mt-8">© 2025 Medigator. All rights reserved.</div>
       </div>
->>>>>>> e3a4d472791ca3e73dd25c1bbb7e4423947a1f5b
     </div>
   );
 };

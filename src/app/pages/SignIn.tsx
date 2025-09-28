@@ -37,7 +37,14 @@ export default function SignIn() {
       }
       const data = await res.json();
       const token = data.token;
-      router.push(`/OnboardingQuestionaire?token=${encodeURIComponent(token)}`);
+      const existing = !!data.existing;
+      if (existing) {
+        // user already has a token -> go to patient interface
+        router.push(`/PatientInterface?token=${encodeURIComponent(token)}`);
+      } else {
+        // new user -> onboarding
+        router.push(`/OnboardingQuestionaire?token=${encodeURIComponent(token)}`);
+      }
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert("Unable to contact auth server");
@@ -45,40 +52,6 @@ export default function SignIn() {
   };
 
   return (
-<<<<<<< HEAD
-    <div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          height: "100vh",
-        }}
-      >
-        <h1 style={{ fontSize: "2rem", marginBottom: "1rem" }}>Sign In</h1>
-        <form
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-          }}
-        >
-          <input
-            type="text"
-            placeholder="Username"
-            style={{ padding: "0.5rem", marginBottom: "1rem", width: "200px" }}
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            style={{ padding: "0.5rem", marginBottom: "1rem", width: "200px" }}
-          />
-          <button type="submit" style={{ padding: "0.5rem 1rem" }}>
-            Sign In
-          </button>
-        </form>
-=======
     <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
       <div className="mx-auto w-full max-w-md text-center">
         {/* Logo / Brand */}
@@ -115,7 +88,6 @@ export default function SignIn() {
         <div className="text-xs text-gray-400 mt-8">
           © 2025 Medigator. All rights reserved.
         </div>
->>>>>>> e3a4d472791ca3e73dd25c1bbb7e4423947a1f5b
       </div>
     </div>
   );
