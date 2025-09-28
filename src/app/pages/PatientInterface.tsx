@@ -41,6 +41,19 @@ const PageShell: React.FC<{
     <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
       <div className="mx-auto w-full max-w-3xl text-center">
 
+        {/* Top-left greeting */}
+        <div className="absolute top-4 left-4 text-gray-700 font-medium">
+          Hi, [NAME]
+        </div>
+
+        {/* Top-right back link */}
+        <a
+          href="/medical-history" // adjust route if needed
+          className="absolute top-4 right-4 text-sm text-orange-600 hover:underline"
+        >
+          Edit Medical History
+        </a>
+
         {/* Logo / Brand */}
         <div className="flex items-center justify-center gap-2 mb-6">
           <div className="h-6 w-6" >
