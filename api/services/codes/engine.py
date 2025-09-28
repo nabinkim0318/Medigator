@@ -31,16 +31,6 @@ class CPTRule:
     tags: list[str]
 
 
-@dataclass
-class EMRule:
-    context: str
-    mdm_problems: str
-    mdm_data: str
-    mdm_risk: str
-    em_cpt: str
-    rationale_key: str
-
-
 def _re_or(pattern: str) -> re.Pattern:
     return re.compile(pattern, re.IGNORECASE) if pattern else re.compile(r"$^")
 
@@ -87,23 +77,6 @@ def load_cpt_rules(path: str) -> list[CPTRule]:
                     tags=[
                         t.strip() for t in (r.get("tags") or "").split("|") if t.strip()
                     ],
-                ),
-            )
-    return rules
-
-
-def load_em_rules(path: str) -> list[EMRule]:
-    rules = []
-    with open(path, encoding="utf-8") as f:
-        for r in csv.DictReader(f):
-            rules.append(
-                EMRule(
-                    context=r["context"].strip(),
-                    mdm_problems=r["mdm_problems"].strip(),
-                    mdm_data=r["mdm_data"].strip(),
-                    mdm_risk=r["mdm_risk"].strip(),
-                    em_cpt=r["em_cpt"].strip(),
-                    rationale_key=r["rationale_key"].strip(),
                 ),
             )
     return rules

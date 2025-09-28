@@ -1,7 +1,7 @@
 # api/services/llm/fallback.py
 from collections.abc import Mapping
 
-from core.schemas import SummaryIn
+from api.core.schemas import SummaryIn
 
 
 def templated(body: SummaryIn) -> dict:

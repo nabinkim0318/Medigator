@@ -4,7 +4,7 @@ import logging
 import re
 from typing import Any
 
-from core.schemas import SummaryOut
+from api.core.schemas import SummaryOut
 
 # Get logger
 logger = logging.getLogger(__name__)

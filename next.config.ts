@@ -15,6 +15,16 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
 
+  // Experimental features for hydration
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
+  },
+
+  // Enable styled-components transform (better classnames and SSR)
+  compiler: {
+    styledComponents: true,
+  },
+
   // Environment variables
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8082',

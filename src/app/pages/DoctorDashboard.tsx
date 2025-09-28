@@ -9,19 +9,38 @@ import DoctorDashboard, {
   ClinicalUpdate,
   PatientFeeItem,
 } from "./DoctorPage";
+import { EnhancedAppointmentRow } from "./DoctorDashboardWithData";
 import AppointmentsPage from "./AppointmentsPage";
 import DoctorPatientView from "./DoctorPatientView";
 
 // (Optional) bring in your standalone appointments component if you have it)
 // import Appointments from "./Appointments";
 
-const appointments: AppointmentRow[] = [
+const appointments: EnhancedAppointmentRow[] = [
   {
     id: "a1",
     time: "9:30 AM",
     date: "05/12/2022",
     patient: { name: "Elizabeth Polson", initials: "EP", gender: "Female" },
     doctor: "Dr. John",
+    summary: {
+      hpi: "55-year-old female presents with chest pain radiating to left arm, duration 2 hours",
+      ros: {
+        cardiovascular: { positive: ["chest pain"], negative: [] },
+        respiratory: { positive: [], negative: [] },
+      },
+      pmh: "Hypertension, Diabetes",
+      meds: "Lisinopril, Metformin",
+      flags: { ischemic_features: true, dm_followup: false },
+    },
+    evidence: [
+      {
+        title: "Chest Pain Evaluation Guidelines",
+        content: "Acute chest pain requires immediate ECG and cardiac enzymes",
+        year: "2023",
+        section: "Emergency Medicine",
+      },
+    ],
   },
   {
     id: "a2",

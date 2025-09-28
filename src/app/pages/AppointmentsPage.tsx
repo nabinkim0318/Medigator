@@ -221,11 +221,22 @@ const AppointmentsPage: React.FC = () => {
               />
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <img
-                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face"
-                style={{ width: 40, height: 40, borderRadius: 999 }}
-                alt="Doctor"
-              />
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 999,
+                  backgroundColor: "#f59e0b",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                }}
+              >
+                Dr
+              </div>
               <div>
                 <div style={{ fontWeight: 700, color: "#334155" }}>
                   Jonitha Cathrine

@@ -5,7 +5,7 @@ from typing import Any
 
 from fastapi import APIRouter, Body, HTTPException
 
-from services.llm.service import llm_service
+from api.services.llm.service import llm_service
 
 router = APIRouter(prefix="/summary", tags=["summary"])
 

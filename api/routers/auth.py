@@ -19,7 +19,7 @@ def login(body: LoginIn):
         raise HTTPException(status_code=400, detail="username required")
 
     # Ensure DB/table exists and then either return existing token or create a new one
-    with sqlite3.connect("data/app.db") as c:
+    with sqlite3.connect("copilot.db") as c:
         c.execute(
             "CREATE TABLE IF NOT EXISTS user_tokens (username TEXT PRIMARY KEY, token TEXT UNIQUE, created_at TEXT)"
         )

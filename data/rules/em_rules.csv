@@ -1,4 +1,0 @@
-context,mdm_problems,mdm_data,mdm_risk,em_cpt,rationale_key
-Office Visit,Low,Minimal,Low,99212,"em_low_complexity"
-Office Visit,Moderate,Limited,Moderate,99214,"em_moderate_complexity"
-Emergency Dept,High,Extensive,High,99285,"em_high_complexity"

@@ -4,7 +4,7 @@ import logging
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from core.config import settings
+from api.core.config import settings
 
 
 class NoBodyLoggingFilter(logging.Filter):

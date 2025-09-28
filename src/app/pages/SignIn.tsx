@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 // Small utility to generate a RFC4122 v4 UUID-ish token (not cryptographically secure - fine for mock)
@@ -15,6 +15,29 @@ function generateToken() {
 
 export default function SignIn() {
   const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
+        <div className="mx-auto w-full max-w-md text-center">
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <div className="h-6 w-6">
+              <img src="/logo.png" alt="Medigator Logo" />
+            </div>
+            <div className="font-semibold text-orange-600">Medigator</div>
+          </div>
+          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+            <div className="text-center">Loading...</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

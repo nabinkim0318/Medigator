@@ -2,6 +2,8 @@
 
 import React, { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { useToast } from "../components/ErrorToast";
+import StyledQuestionShell from "./StyledQuestionShell";
 
 // --- Types
 type Choice = {
@@ -269,6 +271,7 @@ export default function PatientChestPainQuestionnairePage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams?.get("token") ?? "";
+  const { showToast, ToastContainer } = useToast();
   // Answers
   const [q1, setQ1] = useState<SingleAnswer>({}); // When did the pain start? (single)
   const [q2, setQ2] = useState<MultiAnswer>({ selected: [] });
@@ -422,16 +425,33 @@ export default function PatientChestPainQuestionnairePage() {
 
   // --- Submit
   const submit = () => {
+    // Convert answer objects to strings for backend
+    const convertAnswer = (answer: any): string => {
+      if (typeof answer === "string") return answer;
+      if (answer && typeof answer === "object") {
+        if (Array.isArray(answer.selected)) {
+          return answer.selected.join(", ");
+        }
+        if (answer.selected) {
+          return answer.selected;
+        }
+        if (answer.otherText) {
+          return answer.otherText;
+        }
+      }
+      return "";
+    };
+
     const payload = {
-      q1,
-      q2,
-      q3,
-      q4,
-      q5,
-      q6,
-      q7,
-      q8,
-      q9,
+      q1: convertAnswer(q1),
+      q2: convertAnswer(q2),
+      q3: convertAnswer(q3),
+      q4: convertAnswer(q4),
+      q5: convertAnswer(q5),
+      q6: convertAnswer(q6),
+      q7: convertAnswer(q7),
+      q8: convertAnswer(q8),
+      q9: convertAnswer(q9),
     };
     // POST appointment payload to backend under the user's token
     const API_BASE =
@@ -458,8 +478,7 @@ export default function PatientChestPainQuestionnairePage() {
         console.log(`Saved appointment data as ${data.key}`);
       })
       .catch((err) => {
-        // eslint-disable-next-line no-alert
-        alert(`Failed to save appointment: ${err.message}`);
+        showToast(`Failed to save appointment: ${err.message}`, "error");
       });
   };
 
@@ -468,26 +487,26 @@ export default function PatientChestPainQuestionnairePage() {
     switch (step) {
       case 1:
         return (
-          <PageShell
+          <StyledQuestionShell
             step={step}
             total={TOTAL_STEPS}
-            title="Symptom Onset"
-            subtitle="When did the pain start?"
+            title="Symptom Check"
+            subtitle="What symptoms are you currently experiencing?"
             onNext={() => setStep(step + 1)}
             nextDisabled={nextDisabled}
-            onStepSelect={(s) => setStep(s)} // enable dot navigation
+            onStepSelect={(s) => setStep(s)}
           >
             <SingleSelectQuestion
               choices={Q1_CHOICES}
               value={q1}
               onChange={setQ1}
             />
-          </PageShell>
+          </StyledQuestionShell>
         );
 
       case 2:
         return (
-          <PageShell
+          <StyledQuestionShell
             step={step}
             total={TOTAL_STEPS}
             title="Pain Location"
@@ -502,12 +521,12 @@ export default function PatientChestPainQuestionnairePage() {
               value={q2}
               onChange={setQ2}
             />
-          </PageShell>
+          </StyledQuestionShell>
         );
 
       case 3:
         return (
-          <PageShell
+          <StyledQuestionShell
             step={step}
             total={TOTAL_STEPS}
             title="Pain Quality"
@@ -522,12 +541,12 @@ export default function PatientChestPainQuestionnairePage() {
               value={q3}
               onChange={setQ3}
             />
-          </PageShell>
+          </StyledQuestionShell>
         );
 
       case 4:
         return (
-          <PageShell
+          <StyledQuestionShell
             step={step}
             total={TOTAL_STEPS}
             title="Triggers"
@@ -542,12 +561,12 @@ export default function PatientChestPainQuestionnairePage() {
               value={q4}
               onChange={setQ4}
             />
-          </PageShell>
+          </StyledQuestionShell>
         );
 
       case 5:
         return (
-          <PageShell
+          <StyledQuestionShell
             step={step}
             total={TOTAL_STEPS}
             title="Relief"
@@ -562,12 +581,12 @@ export default function PatientChestPainQuestionnairePage() {
               value={q5}
               onChange={setQ5}
             />
-          </PageShell>
+          </StyledQuestionShell>
         );
 
       case 6:
         return (
-          <PageShell
+          <StyledQuestionShell
             step={step}
             total={TOTAL_STEPS}
             title="Associated Symptoms"
@@ -583,12 +602,12 @@ export default function PatientChestPainQuestionnairePage() {
               value={q6}
               onChange={setQ6}
             />
-          </PageShell>
+          </StyledQuestionShell>
         );
 
       case 7:
         return (
-          <PageShell
+          <StyledQuestionShell
             step={step}
             total={TOTAL_STEPS}
             title="Duration"
@@ -603,12 +622,12 @@ export default function PatientChestPainQuestionnairePage() {
               value={q7}
               onChange={setQ7}
             />
-          </PageShell>
+          </StyledQuestionShell>
         );
 
       case 8:
         return (
-          <PageShell
+          <StyledQuestionShell
             step={step}
             total={TOTAL_STEPS}
             title="Frequency"
@@ -623,12 +642,12 @@ export default function PatientChestPainQuestionnairePage() {
               value={q8}
               onChange={setQ8}
             />
-          </PageShell>
+          </StyledQuestionShell>
         );
 
       case 9:
         return (
-          <PageShell
+          <StyledQuestionShell
             step={step}
             total={TOTAL_STEPS}
             title="Pain/Discomfort Level"
@@ -643,7 +662,7 @@ export default function PatientChestPainQuestionnairePage() {
               value={q9}
               onChange={setQ9}
             />
-          </PageShell>
+          </StyledQuestionShell>
         );
 
       default:
@@ -651,5 +670,10 @@ export default function PatientChestPainQuestionnairePage() {
     }
   };
 
-  return renderStep();
+  return (
+    <>
+      <ToastContainer />
+      {renderStep()}
+    </>
+  );
 }
