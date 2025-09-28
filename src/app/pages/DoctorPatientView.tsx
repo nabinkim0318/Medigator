@@ -161,6 +161,12 @@ const DoctorPatientView: React.FC = () => {
     setIsPopupOpen(true);
   };
 
+  const filteredPatients = patients.filter((p) => {
+  const matchesName = p.name.toLowerCase().includes(searchTerm.toLowerCase());
+  return matchesName;
+});
+
+
   return (
     <div style={{ display: "flex", height: "100vh", backgroundColor: "#f9fafb", width: "100%" }}>
       {/* Main */}
@@ -301,44 +307,6 @@ const DoctorPatientView: React.FC = () => {
                       }}
                     />
                   </div>
-                  <div style={{ position: "relative" }}>
-                    <Calendar
-                      style={{
-                        width: 20,
-                        height: 20,
-                        color: "#9ca3af",
-                        position: "absolute",
-                        left: "12px",
-                        top: "50%",
-                        transform: "translateY(-50%)",
-                      }}
-                    />
-                    <input
-                      type="text"
-                      placeholder="Filter by Date"
-                      value={filterDate}
-                      onChange={(e) => setFilterDate(e.target.value)}
-                      style={{
-                        paddingLeft: "40px",
-                        paddingRight: "16px",
-                        paddingTop: "8px",
-                        paddingBottom: "8px",
-                        border: "1px solid #d1d5db",
-                        borderRadius: "8px",
-                        outline: "none",
-                        fontSize: "14px",
-                      }}
-                      onFocus={(e) => {
-                        e.currentTarget.style.borderColor = "#f97316";
-                        e.currentTarget.style.boxShadow =
-                          "0 0 0 2px rgba(249, 115, 22, 0.2)";
-                      }}
-                      onBlur={(e) => {
-                        e.currentTarget.style.borderColor = "#d1d5db";
-                        e.currentTarget.style.boxShadow = "none";
-                      }}
-                    />
-                  </div>
                 </div>
                 <button
                   style={{
@@ -373,6 +341,7 @@ const DoctorPatientView: React.FC = () => {
             </div>
 
             {/* Table */}
+            
             <div style={{ flex: 1, overflow: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead style={{ backgroundColor: "#f9fafb" }}>
@@ -449,8 +418,9 @@ const DoctorPatientView: React.FC = () => {
                     </th>
                   </tr>
                 </thead>
+                
                 <tbody>
-                  {patients.map((patient, index) => (
+                  {filteredPatients.map((patient, index) => (
                     <tr
                       key={patient.id}
                       onClick={() => openPatient(patient)}
