@@ -25,33 +25,31 @@ services:
       start_period: 40s
     restart: unless-stopped
 
-  # Frontend (development)
-  frontend:
+  # Patient Frontend (Port 3000)
+  patient-frontend:
     build:
       context: .
-      dockerfile: Dockerfile.frontend
+      dockerfile: Dockerfile.patient
     ports:
-      - "5173:5173"
-    volumes:
-      - .:/app
-      - /app/node_modules
+      - "3000:3000"
     environment:
-      - VITE_API_URL=http://localhost:8082
+      - NEXT_PUBLIC_API_URL=http://api:8082
     depends_on:
       - api
     restart: unless-stopped
 
-  # Database (optional - for production)
-  # postgres:
-  #   image: postgres:15-alpine
-  #   environment:
-  #     POSTGRES_DB: bbb_medical
-  #     POSTGRES_USER: bbb_user
-  #     POSTGRES_PASSWORD: bbb_password
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
+  # Doctor Frontend (Port 3001)
+  doctor-frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.doctor
+    ports:
+      - "3001:3001"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://api:8082
+    depends_on:
+      - api
+    restart: unless-stopped
 
 volumes:
   postgres_data:

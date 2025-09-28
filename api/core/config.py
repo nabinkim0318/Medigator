@@ -58,7 +58,9 @@ class Settings(BaseSettings):
         # Parse CORS origins from CSV if provided
         if self.cors_origins_csv:
             csv_origins = [
-                origin.strip() for origin in self.cors_origins_csv.split(",") if origin.strip()
+                origin.strip()
+                for origin in self.cors_origins_csv.split(",")
+                if origin.strip()
             ]
             self.cors_origins.extend(csv_origins)
 

@@ -37,7 +37,9 @@ class RAGStore:
         self.index: faiss.Index = faiss.read_index(str(self.index_path))
 
         # Load meta
-        self.meta: list[dict[str, Any]] = json.loads(self.meta_path.read_text(encoding="utf-8"))
+        self.meta: list[dict[str, Any]] = json.loads(
+            self.meta_path.read_text(encoding="utf-8")
+        )
         if not isinstance(self.meta, list) or not self.meta:
             raise RuntimeError("meta.json is empty or invalid")
 

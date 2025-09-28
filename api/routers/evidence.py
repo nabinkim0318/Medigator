@@ -73,7 +73,9 @@ async def _rag_cards(
         jitter = random.randint(-100, 150)  # nosec S311
         t = (timeout_ms + jitter) / 1000.0
         rets = await asyncio.wait_for(
-            asyncio.get_event_loop().run_in_executor(None, lambda: retrieve(summary, k=k)),
+            asyncio.get_event_loop().run_in_executor(
+                None, lambda: retrieve(summary, k=k)
+            ),
             timeout=t,
         )
 

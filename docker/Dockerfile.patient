@@ -1,0 +1,23 @@
+# Patient Frontend Dockerfile
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Install dependencies
+RUN npm ci
+
+# Copy source code
+COPY . ./
+
+# Build patient-specific frontend
+ENV NEXT_PUBLIC_APP_TYPE=patient
+RUN npm run build
+
+# Expose port 3000
+EXPOSE 3000
+
+# Start patient frontend
+CMD ["npm", "run", "start:patient"]

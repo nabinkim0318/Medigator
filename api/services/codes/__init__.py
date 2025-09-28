@@ -1,7 +1,7 @@
 # api/services/codes/__init__.py
 import logging
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any
 
 from .cpt import suggest_cpt
 from .em import suggest_em

@@ -10,6 +10,7 @@ import sys
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from core.config import settings
 from middleware.log_sanitizer import NoBodyLoggingFilter, RedactLogsMiddleware
@@ -68,7 +69,10 @@ async def limit_request_size(request: Request, call_next):
     if request.method in ["POST", "PUT", "PATCH"]:
         content_length = request.headers.get("content-length")
         if content_length and int(content_length) > 1024 * 1024:  # 1MB limit
-            logger.warning(f"Request too large: {content_length} bytes from {request.client.host}")
+            client_host = request.client.host if request.client else "unknown"
+            logger.warning(
+                f"Request too large: {content_length} bytes from {client_host}"
+            )
             raise HTTPException(status_code=413, detail="Request too large (max 1MB)")
     return await call_next(request)
 
@@ -92,19 +96,23 @@ app.add_middleware(PerformanceMiddleware)
 # Setup global exception handlers
 setup_exception_handlers(app)
 
+# Mount static files for frontend
+try:
+    app.mount("/", StaticFiles(directory="app/dist", html=True), name="frontend")
+except Exception as e:
+    logger.warning(f"Could not mount static files: {e}")
+
 
 @app.get("/")
 async def root():
     """Root endpoint"""
-    logger.info("Root endpoint accessed")
     return {"message": "BBB Medical Report API", "version": "1.0.0", "docs": "/docs"}
 
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    logger.info("Health check requested")
-    return {"status": "healthy"}
+    return {"status": "healthy", "timestamp": "2025-01-27T00:00:00Z"}
 
 
 if __name__ == "__main__":

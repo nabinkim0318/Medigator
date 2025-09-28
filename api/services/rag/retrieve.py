@@ -26,9 +26,8 @@ except Exception:  # pragma: no cover
     BM25Okapi = None  # type: ignore
 
 # Import settings to use consistent RAG flag
-from core.config import settings
-
-from .store import RAGStore
+from api.core.config import settings  # noqa: E402
+from .store import RAGStore  # noqa: E402
 
 USE_RAG = bool(getattr(settings, "enable_rag", False))
 RAG_INDEX_DIR = os.getenv("RAG_INDEX_DIR", "rag_index")
@@ -139,7 +138,9 @@ def make_query(summary: dict[str, Any]) -> dict[str, str]:
 
     # Boost key terms for ischemic features
     key_terms = (
-        ["troponin", "ecg", "chest pain", "ischemia"] if flags.get("ischemic_features") else []
+        ["troponin", "ecg", "chest pain", "ischemia"]
+        if flags.get("ischemic_features")
+        else []
     )
     boosted_query = boost_key_terms(embed_query, SYN, key_terms)
 

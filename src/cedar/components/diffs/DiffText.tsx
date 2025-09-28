@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { animate, motion, useMotionValue } from "motion/react";
-import { diffWords, diffChars, diffLines } from "diff";
+import { diffWords, diffLines } from "diff";
 
 // TypewriterText component for animated text appearance
 const TypewriterText: React.FC<{
@@ -169,9 +169,10 @@ export const DiffText: React.FC<DiffTextProps> = ({
   // Use the appropriate diff function based on mode
   let changes;
   if (diffMode === "chars") {
-    changes = diffChars(oldText, newText);
+    // Fallback to words for chars mode since diffChars is not available
+    changes = diffWords(oldText, newText);
   } else if (diffMode === "lines") {
-    changes = diffLines(oldText, newText, {});
+    changes = diffLines(oldText, newText);
   } else {
     changes = diffWords(oldText, newText);
   }

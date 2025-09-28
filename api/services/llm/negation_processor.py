@@ -1,7 +1,7 @@
 # api/services/llm/negation_processor.py
 import logging
 import re
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 # Get logger
 logger = logging.getLogger(__name__)
@@ -74,7 +74,9 @@ class NegationProcessor:
             for pattern, replacement in self.contextual_patterns
         ]
 
-        logger.info(f"Initialized negation processor with {len(self.compiled_patterns)} patterns")
+        logger.info(
+            f"Initialized negation processor with {len(self.compiled_patterns)} patterns"
+        )
 
     def contains_negation(self, text: str) -> bool:
         """Check if text contains negation patterns"""
@@ -105,7 +107,9 @@ class NegationProcessor:
 
         return negated_items
 
-    def process_negation_in_list(self, items: list[str]) -> tuple[list[str], list[str], list[str]]:
+    def process_negation_in_list(
+        self, items: list[str]
+    ) -> tuple[list[str], list[str], list[str]]:
         """Process negation in a list of items
 
         Returns:
@@ -162,8 +166,8 @@ class NegationProcessor:
         for key, value in intake_data.items():
             if isinstance(value, (list, tuple)):
                 # Process list items for negation
-                positive_items, negative_items, all_negated = self.process_negation_in_list(
-                    list(value)
+                positive_items, negative_items, all_negated = (
+                    self.process_negation_in_list(list(value))
                 )
 
                 processed_data[key] = {
@@ -231,7 +235,11 @@ class NegationProcessor:
         # Map intake questions to ROS systems
         question_mapping = {
             "Q2_Where_is_the_pain": "cardiovascular",
-            "Q6_Associated_symptoms": ["cardiovascular", "respiratory", "constitutional"],
+            "Q6_Associated_symptoms": [
+                "cardiovascular",
+                "respiratory",
+                "constitutional",
+            ],
             "Q4_Worse_with": "cardiovascular",
             "Q5_Better_with": "cardiovascular",
         }
@@ -254,8 +262,12 @@ class NegationProcessor:
 
         # Clean up duplicates and canonicalize clinical terms
         for ros_system in processed_ros.values():
-            ros_system["positive"] = sorted({self._canon(x) for x in ros_system["positive"]})
-            ros_system["negative"] = sorted({self._canon(x) for x in ros_system["negative"]})
+            ros_system["positive"] = sorted(
+                {self._canon(x) for x in ros_system["positive"]}
+            )
+            ros_system["negative"] = sorted(
+                {self._canon(x) for x in ros_system["negative"]}
+            )
 
         logger.info("Applied negation processing to ROS structure")
         return processed_ros

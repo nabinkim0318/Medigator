@@ -8,8 +8,8 @@ import os
 import sqlite3
 from pathlib import Path
 
-from core.config import settings
-from services.rag.retrieve import USE_RAG, init_retriever
+from api.core.config import settings
+from api.services.rag.retrieve import USE_RAG
 
 logger = logging.getLogger(__name__)
 
@@ -122,6 +122,8 @@ def perform_startup_checks():
     logger.info(f"Startup checks completed: {passed}/{total} passed")
 
     if passed < total:
-        logger.warning("Some startup checks failed - application may not function correctly")
+        logger.warning(
+            "Some startup checks failed - application may not function correctly"
+        )
 
     return results

@@ -1,14 +1,14 @@
-import { ContextBadgeRow } from "@/cedar/components/chatInput/ContextBadgeRow";
-import { ChatRenderer } from "@/cedar/components/chatMessages/ChatRenderer";
-import { ShimmerText } from "@/cedar/components/text/ShimmerText";
+import { ContextBadgeRow } from "../chatInput/ContextBadgeRow";
+import { ChatRenderer } from "../chatMessages/ChatRenderer";
+import { ShimmerText } from "../text/ShimmerText";
 import {
   Command,
   CommandGroup,
   CommandItem,
   CommandList,
   CommandSeparator,
-} from "@/cedar/components/ui/command";
-import { KeyboardShortcut } from "@/cedar/components/ui/KeyboardShortcut";
+} from "../ui/command";
+import { KeyboardShortcut } from "../ui/KeyboardShortcut";
 import { EditorContent } from "@tiptap/react";
 import type { ActivationEvent, ActivationMode } from "cedar-os";
 import {

@@ -39,7 +39,9 @@ def _safe_eval(expr: str, env: dict[str, Any]) -> bool:
         # Use safer evaluation with restricted environment
         code = compile(tree, "<pred>", "eval")
         # Create a safe environment with only allowed variables
-        safe_env = {k: v for k, v in env.items() if isinstance(k, str) and k.isidentifier()}
+        safe_env = {
+            k: v for k, v in env.items() if isinstance(k, str) and k.isidentifier()
+        }
         return bool(eval(code, {"__builtins__": {}}, safe_env))  # nosec B307
     except (SyntaxError, ValueError, TypeError):
         return False

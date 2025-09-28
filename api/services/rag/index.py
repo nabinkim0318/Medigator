@@ -11,9 +11,9 @@ from typing import Any
 
 import faiss
 import numpy as np
-from sentence_transformers import (  # pip install sentence-transformers
+from sentence_transformers import (
     SentenceTransformer,
-)
+)  # pip install sentence-transformers
 
 # Get logger
 logger = logging.getLogger(__name__)
@@ -140,7 +140,9 @@ def build_index(
     Returns a small summary dict.
     """
     logger.info(f"Starting RAG index build: docs_dir={docs_dir}, out_dir={out_dir}")
-    logger.info(f"Parameters: chunk_size={chunk_size}, overlap={overlap}, max_docs={max_docs}")
+    logger.info(
+        f"Parameters: chunk_size={chunk_size}, overlap={overlap}, max_docs={max_docs}"
+    )
 
     docs_path = Path(docs_dir)
     out_path = Path(out_dir)
@@ -177,7 +179,9 @@ def build_index(
             year = int(m.group(0))
 
         # Tag inference based on filename
-        tags_json = {"type": "guideline" if "guideline" in f.name.lower() else "document"}
+        tags_json = {
+            "type": "guideline" if "guideline" in f.name.lower() else "document"
+        }
 
         for ci, (txt, start, end) in enumerate(chs):
             cid = f"{f.stem}__{ci:04d}"
@@ -200,7 +204,9 @@ def build_index(
 
     if not all_texts:
         logger.error("No chunks produced. Check your documents or chunking parameters.")
-        raise RuntimeError("No chunks produced. Check your documents or chunking parameters.")
+        raise RuntimeError(
+            "No chunks produced. Check your documents or chunking parameters."
+        )
 
     logger.info(f"Total chunks created: {len(all_chunks)}")
     logger.info("Generating embeddings...")
@@ -253,7 +259,9 @@ def load_index(out_dir: str = "rag_index") -> tuple[faiss.Index, list[dict[str, 
     meta_path = out_path / "meta.json"
 
     if not index_path.exists() or not meta_path.exists():
-        raise FileNotFoundError(f"Missing index/meta in {out_path}. Run build_index() first.")
+        raise FileNotFoundError(
+            f"Missing index/meta in {out_path}. Run build_index() first."
+        )
 
     index = faiss.read_index(str(index_path))
     meta = json.loads(meta_path.read_text(encoding="utf-8"))

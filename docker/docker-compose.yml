@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  # Backend API with Frontend
+  api:
+    build: .
+    ports:
+      - "8082:8082"
+    environment:
+      - DB_URL=sqlite:///./api/copilot.db
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - DEMO_ACCESS_CODE=${DEMO_ACCESS_CODE:-demo123}
+      - DEMO_MODE=true
+      - HIPAA_MODE=false
+      - enable_rag=true
+    volumes:
+      - ./data:/app/data:ro
+      - ./api/reports:/app/api/reports
+      - ./logs:/app/logs
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    restart: unless-stopped
+    depends_on:
+      - frontend
+
+  # Frontend (production build)
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile.frontend
+    # No ports needed - this is just for building
+    # The built files will be copied to the main container
+
+  # Database (optional - for production)
+  # postgres:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_DB: bbb_medical
+  #     POSTGRES_USER: bbb_user
+  #     POSTGRES_PASSWORD: bbb_password
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+
+volumes:
+  postgres_data:

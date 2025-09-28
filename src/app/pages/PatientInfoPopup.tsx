@@ -69,7 +69,7 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
     { code: "R07.9", description: "Chest pain, unspecified" },
     { code: "93000", description: "Electrocardiogram, routine ECG" },
   ];
-  const suspectedConditions = ['Myocardial Infarction'];
+  const suspectedConditions = ["Myocardial Infarction"];
   const recommendedResearch = [
     {
       title: "MI Biomarkers",
@@ -78,7 +78,8 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
       author: "Author Name",
       avatar:
         "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=40&h=40&fit=crop&crop=face",
-      summary: "High-sensitivity troponin detected myocardial infarction 3–6 hours earlier than standard methods.\nEarly detection improved patient outcomes by reducing time to treatment initiation."
+      summary:
+        "High-sensitivity troponin detected myocardial infarction 3–6 hours earlier than standard methods.\nEarly detection improved patient outcomes by reducing time to treatment initiation.",
     },
     {
       title: "PCI Outcomes in STEMI Patients",
@@ -87,7 +88,8 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
       author: "Carla Chen",
       avatar:
         "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face",
-      summary: "ECG within 10 minutes of chest pain onset remains the gold standard for MI diagnosis.\nCombining ECG with biomarker testing reduces false negatives in early-stage infarction."
+      summary:
+        "ECG within 10 minutes of chest pain onset remains the gold standard for MI diagnosis.\nCombining ECG with biomarker testing reduces false negatives in early-stage infarction.",
     },
   ];
   const similarPatients = [
@@ -104,9 +106,7 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
       status: "Incorrect Diag",
     },
   ];
-  const questions = [
-    "How long does each episode of chest pain last?",
-  ];
+  const questions = ["How long does each episode of chest pain last?"];
 
   const InfoSection: React.FC<{ title: string; children: React.ReactNode }> = ({
     title,
@@ -594,9 +594,22 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
             </div>
 
             {/* ICD Codes and Suspected Conditions */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 2fr",
+                gap: "24px",
+              }}
+            >
               <div>
-                <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#f59e0b', margin: '0 0 16px 0' }}>
+                <h4
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    color: "#f59e0b",
+                    margin: "0 0 16px 0",
+                  }}
+                >
                   Suspected Condition(s)
                 </h4>
                 <div
@@ -623,16 +636,34 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                 </div>
               </div>
               <div>
-                <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#f59e0b', margin: '0 0 16px 0' }}>
+                <h4
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    color: "#f59e0b",
+                    margin: "0 0 16px 0",
+                  }}
+                >
                   Likely ICD-10 and CPT Codes
                 </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px",
+                  }}
+                >
                   {icdCodes.map((code, index) => (
                     <div
                       key={index}
-                      style={{ backgroundColor: '#f97316', color: 'white', padding: '12px 16px', borderRadius: '8px' }}
+                      style={{
+                        backgroundColor: "#f97316",
+                        color: "white",
+                        padding: "12px 16px",
+                        borderRadius: "8px",
+                      }}
                     >
-                      <div style={{ fontWeight: '600', fontSize: '14px' }}>
+                      <div style={{ fontWeight: "600", fontSize: "14px" }}>
                         {code.code}: {code.description}
                       </div>
                     </div>
@@ -784,7 +815,8 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                           fontSize: "12px",
                           color: "#1f2937",
                           margin: "8px 0 8px 0",
-                        }}>
+                        }}
+                      >
                         {item.summary}
                       </p>
                     </div>
@@ -813,8 +845,11 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                     <div style={{ display: "flex", gap: "8px" }}>
                       <textarea
                         className="w-full min-h-[160px] rounded-2xl border border-gray-200 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-200 resize-y"
-                        value={selectedQuestion === question ? selectedQuestion : ""}
-                        onChange={(e) => setSelectedQuestion(e.target.value)} />
+                        value={
+                          selectedQuestion === question ? selectedQuestion : ""
+                        }
+                        onChange={(e) => setSelectedQuestion(e.target.value)}
+                      />
                     </div>
                   </div>
                 ))}
