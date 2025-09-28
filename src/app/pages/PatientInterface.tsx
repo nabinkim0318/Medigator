@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 // --- Types
 type Choice = {
@@ -193,6 +194,9 @@ const SingleSelectQuestion: React.FC<{
 const TOTAL_STEPS = 9;
 
 export default function PatientChestPainQuestionnairePage() {
+  const router = useRouter();
+  const search = new URLSearchParams(window.location.search);
+  const token = search.get("token") ?? "";
   // Answers
   const [q1, setQ1] = useState<SingleAnswer>({}); // When did the pain start? (single)
   const [q2, setQ2] = useState<MultiAnswer>({ selected: [] });
@@ -352,8 +356,6 @@ export default function PatientChestPainQuestionnairePage() {
       q9,
     };
     // POST appointment payload to backend under the user's token
-    const search = new URLSearchParams(window.location.search);
-    const token = search.get("token") ?? "";
     const API_BASE = (process.env.NEXT_PUBLIC_API_URL as string) || "http://localhost:8082";
 
     const body = { token, appointmentData: payload };
@@ -373,7 +375,8 @@ export default function PatientChestPainQuestionnairePage() {
       .then((data) => {
         // show user the key so they can reference or copy it
         // eslint-disable-next-line no-alert
-        alert(`Saved appointment data as ${data.key}`);
+        router.push(`/PatientThankYou?token=${encodeURIComponent(token)}`)
+        console.log(`Saved appointment data as ${data.key}`);
       })
       .catch((err) => {
         // eslint-disable-next-line no-alert

@@ -165,7 +165,7 @@ export default function OnboardingQuestionnaire() {
         })
         .then(() => {
           // navigate to patient interface with token
-          router.push(`/PatientInterface?token=${encodeURIComponent(token ?? "")}`);
+          router.push(`/OnboardingThankYou?token=${encodeURIComponent(token ?? "")}`);
         })
         .catch((err) => {
           // basic error feedback

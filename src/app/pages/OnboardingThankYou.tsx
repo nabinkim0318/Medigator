@@ -1,16 +1,20 @@
 "use client";
 
 import React from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function OnboardingThankYou({
   onContinue,
 }: {
   onContinue?: () => void;
 }) {
+  const router = useRouter();
+  const sp = useSearchParams();
+  const token = sp?.get("token") ?? "";
   const handleContinue = () => {
     if (onContinue) return onContinue();
     // Fallback: replace with your router navigation (e.g., router.push("/symptoms"))
-    alert("Continue to symptom check…");
+    router.push(`/PatientInterface?token=${encodeURIComponent(token)}`);
   };
 
   return (

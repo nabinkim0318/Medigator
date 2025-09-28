@@ -8,9 +8,10 @@ import SignIn from "./pages/SignIn";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import DoctorPatientView from "./pages/DoctorPatientView";
 import OnboardingThankYou from "./pages/OnboardingThankYou";
+import PatientThankYou from "./pages/PatientThankYou";
 
 export default function Home() {
   return (
-    <DoctorDashboard />
+    <SignIn />
   );
 }
