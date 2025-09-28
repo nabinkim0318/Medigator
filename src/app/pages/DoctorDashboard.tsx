@@ -139,53 +139,6 @@ const AvatarBadge: React.FC<{ initials: string; size?: number }> = ({ initials, 
   </div>
 );
 
-// Simple SVG donut chart
-const Donut: React.FC<{
-  segments: { pct: number; label: string; color: string }[];
-  size?: number;
-  thickness?: number;
-}> = ({ segments, size = 220, thickness = 38 }) => {
-  const R = size / 2;
-  const r = R - thickness;
-  let cum = 0;
-  const c = 2 * Math.PI * r;
-
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-      <g transform={`translate(${R}, ${R}) rotate(-90)`}>
-        {segments.map((s, i) => {
-          const dash = (s.pct / 100) * c;
-          const gap = c - dash;
-          const strokeDasharray = `${dash} ${gap}`;
-          const rotate = (cum / 100) * 360;
-          cum += s.pct;
-          return (
-            <circle
-              key={i}
-              r={r}
-              cx={0}
-              cy={0}
-              fill="transparent"
-              stroke={s.color}
-              strokeWidth={thickness}
-              strokeDasharray={strokeDasharray}
-              transform={`rotate(${rotate})`}
-              strokeLinecap="butt"
-            />
-          );
-        })}
-      </g>
-      <circle cx={R} cy={R} r={r - 10} fill="white" />
-      <text x={R} y={R - 4} textAnchor="middle" fontWeight={800} fontSize={22} fill="#0f172a">
-        55%
-      </text>
-      <text x={R} y={R + 16} textAnchor="middle" fontSize={12} fill="#64748b">
-        Hypertension
-      </text>
-    </svg>
-  );
-};
-
 const DashboardPage: React.FC = () => {
   const [apptTab] = useState<"new" | "completed">("new");
   const morbiditySegments = useMemo(
@@ -573,82 +526,6 @@ const DashboardPage: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
-              </div>
-            </div>
-
-            {/* Patient Morbidity */}
-            <div
-              style={{
-                background: "white",
-                borderRadius: 14,
-                boxShadow: "0 1px 3px rgba(0,0,0,.08)",
-                padding: 14,
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 10,
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  gridColumn: "1 / -1",
-                }}
-              >
-                <h3 style={{ margin: 0, color: "#111827", fontSize: 16, fontWeight: 800 }}>
-                  Patient Morbidity
-                </h3>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <button
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      display: "flex",
-                      alignItems: "center",
-                      gap: 6,
-                      color: "#64748b",
-                      fontWeight: 700,
-                      cursor: "pointer",
-                    }}
-                  >
-                    Weekly <ChevronDown size={16} />
-                  </button>
-                  <button
-                    style={{
-                      border: "none",
-                      background: "transparent",
-                      color: "#ea580c",
-                      cursor: "pointer",
-                    }}
-                    title="Expand"
-                  >
-                    <Maximize2 size={16} />
-                  </button>
-                </div>
-              </div>
-
-              <div style={{ display: "flex", justifyContent: "center" }}>
-                <Donut segments={morbiditySegments} />
-              </div>
-
-              <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
-                {morbiditySegments.map((s, i) => (
-                  <div key={i} style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                    <span
-                      style={{
-                        width: 10,
-                        height: 10,
-                        background: s.color,
-                        borderRadius: 999,
-                        display: "inline-block",
-                      }}
-                    />
-                    <span style={{ color: "#334155", fontWeight: 700, fontSize: 13 }}>{s.label}</span>
-                    <span style={{ marginLeft: "auto", color: "#64748b", fontWeight: 700 }}>{s.pct}%</span>
-                  </div>
-                ))}
               </div>
             </div>
 
