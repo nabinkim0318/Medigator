@@ -4,7 +4,6 @@ API Mock Data Test
 Tests LLM endpoints with mock patient data via HTTP API
 """
 
-import asyncio
 import json
 import sys
 from pathlib import Path
@@ -12,7 +11,6 @@ from pathlib import Path
 # Add project root to Python path
 sys.path.insert(0, str(Path(__file__).parent))
 
-import httpx
 from fastapi.testclient import TestClient
 
 from api.main import app
@@ -47,7 +45,9 @@ def test_summary_endpoint():
             result = response.json()
             print("✅ API Response:")
             print(f"  HPI: {result.get('hpi', 'N/A')[:100]}...")
-            print(f"  Ischemic Features: {result.get('flags', {}).get('ischemic_features', 'N/A')}")
+            print(
+                f"  Ischemic Features: {result.get('flags', {}).get('ischemic_features', 'N/A')}"
+            )
             return True
         print(f"❌ API Error: {response.text}")
         return False
@@ -68,7 +68,11 @@ def test_evidence_endpoint():
         },
         "pmh": [],
         "meds": [],
-        "flags": {"ischemic_features": True, "dm_followup": False, "labs_a1c_needed": False},
+        "flags": {
+            "ischemic_features": True,
+            "dm_followup": False,
+            "labs_a1c_needed": False,
+        },
     }
 
     with TestClient(app) as client:

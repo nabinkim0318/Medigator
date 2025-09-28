@@ -26,7 +26,10 @@ const NAV_ITEMS: { icon: string; label: NavItem }[] = [
   { icon: "⚙️", label: "Settings" },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ active = "Dashboard", onSelect }) => {
+const Sidebar: React.FC<SidebarProps> = ({
+  active = "Dashboard",
+  onSelect,
+}) => {
   return (
     <aside
       style={{
@@ -55,9 +58,15 @@ const Sidebar: React.FC<SidebarProps> = ({ active = "Dashboard", onSelect }) => 
               fontSize: 18,
             }}
           >
-            <img src="/logo.png" alt="Medigator Logo" style={{ width: 24, height: 24 }} />
+            <img
+              src="/logo.png"
+              alt="Medigator Logo"
+              style={{ width: 24, height: 24 }}
+            />
           </div>
-          <div style={{ color: "#ef6c00", fontWeight: 800, fontSize: 18 }}>Medigator</div>
+          <div style={{ color: "#ef6c00", fontWeight: 800, fontSize: 18 }}>
+            Medigator
+          </div>
         </div>
       </div>
 
@@ -75,7 +84,9 @@ const Sidebar: React.FC<SidebarProps> = ({ active = "Dashboard", onSelect }) => 
               padding: "12px 16px",
               color: isActive ? "#ea580c" : "#475569",
               background: isActive ? "#fff7ed" : "transparent",
-              borderRight: isActive ? "3px solid #ea580c" : "3px solid transparent",
+              borderRight: isActive
+                ? "3px solid #ea580c"
+                : "3px solid transparent",
               cursor: "pointer",
               border: "none",
               textAlign: "left",

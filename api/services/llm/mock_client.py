@@ -46,10 +46,16 @@ class MockOpenAIClient:
                     "finish_reason": "stop",
                 }
             ],
-            "usage": {"prompt_tokens": 100, "completion_tokens": 50, "total_tokens": 150},
+            "usage": {
+                "prompt_tokens": 100,
+                "completion_tokens": 50,
+                "total_tokens": 150,
+            },
         }
 
-    def _generate_mock_response(self, messages: list[dict], response_format: dict) -> str:
+    def _generate_mock_response(
+        self, messages: list[dict], response_format: dict
+    ) -> str:
         """Generate mock response based on input messages"""
         if not messages:
             return "Mock response"
@@ -109,7 +115,10 @@ class MockOpenAIClient:
                         "negative": ["palpitations"],
                     },
                     "respiratory": {"positive": ["dyspnea"], "negative": ["cough"]},
-                    "constitutional": {"positive": ["diaphoresis"], "negative": ["fever"]},
+                    "constitutional": {
+                        "positive": ["diaphoresis"],
+                        "negative": ["fever"],
+                    },
                 },
                 "pmh": ["hypertension", "hyperlipidemia"],
                 "meds": ["lisinopril", "atorvastatin"],
@@ -127,13 +136,23 @@ class MockOpenAIClient:
             {
                 "hpi": "Patient with type 2 diabetes mellitus for routine follow-up. Last HbA1c 6 months ago was 7.2%. No acute symptoms.",
                 "ros": {
-                    "cardiovascular": {"positive": [], "negative": ["chest pain", "palpitations"]},
+                    "cardiovascular": {
+                        "positive": [],
+                        "negative": ["chest pain", "palpitations"],
+                    },
                     "respiratory": {"positive": [], "negative": ["dyspnea", "cough"]},
-                    "constitutional": {"positive": [], "negative": ["fever", "weight loss"]},
+                    "constitutional": {
+                        "positive": [],
+                        "negative": ["fever", "weight loss"],
+                    },
                 },
                 "pmh": ["type 2 diabetes mellitus", "hypertension"],
                 "meds": ["metformin", "lisinopril"],
-                "flags": {"ischemic_features": False, "dm_followup": True, "labs_a1c_needed": True},
+                "flags": {
+                    "ischemic_features": False,
+                    "dm_followup": True,
+                    "labs_a1c_needed": True,
+                },
             }
         )
 
@@ -143,9 +162,15 @@ class MockOpenAIClient:
             {
                 "hpi": "Patient presents for evaluation. No acute symptoms reported.",
                 "ros": {
-                    "cardiovascular": {"positive": [], "negative": ["chest pain", "palpitations"]},
+                    "cardiovascular": {
+                        "positive": [],
+                        "negative": ["chest pain", "palpitations"],
+                    },
                     "respiratory": {"positive": [], "negative": ["dyspnea", "cough"]},
-                    "constitutional": {"positive": [], "negative": ["fever", "weight loss"]},
+                    "constitutional": {
+                        "positive": [],
+                        "negative": ["fever", "weight loss"],
+                    },
                 },
                 "pmh": [],
                 "meds": [],

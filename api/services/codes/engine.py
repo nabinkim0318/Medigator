@@ -74,11 +74,19 @@ def load_cpt_rules(path: str) -> list[CPTRule]:
                     predicate="",  # Not in CSV
                     code=r["cpt"].strip(),
                     label=r["cpt_label"].strip(),
-                    pos=[p.strip() for p in (r.get("pos") or "").split("|") if p.strip()],
-                    bundling=[b.strip() for b in (r.get("bundling") or "").split("|") if b.strip()],
+                    pos=[
+                        p.strip() for p in (r.get("pos") or "").split("|") if p.strip()
+                    ],
+                    bundling=[
+                        b.strip()
+                        for b in (r.get("bundling") or "").split("|")
+                        if b.strip()
+                    ],
                     payer_note=(r.get("payer_note") or "").strip(),
                     rationale_key=r["rationale"].strip(),
-                    tags=[t.strip() for t in (r.get("tags") or "").split("|") if t.strip()],
+                    tags=[
+                        t.strip() for t in (r.get("tags") or "").split("|") if t.strip()
+                    ],
                 ),
             )
     return rules

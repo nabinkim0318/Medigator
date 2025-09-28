@@ -127,7 +127,11 @@ async def test_different_inputs():
                 "Q3_Pain_character": ["Pressure or squeezing", "Tightness / heaviness"],
                 "Q4_Worse_with": ["Physical activity", "Stress or anxiety"],
                 "Q5_Better_with": ["Rest", "Stopping activity"],
-                "Q6_Associated_symptoms": ["Shortness of breath", "Sweating", "Nausea or vomiting"],
+                "Q6_Associated_symptoms": [
+                    "Shortness of breath",
+                    "Sweating",
+                    "Nausea or vomiting",
+                ],
                 "Q7_Duration": "5-30 minutes",
                 "Q8_Frequency": "A few times a week",
                 "Q9_Severity_0_10": "6-7 (severe)",

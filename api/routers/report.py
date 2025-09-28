@@ -101,7 +101,10 @@ async def generate_report(request: ReportRequest):
         # Use LLM to generate report
         report_content = await llm_service.generate_report(
             patient_data=request.patient.dict(),
-            analysis_data={"symptoms": request.symptoms, "provider_notes": request.provider_notes},
+            analysis_data={
+                "symptoms": request.symptoms,
+                "provider_notes": request.provider_notes,
+            },
         )
 
         # Symptom analysis

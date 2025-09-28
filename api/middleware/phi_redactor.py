@@ -8,7 +8,9 @@ _PATTERNS = [
     re.compile(r"\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b"),  # Phone number
     re.compile(r"\b\d{4}-\d{2}-\d{2}\b"),  # YYYY-MM-DD
     # re.compile(r"\b(?:19|20)\d{2}\b"),                  # Allow standalone years (for Evidence year display)
-    re.compile(r"\b[A-Z0-9]{6,10}\b"),  # ID candidates (consider narrowing if too broad)
+    re.compile(
+        r"\b[A-Z0-9]{6,10}\b"
+    ),  # ID candidates (consider narrowing if too broad)
     re.compile(r"\b[0-9]{5}(?:-[0-9]{4})?\b"),  # ZIP
 ]
 

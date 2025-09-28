@@ -46,7 +46,9 @@ class RulesService:
 
             results = []
             for row in cursor.fetchall():
-                results.append({"symptom": row[0], "icd_code": row[1], "icd_description": row[2]})
+                results.append(
+                    {"symptom": row[0], "icd_code": row[1], "icd_description": row[2]}
+                )
 
             return results
 
@@ -192,7 +194,9 @@ class RulesService:
         applied_rules = []
 
         for rule in rules:
-            if await self._evaluate_rule_condition(rule, patient_data, symptoms, vital_signs):
+            if await self._evaluate_rule_condition(
+                rule, patient_data, symptoms, vital_signs
+            ):
                 applied_rules.append(
                     {
                         "rule_id": rule["id"],

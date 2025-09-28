@@ -57,7 +57,6 @@ const PageShell: React.FC<{
   return (
     <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
       <div className="mx-auto w-full max-w-3xl text-center">
-
         {/* Top-left greeting */}
         <div className="absolute top-4 left-4 text-gray-700 font-medium">
           {name ? `Welcome, ${name}` : "Hi"}
@@ -73,7 +72,7 @@ const PageShell: React.FC<{
 
         {/* Logo / Brand */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="h-6 w-6" >
+          <div className="h-6 w-6">
             <img src="/logo.png" alt="Medigator Logo" />
           </div>
           <div className="font-semibold text-orange-600">Medigator</div>
@@ -101,8 +100,8 @@ const PageShell: React.FC<{
                   isActive
                     ? "bg-orange-500"
                     : isDone
-                    ? "bg-green-500"
-                    : "bg-gray-300"
+                      ? "bg-green-500"
+                      : "bg-gray-300"
                 }`}
                 aria-label={`Go to step ${dotStep}`}
                 title={`Step ${dotStep}`}
@@ -123,7 +122,9 @@ const PageShell: React.FC<{
           {onNext && (
             <button
               className={`px-6 py-3 rounded-xl text-white ${
-                nextDisabled ? "bg-orange-300 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"
+                nextDisabled
+                  ? "bg-orange-300 cursor-not-allowed"
+                  : "bg-orange-500 hover:bg-orange-600"
               }`}
               onClick={onNext}
               disabled={nextDisabled}
@@ -133,7 +134,9 @@ const PageShell: React.FC<{
           )}
         </div>
 
-        <div className="text-xs text-gray-400 mt-8">© 2025 Medigator. All rights reserved.</div>
+        <div className="text-xs text-gray-400 mt-8">
+          © 2025 Medigator. All rights reserved.
+        </div>
       </div>
     </div>
   );
@@ -156,7 +159,9 @@ const SelectBox: React.FC<{
       <div className="flex items-center gap-3">
         <span
           className={`inline-flex h-5 w-5 items-center justify-center rounded-full border ${
-            selected ? "border-green-500 bg-green-500 text-white" : "border-gray-300 bg-white text-transparent"
+            selected
+              ? "border-green-500 bg-green-500 text-white"
+              : "border-gray-300 bg-white text-transparent"
           }`}
         >
           {radio ? "●" : "✓"}
@@ -186,15 +191,21 @@ const MultiSelectQuestion: React.FC<{
         next = [c.id];
       } else {
         // If clicking a non-exclusive option and exclusive is selected, remove exclusive
-        next = value.selected.filter((id) => !choices.find((x) => x.id === id)?.isExclusive);
+        next = value.selected.filter(
+          (id) => !choices.find((x) => x.id === id)?.isExclusive,
+        );
         next = [...next, c.id];
       }
     }
 
     // If "Other" was de-selected, remove text
     const otherId = choices.find((x) => x.isOther)?.id;
-    const otherDeselected = otherId && !next.includes(otherId) && value.selected.includes(otherId);
-    onChange({ selected: next, otherText: otherDeselected ? "" : value.otherText });
+    const otherDeselected =
+      otherId && !next.includes(otherId) && value.selected.includes(otherId);
+    onChange({
+      selected: next,
+      otherText: otherDeselected ? "" : value.otherText,
+    });
   };
 
   const other = choices.find((c) => c.isOther);
@@ -234,7 +245,8 @@ const SingleSelectQuestion: React.FC<{
     // toggle off if clicking same one
     const selected = value.selected === c.id ? undefined : c.id;
     const otherId = choices.find((x) => x.isOther)?.id;
-    const otherDeselected = otherId && selected !== otherId && value.selected === otherId;
+    const otherDeselected =
+      otherId && selected !== otherId && value.selected === otherId;
     onChange({ selected, otherText: otherDeselected ? "" : value.otherText });
   };
 
@@ -312,7 +324,10 @@ export default function PatientChestPainQuestionnairePage() {
   ];
 
   const Q4_CHOICES: Choice[] = [
-    { id: "activity", label: "Physical activity (walking, climbing stairs, exercise)" },
+    {
+      id: "activity",
+      label: "Physical activity (walking, climbing stairs, exercise)",
+    },
     { id: "breathing", label: "Breathing deeply or changing position" },
     { id: "eating", label: "Eating or drinking" },
     { id: "stress", label: "Stress or anxiety" },
@@ -323,7 +338,10 @@ export default function PatientChestPainQuestionnairePage() {
   const Q5_CHOICES: Choice[] = [
     { id: "rest", label: "Rest" },
     { id: "stop", label: "Stopping activity" },
-    { id: "medicine", label: "Medicine (nitroglycerin, antacids, painkillers)" },
+    {
+      id: "medicine",
+      label: "Medicine (nitroglycerin, antacids, painkillers)",
+    },
     { id: "nothing", label: "Nothing helps" },
     { id: "not-sure", label: "Not sure" },
     { id: "other", label: "Other / describe", isOther: true },
@@ -474,7 +492,11 @@ export default function PatientChestPainQuestionnairePage() {
             nextDisabled={nextDisabled}
             onStepSelect={(s) => setStep(s)} // enable dot navigation
           >
-            <SingleSelectQuestion choices={Q1_CHOICES} value={q1} onChange={setQ1} />
+            <SingleSelectQuestion
+              choices={Q1_CHOICES}
+              value={q1}
+              onChange={setQ1}
+            />
           </PageShell>
         );
 
@@ -490,7 +512,11 @@ export default function PatientChestPainQuestionnairePage() {
             nextDisabled={nextDisabled}
             onStepSelect={(s) => setStep(s)}
           >
-            <MultiSelectQuestion choices={Q2_CHOICES} value={q2} onChange={setQ2} />
+            <MultiSelectQuestion
+              choices={Q2_CHOICES}
+              value={q2}
+              onChange={setQ2}
+            />
           </PageShell>
         );
 
@@ -506,7 +532,11 @@ export default function PatientChestPainQuestionnairePage() {
             nextDisabled={nextDisabled}
             onStepSelect={(s) => setStep(s)}
           >
-            <MultiSelectQuestion choices={Q3_CHOICES} value={q3} onChange={setQ3} />
+            <MultiSelectQuestion
+              choices={Q3_CHOICES}
+              value={q3}
+              onChange={setQ3}
+            />
           </PageShell>
         );
 
@@ -522,7 +552,11 @@ export default function PatientChestPainQuestionnairePage() {
             nextDisabled={nextDisabled}
             onStepSelect={(s) => setStep(s)}
           >
-            <MultiSelectQuestion choices={Q4_CHOICES} value={q4} onChange={setQ4} />
+            <MultiSelectQuestion
+              choices={Q4_CHOICES}
+              value={q4}
+              onChange={setQ4}
+            />
           </PageShell>
         );
 
@@ -538,7 +572,11 @@ export default function PatientChestPainQuestionnairePage() {
             nextDisabled={nextDisabled}
             onStepSelect={(s) => setStep(s)}
           >
-            <MultiSelectQuestion choices={Q5_CHOICES} value={q5} onChange={setQ5} />
+            <MultiSelectQuestion
+              choices={Q5_CHOICES}
+              value={q5}
+              onChange={setQ5}
+            />
           </PageShell>
         );
 
@@ -555,7 +593,11 @@ export default function PatientChestPainQuestionnairePage() {
             onStepSelect={(s) => setStep(s)}
           >
             {/* Scrollable box like your mock (rows scroll, page doesn't) */}
-            <MultiSelectQuestion choices={Q6_CHOICES} value={q6} onChange={setQ6} />
+            <MultiSelectQuestion
+              choices={Q6_CHOICES}
+              value={q6}
+              onChange={setQ6}
+            />
           </PageShell>
         );
 
@@ -571,7 +613,11 @@ export default function PatientChestPainQuestionnairePage() {
             nextDisabled={nextDisabled}
             onStepSelect={(s) => setStep(s)}
           >
-            <SingleSelectQuestion choices={Q7_CHOICES} value={q7} onChange={setQ7} />
+            <SingleSelectQuestion
+              choices={Q7_CHOICES}
+              value={q7}
+              onChange={setQ7}
+            />
           </PageShell>
         );
 
@@ -587,7 +633,11 @@ export default function PatientChestPainQuestionnairePage() {
             nextDisabled={nextDisabled}
             onStepSelect={(s) => setStep(s)}
           >
-            <SingleSelectQuestion choices={Q8_CHOICES} value={q8} onChange={setQ8} />
+            <SingleSelectQuestion
+              choices={Q8_CHOICES}
+              value={q8}
+              onChange={setQ8}
+            />
           </PageShell>
         );
 
@@ -603,7 +653,11 @@ export default function PatientChestPainQuestionnairePage() {
             nextDisabled={nextDisabled}
             onStepSelect={(s) => setStep(s)}
           >
-            <SingleSelectQuestion choices={Q9_CHOICES} value={q9} onChange={setQ9} />
+            <SingleSelectQuestion
+              choices={Q9_CHOICES}
+              value={q9}
+              onChange={setQ9}
+            />
           </PageShell>
         );
 

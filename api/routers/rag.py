@@ -54,6 +54,8 @@ class IndexResponse(BaseModel):
 class RAGStatusResponse(BaseModel):
     """RAG system status response"""
 
+    model_config = {"protected_namespaces": ()}
+
     enabled: bool
     initialized: bool
     index_path: str | None = None
@@ -88,7 +90,9 @@ async def get_rag_status():
 
     except Exception as e:
         logger.error(f"RAG status check failed: {e!s}")
-        raise RAGServiceException(message="Failed to get RAG status", details={"error": str(e)})
+        raise RAGServiceException(
+            message="Failed to get RAG status", details={"error": str(e)}
+        )
 
 
 @router.post("/search", response_model=SearchResponse)
@@ -111,7 +115,9 @@ async def search_documents(request: SearchRequest):
             init_retriever()
         except Exception as e:
             logger.error(f"RAG initialization failed: {e!s}")
-            raise RAGServiceException(message="RAG system not available", details={"error": str(e)})
+            raise RAGServiceException(
+                message="RAG system not available", details={"error": str(e)}
+            )
 
         # Create summary-like structure for query
         summary = {
@@ -179,7 +185,9 @@ async def build_rag_index(request: IndexRequest):
 
         logger.info(f"RAG index built successfully: {stats}")
 
-        return IndexResponse(success=True, message="Index built successfully", stats=stats)
+        return IndexResponse(
+            success=True, message="Index built successfully", stats=stats
+        )
 
     except Exception as e:
         logger.error(f"RAG index build failed: {e!s}")
@@ -250,4 +258,6 @@ async def health_check():
 
     except Exception as e:
         logger.error(f"RAG health check failed: {e!s}")
-        raise RAGServiceException(message="Health check failed", details={"error": str(e)})
+        raise RAGServiceException(
+            message="Health check failed", details={"error": str(e)}
+        )

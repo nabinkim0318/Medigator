@@ -145,4 +145,6 @@ def log_phi_access(operation: str, patient_id: str | None = None):
     """Log PHI access events (HIPAA compliance)"""
     if settings.HIPAA_MODE:
         security_logger = logging.getLogger("security")
-        security_logger.warning(f"PHI Access: {operation} - Patient: {patient_id or 'Unknown'}")
+        security_logger.warning(
+            f"PHI Access: {operation} - Patient: {patient_id or 'Unknown'}"
+        )
