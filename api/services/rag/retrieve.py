@@ -26,7 +26,7 @@ except Exception:  # pragma: no cover
     BM25Okapi = None  # type: ignore
 
 # Import settings to use consistent RAG flag
-from api.core.config import settings  # noqa: E402
+from core.config import settings  # noqa: E402
 from .store import RAGStore  # noqa: E402
 
 USE_RAG = bool(getattr(settings, "enable_rag", False))

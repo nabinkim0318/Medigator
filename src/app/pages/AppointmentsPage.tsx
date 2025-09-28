@@ -5,30 +5,6 @@ import { Search, Calendar, Plus, Maximize2, X } from "lucide-react";
 
 type Gender = "Male" | "Female";
 
-interface PatientRow {
-  id: string;
-  time: string;
-  date: string; // DD/MM/YYYY
-  patient: {
-    name: string;
-    age: number;
-    gender: Gender;
-    initials: string;
-    avatar?: string;
-  };
-  doctor: string;
-}
-
-const data: PatientRow[] = [
-  { id: "a1", time: "9:30 AM", date: "05/12/2022", patient: { name: "Elizabeth Polson", age: 32, gender: "Female", initials: "EP" }, doctor: "Dr. John" },
-  { id: "a2", time: "9:30 AM", date: "05/12/2022", patient: { name: "John David", age: 28, gender: "Male", initials: "JD" }, doctor: "Dr. Joel" },
-  { id: "a3", time: "10:30 AM", date: "05/12/2022", patient: { name: "Krishtav Rajan", age: 24, gender: "Male", initials: "KR" }, doctor: "Dr. Joel" },
-  { id: "a4", time: "11:00 AM", date: "05/12/2022", patient: { name: "Sumanth Tinson", age: 26, gender: "Male", initials: "KR" }, doctor: "Dr. John" },
-  { id: "a5", time: "11:30 AM", date: "05/12/2022", patient: { name: "EG Subramani", age: 77, gender: "Male", initials: "KR" }, doctor: "Dr. John" },
-  { id: "a6", time: "11:00 AM", date: "05/12/2022", patient: { name: "Ranjan Maari", age: 77, gender: "Male", initials: "KR" }, doctor: "Dr. John" },
-  { id: "a7", time: "11:00 AM", date: "05/12/2022", patient: { name: "Phillipie Gopal", age: 55, gender: "Male", initials: "KR" }, doctor: "Dr. John" },
-];
-
 const AvatarBadge: React.FC<{ initials: string; size?: number }> = ({
   initials,
   size = 32,
@@ -144,8 +120,15 @@ const AppointmentsPage: React.FC = () => {
 });
 
   return (
-    // Let height come from the parent shell; contain overflow inside.
-    <div style={{ height: "100%", minHeight: 0, display: "flex", flexDirection: "column", background: "#f8fafc" }}>
+    <div
+      style={{
+        height: "100%",
+        minHeight: 0,
+        display: "flex",
+        flexDirection: "column",
+        background: "#f8fafc",
+      }}
+    >
       {/* Top bar */}
       <div
         style={{
@@ -154,23 +137,8 @@ const AppointmentsPage: React.FC = () => {
           borderBottom: "1px solid #f1f5f9",
         }}
       >
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          <h1
-            style={{
-              margin: 0,
-              fontSize: 28,
-              fontWeight: 700,
-              color: "#374151",
-            }}
-          >
-            Appointments
-          </h1>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, color: "#374151" }}>Appointments</h1>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div title="Notifications" style={{ width: 36, height: 36, borderRadius: 18, background: "white", boxShadow: "0 1px 2px rgba(0,0,0,.05)", position: "relative" }}>
               <div style={{ width: 8, height: 8, borderRadius: 8, background: "#ef4444", position: "absolute", right: 8, top: 8 }} />
@@ -182,9 +150,7 @@ const AppointmentsPage: React.FC = () => {
                 alt="Doctor"
               />
               <div>
-                <div style={{ fontWeight: 700, color: "#334155" }}>
-                  Jonitha Cathrine
-                </div>
+                <div style={{ fontWeight: 700, color: "#334155" }}>Jonitha Cathrine</div>
                 <div style={{ fontSize: 12, color: "#94a3b8" }}>Doctor</div>
               </div>
             </div>
@@ -198,31 +164,13 @@ const AppointmentsPage: React.FC = () => {
           <div style={{ borderBottom: "1px solid #e5e7eb", padding: "0 18px" }}>
             <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, flexWrap: "wrap", minWidth: 0 }}>
               <div style={{ minWidth: 0 }}>
-                <TabButton active={activeTab === "new"} onClick={() => setActiveTab("new")}>
-                  NEW APPOINTMENTS
-                </TabButton>
-                <TabButton active={activeTab === "completed"} onClick={() => setActiveTab("completed")}>
-                  COMPLETED APPOINTMENTS
-                </TabButton>
+                <TabButton active={activeTab === "new"} onClick={() => setActiveTab("new")}>NEW APPOINTMENTS</TabButton>
+                <TabButton active={activeTab === "completed"} onClick={() => setActiveTab("completed")}>COMPLETED APPOINTMENTS</TabButton>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 0 }}>
-                <button
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    gap: 8,
-                    background: "#f59e0b",
-                    color: "white",
-                    border: "none",
-                    padding: "10px 14px",
-                    borderRadius: 10,
-                    fontWeight: 700,
-                    cursor: "pointer",
-                  }}
-                >
-                  <Plus style={{ width: 18, height: 18 }} />
-                  New Appointment
+                <button style={{ display: "flex", alignItems: "center", gap: 8, background: "#f59e0b", color: "white", border: "none", padding: "10px 14px", borderRadius: 10, fontWeight: 700, cursor: "pointer" }}>
+                  <Plus style={{ width: 18, height: 18 }} /> New Appointment
                 </button>
                 <button title="Expand" style={{ border: "none", background: "transparent", padding: 8, borderRadius: 8, color: "#ea580c", cursor: "pointer" }}>
                   <Maximize2 style={{ width: 18, height: 18 }} />
@@ -245,51 +193,26 @@ const AppointmentsPage: React.FC = () => {
               <div>
                 <button
                   onClick={() => {
-                    const v = prompt("Filter by Date (DD/MM/YYYY) contains…", dateFilter || "05/12/2022");
+                    const v = prompt("Filter by Date (DD/MM/YYYY) contains…", dateFilter || "");
                     if (v !== null) setDateFilter(v);
                   }}
                   style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 14px", borderRadius: 24, border: "1px solid #f59e0b", background: "white", color: "#334155", fontWeight: 600, cursor: "pointer" }}
                 >
                   Filter by Date
-                  <Calendar
-                    style={{ width: 16, height: 16, color: "#f59e0b" }}
-                  />
+                  <Calendar style={{ width: 16, height: 16, color: "#f59e0b" }} />
                 </button>
               </div>
             </div>
           </div>
 
-          {/* Rows scroller */}
+          {/* Table */}
           <div style={{ flex: 1, minHeight: 0, display: "flex", flexDirection: "column" }}>
             <div style={{ overflowY: "auto", flex: 1 }}>
-              <table
-                style={{
-                  width: "100%",
-                  borderCollapse: "collapse",
-                  tableLayout: "fixed",
-                }}
-              >
-                <thead
-                  style={{
-                    background: "#f8fafc",
-                    position: "sticky",
-                    top: 0,
-                    zIndex: 1,
-                  }}
-                >
+              <table style={{ width: "100%", borderCollapse: "collapse", tableLayout: "fixed" }}>
+                <thead style={{ background: "#f8fafc", position: "sticky", top: 0, zIndex: 1 }}>
                   <tr style={{ color: "#1f2937" }}>
                     {["Time", "Date", "Patient Name", "Patient Age", "Doctor", "User Action"].map((h) => (
-                      <th
-                        key={h}
-                        style={{
-                          textAlign: "left",
-                          padding: "14px 20px",
-                          fontWeight: 700,
-                          fontSize: 13,
-                          borderBottom: "1px solid #e5e7eb",
-                          background: "#f8fafc",
-                        }}
-                      >
+                      <th key={h} style={{ textAlign: "left", padding: "14px 20px", fontWeight: 700, fontSize: 13, borderBottom: "1px solid #e5e7eb", background: "#f8fafc" }}>
                         {h} <span style={{ color: "#cbd5e1" }}>▾</span>
                       </th>
                     ))}
@@ -297,77 +220,88 @@ const AppointmentsPage: React.FC = () => {
                 </thead>
 
                 <tbody>
-                  {rows.map((r, idx) => (
-                    <tr
-                      key={r.id}
-                      style={{
-                        borderTop: idx === 0 ? "none" : "1px solid #f1f5f9",
-                        transition: "background-color .2s",
-                      }}
-                      onMouseEnter={(e) =>
-                        ((e.currentTarget as HTMLTableRowElement).style.backgroundColor = "#fafafa")
-                      }
-                      onMouseLeave={(e) =>
-                        ((e.currentTarget as HTMLTableRowElement).style.backgroundColor = "transparent")
-                      }
-                    >
-                      <td style={{ padding: "16px 20px", color: "#475569" }}>{r.time}</td>
-                      <td style={{ padding: "16px 20px", color: "#475569" }}>{r.date}</td>
-                      <td style={{ padding: "16px 20px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                          <AvatarBadge initials={r.patient.initials} />
-                          <span style={{ color: "#1f2937", fontWeight: 600 }}>{r.patient.name}</span>
-                        </div>
-                      </td>
-                      <td style={{ padding: "16px 20px", color: "#475569" }}>{r.patient.age}</td>
-                      <td style={{ padding: "16px 20px", color: "#475569" }}>{r.doctor}</td>
-                      <td style={{ padding: "16px 20px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-                          <button
-                            style={{
-                              background: "transparent",
-                              border: 0,
-                              color: "#ea580c",
-                              fontWeight: 700,
-                              cursor: "pointer",
-                            }}
-                            onClick={() => alert(`Reschedule ${r.patient.name}`)}
-                          >
-                            Reschedule
-                          </button>
-                          <button
-                            title="Cancel"
-                            onClick={() => confirm("Cancel this appointment?") && alert("Canceled")}
-                            style={{
-                              width: 28,
-                              height: 28,
-                              borderRadius: 8,
-                              border: 0,
-                              background: "#fde2e2",
-                              color: "#e11d48",
-                              display: "flex",
-                              alignItems: "center",
-                              justifyContent: "center",
-                              cursor: "pointer",
-                            }}
-                          >
-                            <X style={{ width: 14, height: 14 }} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                  {filteredAppointments.map((r, idx) => {
+                    const appt = r.appointmentData || {};
+                    const patient = appt.patient || {};
+
+                    // parse date & time from createdBy
+                    let dateStr = "—";
+                    let timeStr = "—";
+                    if (r.createdAt) {
+                      const d = new Date(r.createdAt);
+                      dateStr = d.toLocaleDateString("en-GB");
+                      timeStr = d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit" });
+                    }
+
+                    // token → name mapping
+                    const profile = tokenMap[r.token] || {};
+                    const displayName = appt.patient?.name || profile.name || r.token;
+                    const initials =
+                      appt.patient?.initials ||
+                      displayName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .slice(0, 2)
+                        .toUpperCase();
+                    const age = appt.patient?.age || profile.age || "—";
+
+                    
+
+                    return (
+                      <tr
+                        key={r.key}
+                        style={{ borderTop: idx === 0 ? "none" : "1px solid #f1f5f9", transition: "background-color .2s" }}
+                        onMouseEnter={(e) => ((e.currentTarget as HTMLTableRowElement).style.backgroundColor = "#fafafa")}
+                        onMouseLeave={(e) => ((e.currentTarget as HTMLTableRowElement).style.backgroundColor = "transparent")}
+                      >
+                        <td style={{ padding: "16px 20px", color: "#475569" }}>{timeStr}</td>
+                        <td style={{ padding: "16px 20px", color: "#475569" }}>{dateStr}</td>
+                        <td style={{ padding: "16px 20px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                            <AvatarBadge initials={initials} />
+                            <span style={{ color: "#1f2937", fontWeight: 600 }}>{displayName}</span>
+                          </div>
+                        </td>
+                        <td style={{ padding: "16px 20px", color: "#475569" }}>{age || "—"}</td>
+                        <td style={{ padding: "16px 20px", color: "#475569" }}>{appt.doctor || "Dr. John"}</td>
+                        <td style={{ padding: "16px 20px" }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+                            <button
+                              style={{ background: "transparent", border: 0, color: "#ea580c", fontWeight: 700, cursor: "pointer" }}
+                              onClick={() => alert(`Reschedule ${displayName}`)}
+                            >
+                              Reschedule
+                            </button>
+                            <button
+                              title="Cancel"
+                              onClick={() => confirm("Cancel this appointment?") &&
+                                alert(`Canceled ${patient.name || r.key}`)
+                              }
+                              style={{
+                                width: 28,
+                                height: 28,
+                                borderRadius: 8,
+                                border: 0,
+                                background: "#fde2e2",
+                                color: "#e11d48",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                                cursor: "pointer",
+                              }}
+                            >
+                              <X style={{ width: 14, height: 14 }} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })}
 
                   {appointments.length === 0 && (
                     <tr>
-                      <td
-                        colSpan={6}
-                        style={{
-                          padding: 28,
-                          textAlign: "center",
-                          color: "#94a3b8",
-                        }}
-                      >
+                      <td colSpan={6} style={{ padding: 28, textAlign: "center", color: "#94a3b8" }}>
                         No appointments match your filters.
                       </td>
                     </tr>
@@ -412,14 +346,7 @@ const AppointmentsPage: React.FC = () => {
         </div>
 
         {/* Footer lives outside the card; section contains overflow so it won't push content off-screen */}
-        <div
-          style={{
-            textAlign: "center",
-            color: "#cbd5e1",
-            fontSize: 12,
-            marginTop: 12,
-          }}
-        >
+        <div style={{ textAlign: "center", color: "#cbd5e1", fontSize: 12, marginTop: 12 }}>
           © 2025 Medigator. All rights reserved.
         </div>
       </section>
