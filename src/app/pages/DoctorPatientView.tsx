@@ -189,175 +189,57 @@ const DoctorPatientView: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", backgroundColor: "#f9fafb" }}>
-      {/* Sidebar */}
+    <div style={{ display: "flex", height: "100vh", backgroundColor: "#f9fafb", width: "100%" }}>
+      {/* Main */}
+      <div style={{display: "flex", flexDirection: "column", width: "100%", flex: 1}}>
+      {/* Top bar */}
       <div
         style={{
-          width: "256px",
-          backgroundColor: "white",
-          boxShadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1)",
-          position: "relative",
+          padding: "18px 28px",
+          background: "linear-gradient(180deg,#fff7ed, #fff)",
+          borderBottom: "1px solid #f1f5f9",
         }}
       >
-        <div style={{ padding: "24px", borderBottom: "1px solid #e5e7eb" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+          <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, color: "#374151" }}>Patients</h1>
+          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div
+              title="Notifications"
               style={{
-                width: "32px",
-                height: "32px",
-                backgroundColor: "#f97316",
-                borderRadius: "8px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
+                width: 36,
+                height: 36,
+                borderRadius: 18,
+                background: "white",
+                boxShadow: "0 1px 2px rgba(0,0,0,.05)",
+                position: "relative",
               }}
             >
-              <span style={{ color: "white", fontWeight: "bold" }}>+</span>
-            </div>
-            <span style={{ fontSize: "20px", fontWeight: 600, color: "#1f2937" }}>
-              Medigator
-            </span>
-          </div>
-        </div>
-
-        <nav style={{ padding: "16px" }}>
-          {sidebarItems.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                padding: "12px",
-                borderRadius: "8px",
-                marginBottom: "4px",
-                cursor: "pointer",
-                transition: "all 0.2s",
-                ...(item.active
-                  ? {
-                      backgroundColor: "#fff7ed",
-                      color: "#ea580c",
-                      borderRight: "2px solid #ea580c",
-                    }
-                  : { color: "#6b7280" }),
-              }}
-              onMouseEnter={(e) => {
-                if (!item.active) {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = "#f9fafb";
-                }
-              }}
-              onMouseLeave={(e) => {
-                if (!item.active) {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
-                }
-              }}
-            >
-              <span style={{ fontSize: "18px" }}>{item.icon}</span>
-              <span style={{ fontWeight: 500 }}>{item.label}</span>
-            </div>
-          ))}
-        </nav>
-
-        <div style={{ position: "absolute", bottom: "16px", left: "16px", right: "16px" }}>
-          <button
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              padding: "12px",
-              width: "100%",
-              color: "#6b7280",
-              backgroundColor: "transparent",
-              border: "none",
-              borderRadius: "8px",
-              transition: "all 0.2s",
-              cursor: "pointer",
-            }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#f9fafb";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
-            }}
-          >
-            <span style={{ fontSize: "18px" }}>🚪</span>
-            <span style={{ fontWeight: 500 }}>Logout</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Main */}
-      <div style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-        <div
-          style={{
-            backgroundColor: "white",
-            borderBottom: "1px solid #e5e7eb",
-            padding: "16px 24px",
-          }}
-        >
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
-            <h1 style={{ fontSize: "24px", fontWeight: 600, color: "#1f2937", margin: 0 }}>
-              Patient Details
-            </h1>
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <button
+              <div
                 style={{
-                  position: "relative",
-                  padding: "8px",
-                  color: "#6b7280",
-                  backgroundColor: "transparent",
-                  border: "none",
-                  borderRadius: "50%",
-                  cursor: "pointer",
-                  transition: "all 0.2s",
+                  width: 8,
+                  height: 8,
+                  borderRadius: 8,
+                  background: "#ef4444",
+                  position: "absolute",
+                  right: 8,
+                  top: 8,
                 }}
-                onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#f3f4f6";
-                }}
-                onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
-                }}
-              >
-                <Bell style={{ width: 20, height: 20 }} />
-                <span
-                  style={{
-                    position: "absolute",
-                    top: "-4px",
-                    right: "-4px",
-                    width: "12px",
-                    height: "12px",
-                    backgroundColor: "#ef4444",
-                    borderRadius: "50%",
-                  }}
-                />
-              </button>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-                <img
-                  src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face"
-                  alt="Doctor"
-                  style={{
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "50%",
-                    objectFit: "cover",
-                  }}
-                />
-                <div>
-                  <div style={{ fontSize: "14px", fontWeight: 500, color: "#1f2937" }}>
-                    Jonitha Cathrine
-                  </div>
-                  <div style={{ fontSize: "12px", color: "#6b7280" }}>Doctor</div>
-                </div>
+              />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+              <img
+                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face"
+                style={{ width: 40, height: 40, borderRadius: 999 }}
+                alt="Doctor"
+              />
+              <div>
+                <div style={{ fontWeight: 700, color: "#334155" }}>Jonitha Cathrine</div>
+                <div style={{ fontSize: 12, color: "#94a3b8" }}>Doctor</div>
               </div>
             </div>
           </div>
         </div>
+      </div>
 
         {/* Content */}
         <div
