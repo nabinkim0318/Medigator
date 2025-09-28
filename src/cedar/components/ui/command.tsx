@@ -12,7 +12,7 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/cedar/components/ui/dialog";
+} from "./dialog";
 
 function CommandComponent({
   className,

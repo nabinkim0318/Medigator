@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import DoctorDashboard from "./pages/DoctorDashboard";
 import PatientInterface from "./pages/PatientInterface";
 
