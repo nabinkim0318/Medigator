@@ -1,5 +1,11 @@
 # 🏥 BBB Medical Report API
 
+[![CI/CD](https://github.com/nabinkim0318/BBB/actions/workflows/ci.yml/badge.svg)](https://github.com/nabinkim0318/BBB/actions/workflows/ci.yml)
+[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
+[![Next.js](https://img.shields.io/badge/Next.js-15.5.4-black.svg)](https://nextjs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
+[![Docker](https://img.shields.io/badge/Docker-supported-blue.svg)](https://www.docker.com/)
+
 AI-powered medical report generation and analysis system with RAG (Retrieval-Augmented Generation) capabilities.
 
 ## 🚀 Quick Start
@@ -222,6 +228,15 @@ For questions or issues:
 - ✅ Python version consistency (3.12)
 - ✅ Type checking and linting errors
 - ✅ RAG performance optimization
+
+## 📊 Project Stats
+
+- **Language**: Python 3.12, TypeScript
+- **Framework**: FastAPI, Next.js 15.5.4
+- **Database**: SQLite (dev), PostgreSQL (prod)
+- **AI/ML**: OpenAI GPT-4, Sentence Transformers, FAISS
+- **Deployment**: Docker, Vercel, GitHub Actions
+- **Security**: HIPAA compliant, PHI masking
 
 ## 🎯 Roadmap
 
