@@ -1,9 +1,9 @@
 "use client";
 
-import OnboardingQuestionnaire from "./pages/OnboardingQuestionaire";
+import PatientInterface from "./pages/PatientInterface";
 
 export default function Home() {
   return (
-    <OnboardingQuestionnaire />
+    <PatientInterface />
   );
 }
