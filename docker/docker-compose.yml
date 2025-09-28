@@ -3,7 +3,9 @@ version: '3.8'
 services:
   # Backend API with Frontend
   api:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     ports:
       - "8082:8082"
     environment:
@@ -30,8 +32,8 @@ services:
   # Frontend (production build)
   frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.frontend
+      context: ..
+      dockerfile: docker/Dockerfile.frontend
     # No ports needed - this is just for building
     # The built files will be copied to the main container
 

@@ -167,32 +167,32 @@ docker-build:
 
 docker-up:
 	@echo "🐳 Starting services with Docker Compose..."
-	@cd docker && docker-compose up -d
+	@cd docker && docker compose up -d
 	@echo "✅ Services started. API: http://localhost:8082, UI: http://localhost:5173"
 
 docker-up-separate:
 	@echo "🐳 Starting separate frontend services..."
-	@cd docker && docker-compose -f docker-compose-separate.yml up -d
+	@cd docker && docker compose -f docker-compose-separate.yml up -d
 	@echo "✅ Services started. API: http://localhost:8082, Patient: http://localhost:3000, Doctor: http://localhost:3001"
 
 docker-down:
 	@echo "🐳 Stopping Docker services..."
-	@cd docker && docker-compose down
+	@cd docker && docker compose down
 	@echo "✅ Services stopped."
 
 docker-down-separate:
 	@echo "🐳 Stopping separate services..."
-	@cd docker && docker-compose -f docker-compose-separate.yml down
+	@cd docker && docker compose -f docker-compose-separate.yml down
 	@echo "✅ Services stopped."
 
 docker-logs:
-	@cd docker && docker-compose logs -f
+	@cd docker && docker compose logs -f
 
 docker-logs-separate:
-	@cd docker && docker-compose -f docker-compose-separate.yml logs -f
+	@cd docker && docker compose -f docker-compose-separate.yml logs -f
 
 docker-shell:
-	@cd docker && docker-compose exec api bash
+	@cd docker && docker compose exec api bash
 
 # ====== Deployment ======
 deploy-patient:
