@@ -12,7 +12,6 @@ type Choice = {
   isExclusive?: boolean;
 };
 
-<<<<<<< HEAD
   // 👇 Will flip to true after long-answer is submitted
   const [docked, setDocked] = useState(false);
 
