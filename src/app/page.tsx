@@ -11,7 +11,5 @@ import SignIn from "./pages/SignIn";
 export default function Home() {
   const [activeApp, setActiveApp] = useState<"patient" | "doctor">("patient");
 
-  return (
-    <SignIn />
-  );
+  return <SignIn />;
 }

@@ -3,7 +3,6 @@
 import React from "react";
 
 export default function PatientThankYou() {
-
   return (
     <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
       <div className="mx-auto w-full max-w-2xl text-center">
@@ -22,7 +21,9 @@ export default function PatientThankYou() {
             Thank you for your time!
           </h1>
           <p className="text-gray-600 mb-6">
-            Thank you for filling out this preliminary survey. <br /><br />Sit tight! A doctor will be with you shortly.
+            Thank you for filling out this preliminary survey. <br />
+            <br />
+            Sit tight! A doctor will be with you shortly.
           </p>
         </div>
 

@@ -3,6 +3,16 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 
+// Small utility to generate a RFC4122 v4 UUID-ish token (not cryptographically secure - fine for mock)
+function generateToken() {
+  // quick UUID v4
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function (c) {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16);
+  });
+}
+
 export default function SignIn() {
   const router = useRouter();
   const [errors, setErrors] = useState<{ username?: string; password?: string }>({});
@@ -38,7 +48,8 @@ export default function SignIn() {
 
     // Request token for this username from backend
     try {
-      const API_BASE = (process.env.NEXT_PUBLIC_API_URL as string) || "http://localhost:8082";
+      const API_BASE =
+        (process.env.NEXT_PUBLIC_API_URL as string) || "http://localhost:8082";
       const res = await fetch(`${API_BASE}/api/v1/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -73,9 +84,14 @@ export default function SignIn() {
         </div>
 
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-6">Please Enter Your Credentials</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 mb-6">
+            Please Enter Your Credentials
+          </h1>
 
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col gap-4 text-left"
+          >
             <input
               name="username"
               type="text"

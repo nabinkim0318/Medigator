@@ -62,12 +62,15 @@ make ui-doctor &    # Doctor Frontend (port 3001)
 make setup          # One-time setup
 make dev            # Run API + UI together
 make api            # Run API only
-make ui             # Run UI only
+make ui-patient     # Patient Frontend (port 3000)
+make ui-doctor      # Doctor Frontend (port 3001)
 
 # Docker
 make docker-build   # Build Docker images
-make docker-up      # Start with Docker
-make docker-down    # Stop Docker services
+make docker-up      # Start unified Docker services
+make docker-up-separate # Start separate Docker services
+make docker-down    # Stop unified Docker services
+make docker-down-separate # Stop separate Docker services
 make docker-logs    # View logs
 make docker-shell   # Open container shell
 
@@ -241,6 +244,10 @@ For questions or issues:
 - ✅ Python version consistency (3.12)
 - ✅ Type checking and linting errors
 - ✅ RAG performance optimization
+- ✅ Docker Compose command compatibility
+- ✅ PostCSS configuration for Tailwind CSS
+- ✅ Hardcoded file paths in code generation
+- ✅ Test type checking issues
 
 ## 📊 Project Stats
 

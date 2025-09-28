@@ -7,10 +7,14 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm ci
+RUN npm install
 
 # Copy source code
-COPY . ./
+COPY src ./src
+COPY next.config.ts ./
+COPY tsconfig.json ./
+COPY tailwind.config.ts ./
+COPY postcss.config.js ./
 
 # Build patient-specific frontend
 ENV NEXT_PUBLIC_APP_TYPE=patient

@@ -23,12 +23,17 @@ def login(body: LoginIn):
         c.execute(
             "CREATE TABLE IF NOT EXISTS user_tokens (username TEXT PRIMARY KEY, token TEXT UNIQUE, created_at TEXT)"
         )
-        row = c.execute("SELECT token FROM user_tokens WHERE username=?", (uname,)).fetchone()
+        row = c.execute(
+            "SELECT token FROM user_tokens WHERE username=?", (uname,)
+        ).fetchone()
         if row:
             return {"username": uname, "token": row[0], "existing": True}
         # create a stable token for this username
         token = str(uuid.uuid5(uuid.NAMESPACE_DNS, uname))
         created_at = datetime.utcnow().isoformat()
-        c.execute("INSERT INTO user_tokens(username, token, created_at) VALUES(?,?,?)", (uname, token, created_at))
+        c.execute(
+            "INSERT INTO user_tokens(username, token, created_at) VALUES(?,?,?)",
+            (uname, token, created_at),
+        )
         c.commit()
     return {"username": uname, "token": token, "existing": False}

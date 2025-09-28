@@ -141,7 +141,8 @@ export default function OnboardingQuestionnaire() {
         medicalHistory: answers,
       };
 
-      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082";
+      const API_BASE =
+        process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082";
       fetch(`${API_BASE}/api/v1/patient/patientData`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -156,7 +157,9 @@ export default function OnboardingQuestionnaire() {
         })
         .then(() => {
           // navigate to patient interface with token
-          router.push(`/OnboardingThankYou?token=${encodeURIComponent(token ?? "")}`);
+          router.push(
+            `/OnboardingThankYou?token=${encodeURIComponent(token ?? "")}`,
+          );
         })
         .catch((err) => {
           // basic error feedback
