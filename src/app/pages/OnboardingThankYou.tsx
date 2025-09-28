@@ -16,10 +16,9 @@ export default function OnboardingThankYou({
   return (
     <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
       <div className="mx-auto w-full max-w-2xl text-center">
-
         {/* Logo / Brand */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="h-6 w-6" >
+          <div className="h-6 w-6">
             <img src="/logo.png" alt="Medigator Logo" />
           </div>
           <div className="font-semibold text-orange-600">Medigator</div>
@@ -41,7 +40,9 @@ export default function OnboardingThankYou({
             <ul className="space-y-2 text-gray-700">
               <li>• Tell us about your current symptoms.</li>
               <li>• You’ll see an estimated cost for your appointment.</li>
-              <li>• Your doctor will receive a clear summary of your answers.</li>
+              <li>
+                • Your doctor will receive a clear summary of your answers.
+              </li>
             </ul>
           </div>
 

@@ -12,7 +12,7 @@ router = APIRouter(prefix="/summary", tags=["summary"])
 
 @router.post("")
 async def summarize(intake: dict[str, Any] = Body(...)):
-    """Structured intake → HPI/ROS/flags JSON (다이어그램의 LLM Summarizer API)"""
+    """Structured intake → HPI/ROS/flags JSON (LLM Summarizer API from diagram)"""
     try:
         data = await llm_service.summary(intake)
         return {"summary": data}

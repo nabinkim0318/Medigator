@@ -36,7 +36,7 @@ def _ensure_init():
 
 
 def _hash_payload(p: dict) -> str:
-    """요약/코드/플래그 변화에만 반응하도록 정규화"""
+    """Normalize to respond only to summary/code/flag changes"""
     keys = ["hpi", "ros", "cc", "flags", "codes"]
     base = {k: p.get(k) for k in keys}
     blob = json.dumps(base, sort_keys=True, ensure_ascii=False)
@@ -44,7 +44,7 @@ def _hash_payload(p: dict) -> str:
 
 
 def _dedupe(cards: list[dict]) -> list[dict]:
-    """중복 제거 (title, year, section 기준)"""
+    """Remove duplicates (based on title, year, section)"""
     seen = set()
     out = []
     for c in cards:
@@ -63,12 +63,12 @@ def _dedupe(cards: list[dict]) -> list[dict]:
 async def _rag_cards(
     summary: dict[str, Any], timeout_ms: int = 600, k: int = 6, max_cards: int = 2
 ) -> list[dict]:
-    """RAG 카드 추출 with timeout and jitter"""
+    """RAG card extraction with timeout and jitter"""
     if not USE_RAG:
         return []
 
     try:
-        # retrieve()는 sync → executor로
+        # retrieve() is sync → use executor
         # Add jitter to prevent thundering herd
         jitter = random.randint(-100, 150)  # nosec S311
         t = (timeout_ms + jitter) / 1000.0
@@ -77,7 +77,7 @@ async def _rag_cards(
             timeout=t,
         )
 
-        # 키워드 하이라이트용 추출(옵션)
+        # Extract for keyword highlighting (optional)
         flags = list((summary.get("flags") or {}).keys())
         codes = summary.get("codes") or {}
         kw = (
@@ -95,10 +95,10 @@ async def _rag_cards(
 
 @router.post("")
 async def evidence(summary: dict[str, Any] = Body(...)):
-    """상위 2개 에비던스 추출 with 캐시/중복제거/랭킹"""
+    """Extract top 2 evidence with cache/deduplication/ranking"""
     _ensure_init()
 
-    # 캐시 체크
+    # Cache check
     ck = _hash_payload(summary)
     now = time.time()
     hit = _CACHE.get(ck)
@@ -106,23 +106,23 @@ async def evidence(summary: dict[str, Any] = Body(...)):
         logger.info("Cache hit for evidence request")
         return hit[1]
 
-    # 1) RAG 우선 (최대 2장)
+    # 1) RAG first (max 2 cards)
     rag = await _rag_cards(summary, timeout_ms=600, k=8, max_cards=2)
     logger.info(f"Retrieved {len(rag)} RAG evidence cards")
 
-    # 2) 정적 카드 보충
+    # 2) Static card supplement
     static = static_cards(summary)
     logger.info(f"Retrieved {len(static)} static evidence cards")
 
-    # 3) 결합: RAG 먼저, 중복 제거, 상한 2
+    # 3) Combine: RAG first, deduplicate, limit to 2
     merged = _dedupe(rag + static)[:2]
 
-    # 4) rank 재부여(1..n), score 없으면 0.0
+    # 4) Reassign rank (1..n), use 0.0 if no score
     for i, c in enumerate(merged, 1):
         c["rank"] = i
         c.setdefault("score", 0.0)
 
-    resp = {"items": merged}  # ← UI가 받는 최종 스키마
+    resp = {"items": merged}  # ← Final schema for UI
     _CACHE[ck] = (now, resp)
 
     logger.info(f"Returning {len(merged)} evidence cards with ranking")
