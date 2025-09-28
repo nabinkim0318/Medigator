@@ -78,7 +78,8 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
       author: "Author Name",
       avatar:
         "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=40&h=40&fit=crop&crop=face",
-      summary: "High-sensitivity troponin detected myocardial infarction 3–6 hours earlier than standard methods.\nEarly detection improved patient outcomes by reducing time to treatment initiation."
+      summary:
+        "High-sensitivity troponin detected myocardial infarction 3–6 hours earlier than standard methods.\nEarly detection improved patient outcomes by reducing time to treatment initiation.",
     },
     {
       title: "PCI Outcomes in STEMI Patients",
@@ -87,7 +88,8 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
       author: "Carla Chen",
       avatar:
         "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face",
-      summary: "ECG within 10 minutes of chest pain onset remains the gold standard for MI diagnosis.\nCombining ECG with biomarker testing reduces false negatives in early-stage infarction."
+      summary:
+        "ECG within 10 minutes of chest pain onset remains the gold standard for MI diagnosis.\nCombining ECG with biomarker testing reduces false negatives in early-stage infarction.",
     },
   ];
   const similarPatients = [
@@ -104,9 +106,7 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
       status: "Incorrect Diag",
     },
   ];
-  const questions = [
-    "How long does each episode of chest pain last?",
-  ];
+  const questions = ["How long does each episode of chest pain last?"];
 
   const InfoSection: React.FC<{ title: string; children: React.ReactNode }> = ({
     title,
@@ -815,7 +815,8 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                           fontSize: "12px",
                           color: "#1f2937",
                           margin: "8px 0 8px 0",
-                        }}>
+                        }}
+                      >
                         {item.summary}
                       </p>
                     </div>
@@ -844,8 +845,11 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                     <div style={{ display: "flex", gap: "8px" }}>
                       <textarea
                         className="w-full min-h-[160px] rounded-2xl border border-gray-200 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-200 resize-y"
-                        value={selectedQuestion === question ? selectedQuestion : ""}
-                        onChange={(e) => setSelectedQuestion(e.target.value)} />
+                        value={
+                          selectedQuestion === question ? selectedQuestion : ""
+                        }
+                        onChange={(e) => setSelectedQuestion(e.target.value)}
+                      />
                     </div>
                   </div>
                 ))}

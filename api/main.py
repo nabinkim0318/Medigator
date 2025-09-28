@@ -93,15 +93,13 @@ setup_exception_handlers(app)
 @app.get("/")
 async def root():
     """Root endpoint"""
-    logger.info("Root endpoint accessed")
     return {"message": "BBB Medical Report API", "version": "1.0.0", "docs": "/docs"}
 
 
 @app.get("/health")
 async def health_check():
     """Health check endpoint"""
-    logger.info("Health check requested")
-    return {"status": "healthy"}
+    return {"status": "healthy", "timestamp": "2025-01-27T00:00:00Z"}
 
 
 if __name__ == "__main__":

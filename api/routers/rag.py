@@ -54,6 +54,8 @@ class IndexResponse(BaseModel):
 class RAGStatusResponse(BaseModel):
     """RAG system status response"""
 
+    model_config = {"protected_namespaces": ()}
+
     enabled: bool
     initialized: bool
     index_path: str | None = None
