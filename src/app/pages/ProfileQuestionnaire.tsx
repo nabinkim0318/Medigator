@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 export default function ProfileQuestionnaire() {
@@ -14,6 +14,28 @@ export default function ProfileQuestionnaire() {
   const [bloodGroup, setBloodGroup] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [touched, setTouched] = useState<{ [k: string]: boolean }>({});
+
+  const ageOptions = useMemo(() => Array.from({ length: 130 }, (_, i) => String(i + 1)), []);
+  const bloodGroups = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+
+  const errors = useMemo(() => {
+    const e: { [k: string]: string } = {};
+    if (!name.trim()) e.name = "Name is required";
+    const ageNum = Number(age);
+    if (!age || Number.isNaN(ageNum) || ageNum < 1 || ageNum > 130) e.age = "Select a valid age";
+    if (!gender.trim()) e.gender = "Gender is required";
+    if (!bloodGroup) e.bloodGroup = "Select blood group";
+    if (!/^\d{10}$/.test(phone)) e.phone = "Phone must be 10 digits";
+    if (!(email.includes("@") && email.includes(".com"))) e.email = "Email not valid";
+    return e;
+  }, [name, age, gender, bloodGroup, phone, email]);
+
+  const isValid = Object.keys(errors).length === 0;
+
+  const handleBlur = (field: string) => {
+    setTouched((t) => ({ ...t, [field]: true }));
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,14 +71,102 @@ export default function ProfileQuestionnaire() {
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
           <h1 className="text-2xl font-semibold text-gray-900 mb-4">Personal Profile Details</h1>
           <form onSubmit={handleSubmit} className="flex flex-col gap-3 text-left">
-            <input value={name} onChange={(e) => setName(e.target.value)} name="name" placeholder="Full name" className="w-full rounded-xl border border-gray-200 px-4 py-3" />
-            <input value={age} onChange={(e) => setAge(e.target.value)} name="age" placeholder="Age" className="w-full rounded-xl border border-gray-200 px-4 py-3" />
-            <input value={gender} onChange={(e) => setGender(e.target.value)} name="gender" placeholder="Gender" className="w-full rounded-xl border border-gray-200 px-4 py-3" />
-            <input value={bloodGroup} onChange={(e) => setBloodGroup(e.target.value)} name="bloodGroup" placeholder="Blood Group" className="w-full rounded-xl border border-gray-200 px-4 py-3" />
-            <input value={phone} onChange={(e) => setPhone(e.target.value)} name="phone" placeholder="Phone number" className="w-full rounded-xl border border-gray-200 px-4 py-3" />
-            <input value={email} onChange={(e) => setEmail(e.target.value)} name="email" placeholder="Email" className="w-full rounded-xl border border-gray-200 px-4 py-3" />
+            <div>
+              <input
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                onBlur={() => handleBlur("name")}
+                name="name"
+                placeholder="Full name"
+                className="w-full rounded-xl border border-gray-200 px-4 py-3"
+              />
+              {touched.name && errors.name && <div className="text-red-500 text-sm mt-1">{errors.name}</div>}
+            </div>
 
-            <button type="submit" className="w-full px-6 py-3 rounded-xl bg-orange-500 text-white">Continue</button>
+            <div>
+              <select
+                value={age}
+                onChange={(e) => setAge(e.target.value)}
+                onBlur={() => handleBlur("age")}
+                name="age"
+                className="w-full rounded-xl border border-gray-200 px-4 py-3 bg-white"
+              >
+                <option value="">Select age</option>
+                {ageOptions.map((a) => (
+                  <option key={a} value={a}>
+                    {a}
+                  </option>
+                ))}
+              </select>
+              {touched.age && errors.age && <div className="text-red-500 text-sm mt-1">{errors.age}</div>}
+            </div>
+
+            <div>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                onBlur={() => handleBlur("gender")}
+                name="gender"
+                className="w-full rounded-xl border border-gray-200 px-4 py-3 bg-white"
+              >
+                <option value="">Select Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              {touched.gender && errors.gender && <div className="text-red-500 text-sm mt-1">{errors.gender}</div>}
+            </div>
+
+            <div>
+              <select
+                value={bloodGroup}
+                onChange={(e) => setBloodGroup(e.target.value)}
+                onBlur={() => handleBlur("bloodGroup")}
+                name="bloodGroup"
+                className="w-full rounded-xl border border-gray-200 px-4 py-3 bg-white"
+              >
+                <option value="">Select Blood Group</option>
+                {bloodGroups.map((bg) => (
+                  <option key={bg} value={bg}>
+                    {bg}
+                  </option>
+                ))}
+              </select>
+              {touched.bloodGroup && errors.bloodGroup && <div className="text-red-500 text-sm mt-1">{errors.bloodGroup}</div>}
+            </div>
+
+            <div>
+              <input
+                value={phone}
+                onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
+                onBlur={() => handleBlur("phone")}
+                name="phone"
+                placeholder="Phone number (10 digits)"
+                className="w-full rounded-xl border border-gray-200 px-4 py-3"
+                maxLength={10}
+              />
+              {touched.phone && errors.phone && <div className="text-red-500 text-sm mt-1">{errors.phone}</div>}
+            </div>
+
+            <div>
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                onBlur={() => handleBlur("email")}
+                name="email"
+                placeholder="Email"
+                className="w-full rounded-xl border border-gray-200 px-4 py-3"
+              />
+              {touched.email && errors.email && <div className="text-red-500 text-sm mt-1">{errors.email}</div>}
+            </div>
+
+            <button
+              type="submit"
+              className={`w-full px-6 py-3 rounded-xl ${isValid ? "bg-orange-500 text-white" : "bg-gray-300 text-gray-600 cursor-not-allowed"}`}
+              disabled={!isValid}
+            >
+              Continue
+            </button>
           </form>
         </div>
       </div>
