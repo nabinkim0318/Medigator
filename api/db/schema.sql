@@ -107,7 +107,7 @@ CREATE INDEX IF NOT EXISTS idx_report_logs_report_id ON report_logs(report_id);
 
 
 -- Link Creation Table
-CREATE TABLE intake_session(
+CREATE TABLE IF NOT EXISTS intake_session(
   id TEXT PRIMARY KEY,                -- uuid
   token TEXT UNIQUE NOT NULL,
   status TEXT NOT NULL CHECK(status IN ('PENDING','SUBMITTED','EXPIRED')),
@@ -117,8 +117,8 @@ CREATE TABLE intake_session(
   submitted_at TEXT
 );
 
-CREATE TABLE intake_payload(
+CREATE TABLE IF NOT EXISTS intake_payload(
   session_id TEXT PRIMARY KEY REFERENCES intake_session(id) ON DELETE CASCADE,
   answers_json TEXT NOT NULL         -- form response (non-PHI only)
 );
-CREATE INDEX idx_intake_token ON intake_session(token);
+CREATE INDEX IF NOT EXISTS idx_intake_token ON intake_session(token);

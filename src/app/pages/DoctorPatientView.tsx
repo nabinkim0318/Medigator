@@ -127,7 +127,10 @@ const DoctorPatientView: React.FC = () => {
       alignItems: "center",
       justifyContent: "center",
       ...(t === "edit" && { color: "#ea580c", backgroundColor: "transparent" }),
-      ...(t === "delete" && { color: "#dc2626", backgroundColor: "transparent" }),
+      ...(t === "delete" && {
+        color: "#dc2626",
+        backgroundColor: "transparent",
+      }),
       ...(t === "view" && { color: "#6b7280", backgroundColor: "transparent" }),
     });
 
@@ -287,7 +290,9 @@ const DoctorPatientView: React.FC = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "16px" }}
+                >
                   <div style={{ position: "relative" }}>
                     <Search
                       style={{
@@ -381,12 +386,14 @@ const DoctorPatientView: React.FC = () => {
                     fontWeight: 500,
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                      "#ea580c";
+                    (
+                      e.currentTarget as HTMLButtonElement
+                    ).style.backgroundColor = "#ea580c";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                      "#f97316";
+                    (
+                      e.currentTarget as HTMLButtonElement
+                    ).style.backgroundColor = "#f97316";
                   }}
                 >
                   <Plus style={{ width: 16, height: 16 }} />
@@ -400,25 +407,74 @@ const DoctorPatientView: React.FC = () => {
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead style={{ backgroundColor: "#f9fafb" }}>
                   <tr>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Patient Name
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Age
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Gender
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Blood Group
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Phone Number
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Email ID
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       User Action
                     </th>
                   </tr>
@@ -434,27 +490,53 @@ const DoctorPatientView: React.FC = () => {
                         cursor: "pointer",
                       }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLTableRowElement).style.backgroundColor = "#f9fafb";
+                        (
+                          e.currentTarget as HTMLTableRowElement
+                        ).style.backgroundColor = "#f9fafb";
                       }}
                       onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLTableRowElement).style.backgroundColor = "transparent";
+                        (
+                          e.currentTarget as HTMLTableRowElement
+                        ).style.backgroundColor = "transparent";
                       }}
                     >
                       <td style={{ padding: "16px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "12px",
+                          }}
+                        >
                           <Avatar patient={patient} />
                           <span style={{ fontWeight: 500, color: "#1f2937" }}>
                             {patient.name}
                           </span>
                         </div>
                       </td>
-                      <td style={{ padding: "16px", color: "#6b7280" }}>{patient.age}</td>
-                      <td style={{ padding: "16px", color: "#6b7280" }}>{patient.gender}</td>
-                      <td style={{ padding: "16px", color: "#6b7280" }}>{patient.bloodGroup}</td>
-                      <td style={{ padding: "16px", color: "#6b7280" }}>{patient.phone}</td>
-                      <td style={{ padding: "16px", color: "#6b7280" }}>{patient.email}</td>
+                      <td style={{ padding: "16px", color: "#6b7280" }}>
+                        {patient.age}
+                      </td>
+                      <td style={{ padding: "16px", color: "#6b7280" }}>
+                        {patient.gender}
+                      </td>
+                      <td style={{ padding: "16px", color: "#6b7280" }}>
+                        {patient.bloodGroup}
+                      </td>
+                      <td style={{ padding: "16px", color: "#6b7280" }}>
+                        {patient.phone}
+                      </td>
+                      <td style={{ padding: "16px", color: "#6b7280" }}>
+                        {patient.email}
+                      </td>
                       <td style={{ padding: "16px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
                           {/* VIEW button with its own onClick */}
                           <ActionButton
                             type="view"
@@ -507,7 +589,9 @@ const DoctorPatientView: React.FC = () => {
                 >
                   Previous
                 </button>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
                   <button
                     style={{
                       width: "32px",
@@ -537,10 +621,14 @@ const DoctorPatientView: React.FC = () => {
                         transition: "background-color 0.2s",
                       }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#f3f4f6";
+                        (
+                          e.currentTarget as HTMLButtonElement
+                        ).style.backgroundColor = "#f3f4f6";
                       }}
                       onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
+                        (
+                          e.currentTarget as HTMLButtonElement
+                        ).style.backgroundColor = "transparent";
                       }}
                     >
                       {p}
@@ -557,10 +645,12 @@ const DoctorPatientView: React.FC = () => {
                     transition: "color 0.2s",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.color = "#ea580c";
+                    (e.currentTarget as HTMLButtonElement).style.color =
+                      "#ea580c";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.color = "#6b7280";
+                    (e.currentTarget as HTMLButtonElement).style.color =
+                      "#6b7280";
                   }}
                 >
                   Next

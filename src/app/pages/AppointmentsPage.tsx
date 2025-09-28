@@ -9,7 +9,13 @@ interface PatientRow {
   id: string;
   time: string;
   date: string; // DD/MM/YYYY
-  patient: { name: string; age: number; gender: Gender; initials: string; avatar?: string };
+  patient: {
+    name: string;
+    age: number;
+    gender: Gender;
+    initials: string;
+    avatar?: string;
+  };
   doctor: string;
 }
 
@@ -23,7 +29,10 @@ const data: PatientRow[] = [
   { id: "a7", time: "11:00 AM", date: "05/12/2022", patient: { name: "Phillipie Gopal", age: 55, gender: "Male", initials: "KR" }, doctor: "Dr. John" },
 ];
 
-const AvatarBadge: React.FC<{ initials: string; size?: number }> = ({ initials, size = 32 }) => (
+const AvatarBadge: React.FC<{ initials: string; size?: number }> = ({
+  initials,
+  size = 32,
+}) => (
   <div
     style={{
       width: size,
@@ -42,11 +51,11 @@ const AvatarBadge: React.FC<{ initials: string; size?: number }> = ({ initials, 
   </div>
 );
 
-const TabButton: React.FC<{ active?: boolean; onClick?: () => void; children: React.ReactNode }> = ({
-  active,
-  onClick,
-  children,
-}) => (
+const TabButton: React.FC<{
+  active?: boolean;
+  onClick?: () => void;
+  children: React.ReactNode;
+}> = ({ active, onClick, children }) => (
   <button
     onClick={onClick}
     style={{
@@ -78,7 +87,7 @@ const AppointmentsPage: React.FC = () => {
         (x) =>
           x.patient.name.toLowerCase().includes(q) ||
           x.doctor.toLowerCase().includes(q) ||
-          x.time.toLowerCase().includes(q)
+          x.time.toLowerCase().includes(q),
       );
     }
     if (dateFilter.trim()) {

@@ -1,17 +1,94 @@
 {
-  "chest pain": ["chest discomfort", "chest pressure", "chest tightness", "angina"],
-  "diabetes": ["diabetes mellitus", "DM", "diabetic", "blood sugar"],
-  "hypertension": ["high blood pressure", "HTN", "elevated blood pressure"],
-  "heart attack": ["myocardial infarction", "MI", "acute coronary syndrome", "ACS"],
-  "stroke": ["cerebrovascular accident", "CVA", "brain attack"],
-  "pneumonia": ["lung infection", "respiratory infection"],
-  "asthma": ["bronchial asthma", "reactive airway disease"],
-  "depression": ["major depressive disorder", "MDD", "clinical depression"],
-  "anxiety": ["anxiety disorder", "generalized anxiety", "panic disorder"],
-  "obesity": ["excessive weight", "overweight", "BMI elevated"],
-  "guideline": ["recommendation", "best practice", "standard", "protocol"],
-  "treatment": ["therapy", "intervention", "management", "care"],
-  "diagnosis": ["assessment", "evaluation", "identification"],
-  "symptom": ["sign", "manifestation", "indication"],
-  "patient": ["individual", "person", "case"]
+  "chest_pain": {
+    "terms": ["chest pain", "chest discomfort", "chest pressure", "chest tightness", "angina", "chest ache"],
+    "normalized": "chest_pain"
+  },
+  "radiation": {
+    "terms": ["spreads", "radiates", "goes to", "extends to", "moves to", "shoots to"],
+    "normalized": "radiation"
+  },
+  "left_arm": {
+    "terms": ["left arm", "left arm / jaw / neck / back", "left upper extremity", "left UE"],
+    "normalized": "left_arm_radiation"
+  },
+  "exertion": {
+    "terms": ["physical activity", "exercise", "exertion", "walking", "climbing stairs", "movement"],
+    "normalized": "exertional"
+  },
+  "rest_relief": {
+    "terms": ["rest", "stopping activity", "stopping", "sitting", "lying down"],
+    "normalized": "rest_relief"
+  },
+  "diaphoresis": {
+    "terms": ["sweating", "diaphoresis", "perspiration", "clammy", "drenched"],
+    "normalized": "diaphoresis"
+  },
+  "nausea": {
+    "terms": ["nausea", "nauseous", "queasy", "sick to stomach", "feeling sick"],
+    "normalized": "nausea"
+  },
+  "vomiting": {
+    "terms": ["vomiting", "vomit", "throwing up", "emesis", "regurgitation"],
+    "normalized": "vomiting"
+  },
+  "shortness_breath": {
+    "terms": ["shortness of breath", "SOB", "dyspnea", "breathing difficulty", "can't catch breath"],
+    "normalized": "dyspnea"
+  },
+  "pressure_quality": {
+    "terms": ["pressure", "squeezing", "tightness", "heaviness", "weight", "crushing"],
+    "normalized": "pressure_quality"
+  },
+  "diabetes": {
+    "terms": ["diabetes", "diabetes mellitus", "DM", "diabetic", "blood sugar", "glucose"],
+    "normalized": "diabetes_mellitus"
+  },
+  "a1c": {
+    "terms": ["a1c", "hba1c", "hemoglobin a1c", "glycated hemoglobin", "a1c test"],
+    "normalized": "hba1c"
+  },
+  "duration_short": {
+    "terms": ["seconds", "a few seconds", "brief", "momentary"],
+    "normalized": "seconds"
+  },
+  "duration_5min": {
+    "terms": ["1-5 minutes", "1–5 minutes", "a few minutes", "short"],
+    "normalized": "1-5min"
+  },
+  "duration_30min": {
+    "terms": ["5-30 minutes", "5–30 minutes", "half hour", "30 minutes"],
+    "normalized": "5-30min"
+  },
+  "duration_long": {
+    "terms": ["more than 30 minutes", "hours", "all day", "continuous"],
+    "normalized": "30min+"
+  },
+  "severity_mild": {
+    "terms": ["0-2", "mild", "slight", "minor", "low"],
+    "normalized": "mild"
+  },
+  "severity_moderate": {
+    "terms": ["3-5", "moderate", "medium", "fair"],
+    "normalized": "moderate"
+  },
+  "severity_severe": {
+    "terms": ["6-7", "severe", "strong", "intense"],
+    "normalized": "severe"
+  },
+  "severity_very_severe": {
+    "terms": ["8-10", "very severe", "worst ever", "excruciating", "unbearable"],
+    "normalized": "very_severe"
+  },
+  "hypertension": {
+    "terms": ["high blood pressure", "HTN", "elevated blood pressure"],
+    "normalized": "hypertension"
+  },
+  "heart_attack": {
+    "terms": ["heart attack", "myocardial infarction", "MI", "acute coronary syndrome", "ACS"],
+    "normalized": "myocardial_infarction"
+  },
+  "stroke": {
+    "terms": ["stroke", "cerebrovascular accident", "CVA", "brain attack"],
+    "normalized": "stroke"
+  }
 }
