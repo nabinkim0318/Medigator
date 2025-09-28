@@ -61,7 +61,7 @@ export default function SignIn() {
         </div>
 
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
-          <h1 className="text-2xl font-semibold text-gray-900 mb-6">Sign In</h1>
+          <h1 className="text-2xl font-semibold text-gray-900 mb-6">Please Enter Your Credentials</h1>
 
           <form onSubmit={handleSubmit} className="flex flex-col gap-4 text-left">
             <input
@@ -80,7 +80,7 @@ export default function SignIn() {
               type="submit"
               className="w-full px-6 py-3 rounded-xl bg-orange-500 text-white font-medium hover:bg-orange-600 transition"
             >
-              Sign In (Mock SMART)
+              Sign In
             </button>
           </form>
         </div>
