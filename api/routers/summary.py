@@ -4,8 +4,6 @@ from __future__ import annotations
 from typing import Any
 
 from fastapi import APIRouter, Body, HTTPException
-from core.schemas import SummaryIn, SummaryOut
-from services.llm.tasks.summarize import run as summarize_run
 
 from services.llm.service import llm_service
 

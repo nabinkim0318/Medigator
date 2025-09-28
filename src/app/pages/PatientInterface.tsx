@@ -434,7 +434,8 @@ export default function PatientChestPainQuestionnairePage() {
       q9,
     };
     // POST appointment payload to backend under the user's token
-    const API_BASE = (process.env.NEXT_PUBLIC_API_URL as string) || "http://localhost:8082";
+    const API_BASE =
+      (process.env.NEXT_PUBLIC_API_URL as string) || "http://localhost:8082";
 
     const body = { token, appointmentData: payload };
 
@@ -453,7 +454,7 @@ export default function PatientChestPainQuestionnairePage() {
       .then((data) => {
         // show user the key so they can reference or copy it
         // eslint-disable-next-line no-alert
-        router.push(`/PatientThankYou?token=${encodeURIComponent(token)}`)
+        router.push(`/PatientThankYou?token=${encodeURIComponent(token)}`);
         console.log(`Saved appointment data as ${data.key}`);
       })
       .catch((err) => {

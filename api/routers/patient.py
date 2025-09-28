@@ -39,7 +39,11 @@ def submit_patient_data(body: PatientDataIn = Body(...)):
             # Upsert – store latest payload
             c.execute(
                 "INSERT OR REPLACE INTO patient_medical_history(token, payload_json, created_at) VALUES(?, json(?), ?)",
-                (body.token, __import__("json").dumps(body.medicalHistory), datetime.utcnow().isoformat()),
+                (
+                    body.token,
+                    __import__("json").dumps(body.medicalHistory),
+                    datetime.utcnow().isoformat(),
+                ),
             )
             c.commit()
 
@@ -74,8 +78,12 @@ def get_profiles(token: Optional[str] = None):
                     "profiles": [
                         {
                             "token": token_v,
-                            "profile": __import__("json").loads(profile_json) if profile_json else None,
-                            "medicalHistory": __import__("json").loads(med_json) if med_json else None,
+                            "profile": __import__("json").loads(profile_json)
+                            if profile_json
+                            else None,
+                            "medicalHistory": __import__("json").loads(med_json)
+                            if med_json
+                            else None,
                         }
                     ],
                 }
@@ -89,8 +97,12 @@ def get_profiles(token: Optional[str] = None):
                 profiles.append(
                     {
                         "token": token_v,
-                        "profile": __import__("json").loads(profile_json) if profile_json else None,
-                        "medicalHistory": __import__("json").loads(med_json) if med_json else None,
+                        "profile": __import__("json").loads(profile_json)
+                        if profile_json
+                        else None,
+                        "medicalHistory": __import__("json").loads(med_json)
+                        if med_json
+                        else None,
                     }
                 )
 
@@ -100,12 +112,15 @@ def get_profiles(token: Optional[str] = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"db error: {e!s}")
 
+
 @router.delete("/profile/{token}")
 def delete_profile(token: str):
     """Delete a patient's profile by token."""
     try:
         with sqlite3.connect("data/app.db", timeout=10) as c:
-            row = c.execute("SELECT token FROM patients WHERE token=?", (token,)).fetchone()
+            row = c.execute(
+                "SELECT token FROM patients WHERE token=?", (token,)
+            ).fetchone()
             if not row:
                 raise HTTPException(status_code=404, detail="not found")
 
@@ -136,7 +151,9 @@ def submit_profile(body: ProfileIn = Body(...)):
                 "CREATE TABLE IF NOT EXISTS patients (token TEXT PRIMARY KEY, profile_json TEXT, medical_history_json TEXT, created_at TEXT, updated_at TEXT)"
             )
             # check existing
-            row = c.execute("SELECT token FROM patients WHERE token=?", (body.token,)).fetchone()
+            row = c.execute(
+                "SELECT token FROM patients WHERE token=?", (body.token,)
+            ).fetchone()
             now = datetime.utcnow().isoformat()
             profile_json = __import__("json").dumps(body.profile)
             if row:
@@ -182,7 +199,12 @@ def create_appointment(body: AppointmentIn = Body(...)):
             )
             c.execute(
                 "INSERT INTO patient_appointments(token, key, payload_json, created_at) VALUES(?, ?, json(?), ?)",
-                (body.token, key, __import__("json").dumps(body.appointmentData), datetime.utcnow().isoformat()),
+                (
+                    body.token,
+                    key,
+                    __import__("json").dumps(body.appointmentData),
+                    datetime.utcnow().isoformat(),
+                ),
             )
             c.commit()
 
@@ -198,12 +220,20 @@ def update_appointment(key: str, body: AppointmentIn = Body(...)):
         raise HTTPException(status_code=400, detail="token required")
     try:
         with sqlite3.connect("data/app.db") as c:
-            row = c.execute("SELECT key FROM patient_appointments WHERE key=? AND token=?", (key, body.token)).fetchone()
+            row = c.execute(
+                "SELECT key FROM patient_appointments WHERE key=? AND token=?",
+                (key, body.token),
+            ).fetchone()
             if not row:
                 raise HTTPException(status_code=404, detail="not found")
             c.execute(
                 "UPDATE patient_appointments SET payload_json=json(?), created_at=? WHERE key=? AND token=?",
-                (__import__("json").dumps(body.appointmentData), datetime.utcnow().isoformat(), key, body.token),
+                (
+                    __import__("json").dumps(body.appointmentData),
+                    datetime.utcnow().isoformat(),
+                    key,
+                    body.token,
+                ),
             )
             c.commit()
         return {"ok": True, "key": key}
