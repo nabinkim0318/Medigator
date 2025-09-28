@@ -1,8 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import ProfileQuestionnaire from "../pages/ProfileQuestionnaire";
 
 export default function ProfileQuestionnaireRoute() {
-  return <ProfileQuestionnaire />;
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ProfileQuestionnaire />
+    </Suspense>
+  );
 }

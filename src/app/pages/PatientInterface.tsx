@@ -267,8 +267,8 @@ const TOTAL_STEPS = 9;
 
 export default function PatientChestPainQuestionnairePage() {
   const router = useRouter();
-  const search = new URLSearchParams(window.location.search);
-  const token = search.get("token") ?? "";
+  const searchParams = useSearchParams();
+  const token = searchParams?.get("token") ?? "";
   // Answers
   const [q1, setQ1] = useState<SingleAnswer>({}); // When did the pain start? (single)
   const [q2, setQ2] = useState<MultiAnswer>({ selected: [] });

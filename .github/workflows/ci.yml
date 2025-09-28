@@ -133,7 +133,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t bbb-medical-api:latest .
+        docker build -f docker/Dockerfile -t bbb-medical-api:latest .
 
     - name: Test Docker image
       run: |
