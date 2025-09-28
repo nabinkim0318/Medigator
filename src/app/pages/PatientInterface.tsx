@@ -351,9 +351,34 @@ export default function PatientChestPainQuestionnairePage() {
       q8,
       q9,
     };
-    // Replace with your API call / router push etc.
-    console.log("Questionnaire submission:", payload);
-    alert("Thanks! Your responses were captured in the console.");
+    // POST appointment payload to backend under the user's token
+    const search = new URLSearchParams(window.location.search);
+    const token = search.get("token") ?? "";
+    const API_BASE = (process.env.NEXT_PUBLIC_API_URL as string) || "http://localhost:8082";
+
+    const body = { token, appointmentData: payload };
+
+    fetch(`${API_BASE}/api/v1/patient/appointment`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const t = await res.text();
+          throw new Error(`save failed: ${res.status} ${t}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        // show user the key so they can reference or copy it
+        // eslint-disable-next-line no-alert
+        alert(`Saved appointment data as ${data.key}`);
+      })
+      .catch((err) => {
+        // eslint-disable-next-line no-alert
+        alert(`Failed to save appointment: ${err.message}`);
+      });
   };
 
   // --- Render per step

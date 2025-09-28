@@ -10,6 +10,6 @@ import DoctorPatientView from "./pages/DoctorPatientView";
 
 export default function Home() {
   return (
-    <SignIn />
+    <DoctorPatientView />
   );
 }
