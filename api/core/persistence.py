@@ -1,5 +1,5 @@
 # api/core/persistence.py
-from api.core.config import settings
+from core.config import settings
 
 
 def write_guard():

@@ -12,18 +12,20 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
-from api.core.config import settings
-from api.middleware.log_sanitizer import NoBodyLoggingFilter, RedactLogsMiddleware
-from api.middleware.performance import PerformanceMiddleware
-from api.routers import codes, evidence, llm, rag, report, summary
+from core.config import settings
+from middleware.log_sanitizer import NoBodyLoggingFilter, RedactLogsMiddleware
+from middleware.performance import PerformanceMiddleware
+from routers import codes, evidence, llm, rag, report, summary
+from routers import auth
+from routers import patient
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from api.core.exceptions import setup_exception_handlers
+from core.exceptions import setup_exception_handlers
 
 # Configure structured logging
-from api.core.logging_config import setup_logging
-from api.core.startup import perform_startup_checks
+from core.logging_config import setup_logging
+from core.startup import perform_startup_checks
 
 logger = setup_logging()
 
@@ -51,6 +53,8 @@ app.include_router(summary.router, prefix="/api/v1", tags=["summary"])
 app.include_router(evidence.router, prefix="/api/v1", tags=["evidence"])
 app.include_router(codes.router, prefix="/api/v1", tags=["codes"])
 app.include_router(rag.router, prefix="/api/v1", tags=["rag"])
+app.include_router(auth.router, prefix="/api/v1", tags=["auth"])
+app.include_router(patient.router, prefix="/api/v1", tags=["patient"])
 logger.info("API routers registered successfully")
 
 # Configure logging with PHI protection

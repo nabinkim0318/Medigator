@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
 type QId = "medicalHistory" | "familyHistory" | "allergies";
 
@@ -95,6 +96,23 @@ const PageShell: React.FC<{
 };
 
 export default function OnboardingQuestionnaire() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const token = searchParams?.get("token") ?? null;
+
+  const copyToken = async () => {
+    if (!token) return;
+    try {
+      await navigator.clipboard.writeText(token);
+      // quick user feedback
+      // eslint-disable-next-line no-alert
+      alert("Token copied to clipboard");
+    } catch (e) {
+      // fallback
+      // eslint-disable-next-line no-alert
+      alert("Unable to copy token to clipboard");
+    }
+  };
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<QA>({
     medicalHistory: "",
@@ -117,9 +135,34 @@ export default function OnboardingQuestionnaire() {
     if (currentStep < QUESTIONS.length - 1) {
       setCurrentStep((s) => s + 1);
     } else {
-      // Final submit
-      console.log("Onboarding answers:", answers);
-      alert("Thanks! Your responses were captured in the console.");
+      // Final submit — POST medicalHistory to backend then navigate to PatientInterface
+      const payload = {
+        token,
+        medicalHistory: answers,
+      };
+
+      const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082";
+      fetch(`${API_BASE}/api/v1/patient/patientData`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+        .then(async (res) => {
+          if (!res.ok) {
+            const txt = await res.text();
+            throw new Error(`save failed: ${res.status} ${txt}`);
+          }
+          return res.json();
+        })
+        .then(() => {
+          // navigate to patient interface with token
+          router.push(`/OnboardingThankYou?token=${encodeURIComponent(token ?? "")}`);
+        })
+        .catch((err) => {
+          // basic error feedback
+          // eslint-disable-next-line no-alert
+          alert(`Failed to save onboarding: ${err.message}`);
+        });
     }
   };
 
@@ -134,6 +177,21 @@ export default function OnboardingQuestionnaire() {
       onNext={goNext}
       nextDisabled={!canProceed}
     >
+      {/* Display token (if present) */}
+      {token && (
+        <div className="mb-4 flex items-center justify-end gap-2">
+          <div className="text-xs text-gray-500">Auth token:</div>
+          <div className="px-2 py-1 rounded-md bg-gray-100 text-xs font-mono text-gray-700 truncate max-w-xs">
+            {token}
+          </div>
+          <button
+            onClick={copyToken}
+            className="px-2 py-1 rounded-md bg-orange-100 text-orange-700 text-xs"
+          >
+            Copy
+          </button>
+        </div>
+      )}
       {/* Question text */}
       <h2 className="text-xl font-medium text-gray-900 text-left mb-3">
         {current.question}

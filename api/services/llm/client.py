@@ -18,7 +18,7 @@ from openai import (
     RateLimitError,
 )
 
-from api.core.config import settings
+from core.config import settings
 
 logger = logging.getLogger("llm")
 

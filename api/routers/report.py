@@ -12,11 +12,11 @@ from fastapi import APIRouter, Body, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from api.core.exceptions import MedicalAPIException
-from api.core.persistence import write_guard
-from api.services.llm import llm_service
-from api.services.pdf import pdf_service
-from api.services.rules import rules_service
+from core.exceptions import MedicalAPIException
+from core.persistence import write_guard
+from services.llm import llm_service
+from services.pdf import pdf_service
+from services.rules import rules_service
 
 # Get logger
 logger = logging.getLogger(__name__)
