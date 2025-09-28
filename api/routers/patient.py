@@ -211,3 +211,57 @@ def update_appointment(key: str, body: AppointmentIn = Body(...)):
         raise
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"db error: {e!s}")
+
+@router.get("/appointment")
+def get_appointments(token: Optional[str] = None):
+    """Return appointments stored in the patient_appointments table.
+
+    If `token` is provided, returns only that user’s appointments.
+    Otherwise returns all appointments.
+    """
+    try:
+        with sqlite3.connect("data/app.db") as c:
+            c.execute(
+                "CREATE TABLE IF NOT EXISTS patient_appointments (token TEXT, key TEXT PRIMARY KEY, payload_json TEXT, created_at TEXT)"
+            )
+
+            if token:
+                rows = c.execute(
+                    "SELECT token, key, payload_json, created_at FROM patient_appointments WHERE token=?",
+                    (token,),
+                ).fetchall()
+                if not rows:
+                    raise HTTPException(status_code=404, detail="not found")
+                appts = []
+                for token_v, key, payload_json, created_at in rows:
+                    appts.append(
+                        {
+                            "token": token_v,
+                            "key": key,
+                            "appointmentData": __import__("json").loads(payload_json) if payload_json else None,
+                            "createdAt": created_at,
+                        }
+                    )
+                return {"ok": True, "appointments": appts}
+
+            # admin view → all appointments
+            rows = c.execute(
+                "SELECT token, key, payload_json, created_at FROM patient_appointments"
+            ).fetchall()
+            appointments = []
+            for token_v, key, payload_json, created_at in rows:
+                appointments.append(
+                    {
+                        "token": token_v,
+                        "key": key,
+                        "appointmentData": __import__("json").loads(payload_json) if payload_json else None,
+                        "createdAt": created_at,
+                    }
+                )
+        return {"ok": True, "appointments": appointments}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
+
+

@@ -16,7 +16,7 @@ export default function SignIn() {
 
     // Quick local doctor shortcut
     if (username === "doc" && password === "pass") {
-      router.push(`/DoctorPatientView`);
+      router.push(`/DoctorDashboard`);
       return;
     }
 
