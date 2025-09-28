@@ -95,7 +95,7 @@ def load_em_rules(path: str) -> list[EMRule]:
                     mdm_data=r["mdm_data"].strip(),
                     mdm_risk=r["mdm_risk"].strip(),
                     em_cpt=r["em_cpt"].strip(),
-                    rationale_key=r["rationale"].strip(),
+                    rationale_key=r["rationale_key"].strip(),
                 ),
             )
     return rules

@@ -517,18 +517,32 @@ const DoctorPatientView: React.FC = () => {
                           />
                           <ActionButton
                             type="delete"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // delete logic here...
-                              alert(`Delete ${patient.name}`);
+                            onClick={async (e) => {
+                                e.stopPropagation();
+                                if (!confirm(`Are you sure you want to delete ${patient.name}?`)) return;
+
+                                try {
+                                  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082";
+                                  const res = await fetch(`${API_BASE}/api/v1/patient/profile/${patient.id}`, {
+                                    method: "DELETE",
+                                  });
+                                  if (!res.ok) {
+                                    const t = await res.text();
+                                    throw new Error(`Delete failed: ${res.status} ${t}`);
+                                  }
+
+                                  // remove from state
+                                  setPatients((prev) => prev.filter((p) => p.id !== patient.id));
+                                } catch (err: any) {
+                                  alert(`Error deleting: ${err.message}`);
+                                }
+                      
                             }}
                           />
                           <ActionButton
                             type="edit"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // edit logic here...
-                              alert(`Edit ${patient.name}`);
+                            onClick={async (e) => {
+                              alert(`Edit Placeholder`);
                             }}
                           />
                         </div>

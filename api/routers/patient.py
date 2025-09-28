@@ -100,6 +100,23 @@ def get_profiles(token: Optional[str] = None):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"db error: {e!s}")
 
+@router.delete("/profile/{token}")
+def delete_profile(token: str):
+    """Delete a patient's profile by token."""
+    try:
+        with sqlite3.connect("data/app.db", timeout=10) as c:
+            row = c.execute("SELECT token FROM patients WHERE token=?", (token,)).fetchone()
+            if not row:
+                raise HTTPException(status_code=404, detail="not found")
+
+            c.execute("DELETE FROM patients WHERE token=?", (token,))
+            c.commit()
+        return {"ok": True, "token": token}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
+
 
 @router.post("/profile")
 def submit_profile(body: ProfileIn = Body(...)):
