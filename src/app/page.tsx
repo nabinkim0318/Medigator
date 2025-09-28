@@ -7,7 +7,5 @@ import OnboardingQuestionnaire from "./pages/OnboardingQuestionaire";
 import SignIn from "./pages/SignIn";
 
 export default function Home() {
-  return (
-    <SignIn />
-  );
+  return <SignIn />;
 }

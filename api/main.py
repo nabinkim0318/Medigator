@@ -8,7 +8,7 @@ import logging.config
 import os
 import sys
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 
 from api.core.config import settings
@@ -56,13 +56,31 @@ logger.info("API routers registered successfully")
 logger = logging.getLogger("uvicorn.access")
 logger.addFilter(NoBodyLoggingFilter())
 
+
+# Request size limit middleware
+@app.middleware("http")
+async def limit_request_size(request: Request, call_next):
+    """Limit request size to prevent DoS attacks"""
+    if request.method in ["POST", "PUT", "PATCH"]:
+        content_length = request.headers.get("content-length")
+        if content_length and int(content_length) > 1024 * 1024:  # 1MB limit
+            logger.warning(f"Request too large: {content_length} bytes from {request.client.host}")
+            raise HTTPException(status_code=413, detail="Request too large (max 1MB)")
+    return await call_next(request)
+
+
 # Add middleware (order matters: last added = first executed)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.cors_origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_origins=settings.cors_origins,  # allow all origins
+    allow_credentials=True,  # allow credentials
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  # allow all methods
+    allow_headers=[
+        "Authorization",
+        "Content-Type",
+        "Accept",
+        "X-Requested-With",
+    ],  # allow all headers
 )
 app.add_middleware(RedactLogsMiddleware)
 app.add_middleware(PerformanceMiddleware)
