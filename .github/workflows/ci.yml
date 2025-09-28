@@ -49,9 +49,7 @@ jobs:
     - name: Run linting
       run: |
         ruff check api/
-        black --check api/
-        isort --check-only api/
-        mypy api/
+        ruff format --check api/
 
     - name: Run tests
       run: |

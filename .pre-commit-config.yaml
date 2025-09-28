@@ -38,4 +38,4 @@ repos:
     rev: v4.0.0-alpha.8
     hooks:
       - id: prettier
-        files: ^app/(src|.*)\.(ts|tsx|js|jsx|json|css|md)$
+        files: ^src/.*\.(ts|tsx|js|jsx|json|css|md)$
