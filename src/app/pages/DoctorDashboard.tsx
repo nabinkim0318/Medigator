@@ -37,11 +37,41 @@ interface PatientFeeItem {
 }
 
 const appointments: AppointmentRow[] = [
-  { id: "a1", time: "9:30 AM", date: "05/12/2022", patient: { name: "Elizabeth Polson", initials: "JD", gender: "Female" }, doctor: "Dr. John" },
-  { id: "a2", time: "9:30 AM", date: "05/12/2022", patient: { name: "John David", initials: "JD", gender: "Male" }, doctor: "Dr. Joel" },
-  { id: "a3", time: "10:30 AM", date: "05/12/2022", patient: { name: "Krishtav Rajan", initials: "KR", gender: "Male" }, doctor: "Dr. Joel" },
-  { id: "a4", time: "11:00 AM", date: "05/12/2022", patient: { name: "Sumanth Tinson", initials: "JD", gender: "Male" }, doctor: "Dr. John" },
-  { id: "a5", time: "11:30 AM", date: "05/12/2022", patient: { name: "EG Subramani", initials: "JD", gender: "Male" }, doctor: "Dr. John" },
+  {
+    id: "a1",
+    time: "9:30 AM",
+    date: "05/12/2022",
+    patient: { name: "Elizabeth Polson", initials: "JD", gender: "Female" },
+    doctor: "Dr. John",
+  },
+  {
+    id: "a2",
+    time: "9:30 AM",
+    date: "05/12/2022",
+    patient: { name: "John David", initials: "JD", gender: "Male" },
+    doctor: "Dr. Joel",
+  },
+  {
+    id: "a3",
+    time: "10:30 AM",
+    date: "05/12/2022",
+    patient: { name: "Krishtav Rajan", initials: "KR", gender: "Male" },
+    doctor: "Dr. Joel",
+  },
+  {
+    id: "a4",
+    time: "11:00 AM",
+    date: "05/12/2022",
+    patient: { name: "Sumanth Tinson", initials: "JD", gender: "Male" },
+    doctor: "Dr. John",
+  },
+  {
+    id: "a5",
+    time: "11:30 AM",
+    date: "05/12/2022",
+    patient: { name: "EG Subramani", initials: "JD", gender: "Male" },
+    doctor: "Dr. John",
+  },
 ];
 
 const clinicalUpdates: ClinicalUpdate[] = [
@@ -49,37 +79,61 @@ const clinicalUpdates: ClinicalUpdate[] = [
     id: "c1",
     title: "T2DM: New 130/80 BP Goal",
     author: "By Dr. K. Lee",
-    thumb: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=faces",
+    thumb:
+      "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=80&h=80&fit=crop&crop=faces",
     badge: "New",
   },
   {
     id: "c2",
     title: "SGLT2i for Non-Diabetic CKD",
     author: "By Dr. J. Chen",
-    thumb: "https://images.unsplash.com/photo-1541534401786-2077eed87a72?w=80&h=80&fit=crop&crop=faces",
+    thumb:
+      "https://images.unsplash.com/photo-1541534401786-2077eed87a72?w=80&h=80&fit=crop&crop=faces",
     badge: "New",
   },
   {
     id: "c3",
     title: "Updated PCP Anxiety Screening",
     author: "By Dr. M. Rodriguez",
-    thumb: "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=80&h=80&fit=crop&crop=faces",
+    thumb:
+      "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=80&h=80&fit=crop&crop=faces",
     badge: "New",
   },
   {
     id: "c4",
     title: "New Oral MDD Drug",
     author: "—",
-    thumb: "https://images.unsplash.com/photo-1606207554193-62c61d9bf34a?w=80&h=80&fit=crop&crop=faces",
+    thumb:
+      "https://images.unsplash.com/photo-1606207554193-62c61d9bf34a?w=80&h=80&fit=crop&crop=faces",
     badge: "Read",
   },
 ];
 
 const feeItems: PatientFeeItem[] = [
-  { id: "f1", name: "EG Subramani", status: "Doctor fee pending", initials: "KR" },
-  { id: "f2", name: "Elizabeth Polson", status: "Doctor fee pending", initials: "KR" },
-  { id: "f3", name: "Sumanth Tinson", status: "Doctor fee pending", initials: "KR" },
-  { id: "f4", name: "Krishtav Rajan", status: "Doctor fee pending", initials: "KR" },
+  {
+    id: "f1",
+    name: "EG Subramani",
+    status: "Doctor fee pending",
+    initials: "KR",
+  },
+  {
+    id: "f2",
+    name: "Elizabeth Polson",
+    status: "Doctor fee pending",
+    initials: "KR",
+  },
+  {
+    id: "f3",
+    name: "Sumanth Tinson",
+    status: "Doctor fee pending",
+    initials: "KR",
+  },
+  {
+    id: "f4",
+    name: "Krishtav Rajan",
+    status: "Doctor fee pending",
+    initials: "KR",
+  },
 ];
 
 const StatTile: React.FC<{
@@ -114,13 +168,25 @@ const StatTile: React.FC<{
       {icon}
     </div>
     <div>
-      <div style={{ fontSize: 22, fontWeight: 800, color: "#1f2937", lineHeight: 1 }}>{value}</div>
+      <div
+        style={{
+          fontSize: 22,
+          fontWeight: 800,
+          color: "#1f2937",
+          lineHeight: 1,
+        }}
+      >
+        {value}
+      </div>
       <div style={{ fontSize: 13, color: "#64748b" }}>{label}</div>
     </div>
   </div>
 );
 
-const AvatarBadge: React.FC<{ initials: string; size?: number }> = ({ initials, size = 30 }) => (
+const AvatarBadge: React.FC<{ initials: string; size?: number }> = ({
+  initials,
+  size = 30,
+}) => (
   <div
     style={{
       width: size,
@@ -148,7 +214,7 @@ const DashboardPage: React.FC = () => {
       { pct: 12, label: "Diabetes (E11)", color: "#22c55e" },
       { pct: 8, label: "Others", color: "#f59e0b" },
     ],
-    []
+    [],
   );
 
   return (
@@ -183,7 +249,9 @@ const DashboardPage: React.FC = () => {
             >
               +
             </div>
-            <div style={{ color: "#ef6c00", fontWeight: 800, fontSize: 18 }}>Medigator</div>
+            <div style={{ color: "#ef6c00", fontWeight: 800, fontSize: 18 }}>
+              Medigator
+            </div>
           </div>
         </div>
 
@@ -205,7 +273,9 @@ const DashboardPage: React.FC = () => {
               padding: "12px 16px",
               color: item.active ? "#ea580c" : "#475569",
               background: item.active ? "#fff7ed" : "transparent",
-              borderRight: item.active ? "3px solid #ea580c" : "3px solid transparent",
+              borderRight: item.active
+                ? "3px solid #ea580c"
+                : "3px solid transparent",
               cursor: "pointer",
             }}
           >
@@ -248,8 +318,23 @@ const DashboardPage: React.FC = () => {
             borderBottom: "1px solid #f1f5f9",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, color: "#374151" }}>Dashboard</h1>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <h1
+              style={{
+                margin: 0,
+                fontSize: 28,
+                fontWeight: 800,
+                color: "#374151",
+              }}
+            >
+              Dashboard
+            </h1>
             <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <div
                 title="Notifications"
@@ -281,7 +366,9 @@ const DashboardPage: React.FC = () => {
                   alt="Doctor"
                 />
                 <div>
-                  <div style={{ fontWeight: 800, color: "#334155" }}>Jonitha Cathrine</div>
+                  <div style={{ fontWeight: 800, color: "#334155" }}>
+                    Jonitha Cathrine
+                  </div>
                   <div style={{ fontSize: 12, color: "#94a3b8" }}>Doctor</div>
                 </div>
               </div>
@@ -290,7 +377,14 @@ const DashboardPage: React.FC = () => {
         </div>
 
         {/* Content Grid */}
-        <div style={{ padding: 24, display: "grid", gridTemplateColumns: "1.2fr 1.8fr", gap: 24 }}>
+        <div
+          style={{
+            padding: 24,
+            display: "grid",
+            gridTemplateColumns: "1.2fr 1.8fr",
+            gap: 24,
+          }}
+        >
           {/* Left column */}
           <div style={{ display: "grid", gap: 24 }}>
             {/* Activity Overview (2x2 grid) */}
@@ -302,8 +396,23 @@ const DashboardPage: React.FC = () => {
                 padding: 18,
               }}
             >
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-                <h3 style={{ margin: 0, color: "#111827", fontSize: 16, fontWeight: 800 }}>Activity Overview</h3>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <h3
+                  style={{
+                    margin: 0,
+                    color: "#111827",
+                    fontSize: 16,
+                    fontWeight: 800,
+                  }}
+                >
+                  Activity Overview
+                </h3>
                 <button
                   style={{
                     display: "flex",
@@ -329,10 +438,26 @@ const DashboardPage: React.FC = () => {
                   marginTop: 14,
                 }}
               >
-                <StatTile icon={<ClipboardList size={22} />} value={100} label="Appointments" />
-                <StatTile icon={<Users size={22} />} value={50} label="New Patients" />
-                <StatTile icon={<Pill size={22} />} value={500} label="Medicines Sold" />
-                <StatTile icon={<FlaskConical size={22} />} value={100} label="Lab Tests" />
+                <StatTile
+                  icon={<ClipboardList size={22} />}
+                  value={100}
+                  label="Appointments"
+                />
+                <StatTile
+                  icon={<Users size={22} />}
+                  value={50}
+                  label="New Patients"
+                />
+                <StatTile
+                  icon={<Pill size={22} />}
+                  value={500}
+                  label="Medicines Sold"
+                />
+                <StatTile
+                  icon={<FlaskConical size={22} />}
+                  value={100}
+                  label="Lab Tests"
+                />
               </div>
             </div>
 
@@ -354,7 +479,16 @@ const DashboardPage: React.FC = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <h3 style={{ margin: 0, color: "#111827", fontSize: 16, fontWeight: 800 }}>Clinical Updates</h3>
+                <h3
+                  style={{
+                    margin: 0,
+                    color: "#111827",
+                    fontSize: 16,
+                    fontWeight: 800,
+                  }}
+                >
+                  Clinical Updates
+                </h3>
                 <button
                   style={{
                     border: "none",
@@ -369,7 +503,14 @@ const DashboardPage: React.FC = () => {
                 </button>
               </div>
 
-              <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 12 }}>
+              <div
+                style={{
+                  padding: 12,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 12,
+                }}
+              >
                 {clinicalUpdates.map((u) => (
                   <div
                     key={u.id}
@@ -385,11 +526,26 @@ const DashboardPage: React.FC = () => {
                     <img
                       src={u.thumb}
                       alt={u.title}
-                      style={{ width: 36, height: 36, borderRadius: 999, objectFit: "cover" }}
+                      style={{
+                        width: 36,
+                        height: 36,
+                        borderRadius: 999,
+                        objectFit: "cover",
+                      }}
                     />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 700, color: "#111827", fontSize: 14 }}>{u.title}</div>
-                      <div style={{ fontSize: 12, color: "#64748b" }}>{u.author}</div>
+                      <div
+                        style={{
+                          fontWeight: 700,
+                          color: "#111827",
+                          fontSize: 14,
+                        }}
+                      >
+                        {u.title}
+                      </div>
+                      <div style={{ fontSize: 12, color: "#64748b" }}>
+                        {u.author}
+                      </div>
                     </div>
                     <button
                       style={{
@@ -476,7 +632,14 @@ const DashboardPage: React.FC = () => {
 
               <div style={{ maxHeight: 270, overflowY: "auto" }}>
                 <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                  <thead style={{ background: "#f9fafb", position: "sticky", top: 0, zIndex: 1 }}>
+                  <thead
+                    style={{
+                      background: "#f9fafb",
+                      position: "sticky",
+                      top: 0,
+                      zIndex: 1,
+                    }}
+                  >
                     <tr>
                       {["Time", "Date", "Patient Name", "Doctor"].map((h) => (
                         <th
@@ -505,23 +668,45 @@ const DashboardPage: React.FC = () => {
                           transition: "background-color .2s",
                         }}
                         onMouseEnter={(e) =>
-                          ((e.currentTarget as HTMLTableRowElement).style.backgroundColor = "#fafafa")
+                          ((
+                            e.currentTarget as HTMLTableRowElement
+                          ).style.backgroundColor = "#fafafa")
                         }
                         onMouseLeave={(e) =>
-                          ((e.currentTarget as HTMLTableRowElement).style.backgroundColor = "transparent")
+                          ((
+                            e.currentTarget as HTMLTableRowElement
+                          ).style.backgroundColor = "transparent")
                         }
                       >
-                        <td style={{ padding: "12px 16px", color: "#475569" }}>{r.time}</td>
-                        <td style={{ padding: "12px 16px", color: "#475569" }}>{r.date}</td>
+                        <td style={{ padding: "12px 16px", color: "#475569" }}>
+                          {r.time}
+                        </td>
+                        <td style={{ padding: "12px 16px", color: "#475569" }}>
+                          {r.date}
+                        </td>
                         <td style={{ padding: "12px 16px" }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 10,
+                            }}
+                          >
                             <AvatarBadge initials={r.patient.initials} />
-                            <span style={{ color: "#111827", fontWeight: 700, fontSize: 14 }}>
+                            <span
+                              style={{
+                                color: "#111827",
+                                fontWeight: 700,
+                                fontSize: 14,
+                              }}
+                            >
                               {r.patient.name}
                             </span>
                           </div>
                         </td>
-                        <td style={{ padding: "12px 16px", color: "#475569" }}>{r.doctor}</td>
+                        <td style={{ padding: "12px 16px", color: "#475569" }}>
+                          {r.doctor}
+                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -547,7 +732,16 @@ const DashboardPage: React.FC = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <h3 style={{ margin: 0, color: "#111827", fontSize: 16, fontWeight: 800 }}>Patient Fee</h3>
+                <h3
+                  style={{
+                    margin: 0,
+                    color: "#111827",
+                    fontSize: 16,
+                    fontWeight: 800,
+                  }}
+                >
+                  Patient Fee
+                </h3>
                 <button
                   style={{
                     border: "none",
@@ -560,7 +754,14 @@ const DashboardPage: React.FC = () => {
                 </button>
               </div>
 
-              <div style={{ padding: 12, display: "flex", flexDirection: "column", gap: 12 }}>
+              <div
+                style={{
+                  padding: 12,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 12,
+                }}
+              >
                 {feeItems.map((p) => (
                   <div
                     key={p.id}
@@ -575,8 +776,24 @@ const DashboardPage: React.FC = () => {
                   >
                     <AvatarBadge initials={p.initials} />
                     <div style={{ flex: 1 }}>
-                      <div style={{ fontWeight: 800, color: "#111827", fontSize: 14 }}>{p.name}</div>
-                      <div style={{ fontSize: 12, color: "#f97316", fontWeight: 700 }}>{p.status}</div>
+                      <div
+                        style={{
+                          fontWeight: 800,
+                          color: "#111827",
+                          fontSize: 14,
+                        }}
+                      >
+                        {p.name}
+                      </div>
+                      <div
+                        style={{
+                          fontSize: 12,
+                          color: "#f97316",
+                          fontWeight: 700,
+                        }}
+                      >
+                        {p.status}
+                      </div>
                     </div>
                     <button
                       style={{
@@ -599,7 +816,14 @@ const DashboardPage: React.FC = () => {
           </div>
         </div>
 
-        <div style={{ textAlign: "center", color: "#cbd5e1", fontSize: 12, paddingBottom: 16 }}>
+        <div
+          style={{
+            textAlign: "center",
+            color: "#cbd5e1",
+            fontSize: 12,
+            paddingBottom: 16,
+          }}
+        >
           © 2025 Medigator. All rights reserved.
         </div>
       </main>

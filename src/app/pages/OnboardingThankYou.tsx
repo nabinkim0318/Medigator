@@ -42,7 +42,9 @@ export default function OnboardingThankYou({
             <ul className="space-y-2 text-gray-700">
               <li>• Tell us about your current symptoms.</li>
               <li>• You’ll see an estimated cost for your appointment.</li>
-              <li>• Your doctor will receive a clear summary of your answers.</li>
+              <li>
+                • Your doctor will receive a clear summary of your answers.
+              </li>
             </ul>
           </div>
 

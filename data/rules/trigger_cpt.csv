@@ -1,0 +1,10 @@
+trigger,cpt,cpt_label,rationale
+chest_pain+suspected_MI,93000,ECG with interpretation,Initial ischemia detection
+chest_pain+acs_ruleout,84484,Troponin quantitative,ACS biomarker test
+chest_pain+confirmed_MI,93454,Coronary angiography,Confirm and localize MI
+chest_pain+suspected_angina,93000,ECG with interpretation,Baseline ischemia check
+chest_pain+exertional,93015,Stress test,Functional ischemia test
+chest_pain+angina_followup,78452,Myocardial perfusion imaging,Perfusion evaluation
+chest_pain+suspected_GERD,91035,Esophageal pH monitoring,Confirm acid reflux
+chest_pain+food_related,43235,Upper GI endoscopy,Check esophagitis
+chest_pain+reflux_chronic,74220,Upper GI radiologic exam,Structural evaluation

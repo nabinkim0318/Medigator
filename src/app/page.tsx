@@ -10,7 +10,5 @@ import DoctorPatientView from "./pages/DoctorPatientView";
 import OnboardingThankYou from "./pages/OnboardingThankYou";
 
 export default function Home() {
-  return (
-    <DoctorDashboard />
-  );
+  return <DoctorDashboard />;
 }

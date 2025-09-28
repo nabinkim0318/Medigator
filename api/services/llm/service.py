@@ -70,7 +70,7 @@ class LLMService:
             # 6) Enhanced validation with retry logic
             try:
                 text = json.dumps(raw, ensure_ascii=False)
-                out = validate_out(text)  # SummaryOut → dict로 반환
+                out = validate_out(text)  # SummaryOut → dict conversion
                 summary_data = out.model_dump()
                 log.info("JSON validation successful")
             except Exception as e:
