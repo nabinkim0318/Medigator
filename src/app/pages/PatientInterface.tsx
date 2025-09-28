@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 // --- Types
@@ -38,13 +38,29 @@ const PageShell: React.FC<{
   nextDisabled,
   onStepSelect,
 }) => {
+  const [name, setName] = useState<string>("");
+
+  useEffect(() => {
+    const token = new URLSearchParams(window.location.search).get("token") ?? "";
+    const API_BASE = (process.env.NEXT_PUBLIC_API_URL as string) || "http://localhost:8082";
+
+    if (!token) return;
+
+    fetch(`${API_BASE}/api/v1/patient/profile?token=${encodeURIComponent(token)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        const profile = data?.profiles?.[0]?.profile;
+        if (profile?.name) setName(profile.name);
+      })
+      .catch((err) => console.error("Failed to fetch patient name", err));
+  }, []);
   return (
     <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
       <div className="mx-auto w-full max-w-3xl text-center">
 
         {/* Top-left greeting */}
         <div className="absolute top-4 left-4 text-gray-700 font-medium">
-          Hi, [NAME]
+          {name ? `Welcome, ${name}` : "Hi"}
         </div>
 
         {/* Top-right back link */}
