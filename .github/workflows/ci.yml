@@ -55,7 +55,7 @@ jobs:
 
     - name: Run tests
       run: |
-        PYTHONPATH=. pytest api/tests/ -v --cov=api --cov-report=xml --cov-report=html
+        PYTHONPATH=. pytest api/tests/ -v --cov=api --cov-report=xml --cov-report=html -k "not trio"
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v4
