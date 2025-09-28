@@ -111,17 +111,17 @@ ci: lint test
 # ====== Testing ======
 test-hardening:
 	@echo "🔧 Running hardening tests..."
-	@cd $(ROOT) && PYTHONPATH=$(ROOT) $(PY) test_hardening.py
+	@cd $(ROOT) && PYTHONPATH=$(ROOT) $(PY) tests/test_hardening.py
 	@echo "✅ Hardening tests completed."
 
 test-llm:
 	@echo "🤖 Running LLM tests..."
-	@cd $(ROOT) && PYTHONPATH=$(ROOT) $(PY) test_api_mock.py
+	@cd $(ROOT) && PYTHONPATH=$(ROOT) $(PY) tests/test_api_mock.py
 	@echo "✅ LLM tests completed."
 
 test-api:
 	@echo "🌐 Running API tests..."
-	@cd $(ROOT) && PYTHONPATH=$(ROOT) $(PY) test_api_mock.py
+	@cd $(ROOT) && PYTHONPATH=$(ROOT) $(PY) tests/test_api_mock.py
 	@echo "✅ API tests completed."
 
 # ====== Build / Artifacts ======

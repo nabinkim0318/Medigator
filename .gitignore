@@ -88,6 +88,9 @@ api/*.sqlite*
 # ----------------------------
 dist/
 build/
+.next/
+.vite/
+.cache/
 *.exe
 *.out
 *.a
@@ -101,6 +104,8 @@ reports/**
 !reports/.gitkeep
 api/reports/**
 !api/reports/.gitkeep
+logs/**
+!logs/.gitkeep
 
 # ----------------------------
 # Caches
