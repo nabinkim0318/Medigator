@@ -9,7 +9,7 @@ import time
 from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
-from core.logging_config import log_performance_metric
+from api.core.logging_config import log_performance_metric
 
 logger = logging.getLogger(__name__)
 

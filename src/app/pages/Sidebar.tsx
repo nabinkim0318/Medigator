@@ -1,6 +1,15 @@
 "use client";
 
 import React from "react";
+import { useRouter } from "next/navigation";
+import dashboard from "../assets/dashboard.svg";
+import patients from "../assets/patients.svg";
+import appointments from "../assets/appointments.svg";
+import doctors from "../assets/doctors.svg";
+import messages from "../assets/messages.svg";
+import clinical_updates from "../assets/clinical_updates.svg";
+import settings from "../assets/settings.svg";
+import logout from "../assets/logout.svg";
 
 type NavItem =
   | "Dashboard"
@@ -16,14 +25,23 @@ export interface SidebarProps {
   onSelect?: (item: NavItem) => void;
 }
 
-const NAV_ITEMS: { icon: string; label: NavItem }[] = [
-  { icon: "🧭", label: "Dashboard" },
-  { icon: "👥", label: "Patients" },
-  { icon: "📝", label: "Appointments" },
-  { icon: "👨‍⚕️", label: "Doctors" },
-  { icon: "💬", label: "Messages" },
-  { icon: "🏥", label: "Clinical Updates" },
-  { icon: "⚙️", label: "Settings" },
+// Turbopack/Next may import SVGs as objects with a `src` field
+const getIconSrc = (value: unknown): string => {
+  if (typeof value === "string") return value;
+  if (value && typeof value === "object" && "src" in (value as any)) {
+    return (value as any).src as string;
+  }
+  return "";
+};
+
+const NAV_ITEMS: { icon: any; label: NavItem }[] = [
+  { icon: dashboard as any, label: "Dashboard" },
+  { icon: patients as any, label: "Patients" },
+  { icon: appointments as any, label: "Appointments" },
+  { icon: doctors as any, label: "Doctors" },
+  { icon: messages as any, label: "Messages" },
+  { icon: clinical_updates as any, label: "Clinical Updates" },
+  { icon: settings as any, label: "Settings" },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({
@@ -92,7 +110,11 @@ const Sidebar: React.FC<SidebarProps> = ({
               textAlign: "left",
             }}
           >
-            <span style={{ fontSize: 18 }}>{item.icon}</span>
+            <img
+              src={getIconSrc(item.icon)}
+              alt={item.label}
+              style={{ width: 18, height: 18 }}
+            />
             <span style={{ fontWeight: 700 }}>{item.label}</span>
           </button>
         );
@@ -114,7 +136,11 @@ const Sidebar: React.FC<SidebarProps> = ({
             cursor: "pointer",
           }}
         >
-          <span>🚪</span>
+          <img
+            src={getIconSrc(logout)}
+            alt="Logout"
+            style={{ width: 18, height: 18 }}
+          />
           <span style={{ fontWeight: 700 }}>Logout</span>
         </button>
       </div>

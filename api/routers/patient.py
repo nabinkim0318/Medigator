@@ -1,297 +1,777 @@
-import sqlite3
-from datetime import datetime
-from typing import Optional
+# api/routers/patient.py
+"""
+Patient API router
+Handles patient intake data storage and retrieval
+"""
 
-from fastapi import APIRouter, Body, HTTPException
+import json
+import logging
+import sqlite3
+import uuid
+from concurrent.futures import ThreadPoolExecutor
+
+from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
 
+from api.core.config import settings
+from api.services.llm import llm_service
+
+# Get logger
+logger = logging.getLogger(__name__)
+
+# Router creation
 router = APIRouter(prefix="/patient", tags=["patient"])
 
 
-class PatientDataIn(BaseModel):
-    token: str
-    medicalHistory: dict
+def _get_db_connection():
+    """Get database connection"""
+    db_path = settings.db_url.replace("sqlite:///", "")
+    conn = sqlite3.connect(db_path)
+    conn.row_factory = (
+        sqlite3.Row
+    )  # This enables column access by name: row['column_name']
+    return conn
 
 
-class ProfileIn(BaseModel):
-    token: str
-    profile: dict
+def _ensure_table_exists(conn):
+    """Ensure intake_payload table exists"""
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS intake_session (
+            id TEXT PRIMARY KEY,                -- uuid
+            token TEXT UNIQUE NOT NULL,
+            status TEXT NOT NULL CHECK(status IN ('PENDING','SUBMITTED','EXPIRED')),
+            patient_hint TEXT,                  -- patient hint (optional)
+            created_at TEXT NOT NULL DEFAULT (datetime('now')),
+            expires_at TEXT NOT NULL,           -- ISO
+            submitted_at TEXT
+        );
+        """
+    )
+    cursor.execute(
+        """
+        CREATE TABLE IF NOT EXISTS intake_payload (
+            session_id TEXT PRIMARY KEY REFERENCES intake_session(id) ON DELETE CASCADE,
+            patient_data TEXT,                  -- patient profile data (JSON)
+            answers_json TEXT NOT NULL,         -- form response (non-PHI only)
+            ai_summary_status TEXT DEFAULT 'pending' -- New column for AI summary status
+        );
+        """
+    )
+    conn.commit()
 
 
-@router.post("/patientData")
-def submit_patient_data(body: PatientDataIn = Body(...)):
-    """Accept onboarding medical history and persist it tied to the user token.
-
-    Request shape:
-      { token: str, medicalHistory: { ... } }
-
-    Stores into table `patient_medical_history` with columns (token, payload_json, created_at)
-    """
-    if not body.token:
-        raise HTTPException(status_code=400, detail="token required")
-
-    # Basic persistence using sqlite like other routers
+def _generate_llm_summary_background(
+    session_id: str, token: str, appointment_data: dict
+):
+    """Generate LLM summary in background"""
     try:
-        with sqlite3.connect("data/app.db") as c:
-            c.execute(
-                "CREATE TABLE IF NOT EXISTS patient_medical_history (token TEXT PRIMARY KEY, payload_json TEXT, created_at TEXT)"
-            )
-            # Upsert – store latest payload
-            c.execute(
-                "INSERT OR REPLACE INTO patient_medical_history(token, payload_json, created_at) VALUES(?, json(?), ?)",
-                (
-                    body.token,
-                    __import__("json").dumps(body.medicalHistory),
-                    datetime.utcnow().isoformat(),
-                ),
-            )
-            c.commit()
+        logger.info(f"Starting LLM summary generation for session {session_id}")
 
-        return {"ok": True, "token": body.token}
+        # Prepare data for LLM
+        summary_data = {
+            "encounterId": token,
+            "patient": {},  # Will be populated from patient_data if available
+            "answers": {
+                "chief_complaint": appointment_data.get("q1", ""),
+                "location": appointment_data.get("q2", ""),
+                "character": appointment_data.get("q3", ""),
+                "aggravating_factors": appointment_data.get("q4", ""),
+                "alleviating_factors": appointment_data.get("q5", ""),
+                "associated_symptoms": appointment_data.get("q6", ""),
+                "severity": appointment_data.get("q7", ""),
+                "duration": appointment_data.get("q8", ""),
+                "notes": appointment_data.get("q9", ""),
+            },
+        }
+
+        # Generate LLM summary
+        summary_result = llm_service.summary(summary_data)
+        logger.info(f"LLM summary result: {summary_result}")
+
+        # Update AI summary status to 'done'
+        conn = _get_db_connection()
+        with conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE intake_payload SET ai_summary_status = ? WHERE session_id = ?",
+                ("done", session_id),
+            )
+            conn.commit()
+
+        logger.info(f"LLM summary generation completed for session {session_id}")
 
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
+        logger.error(f"Failed to generate LLM summary for session {session_id}: {e}")
+        # Update status to 'failed' if needed
+        try:
+            conn = _get_db_connection()
+            with conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    "UPDATE intake_payload SET ai_summary_status = ? WHERE session_id = ?",
+                    ("failed", session_id),
+                )
+                conn.commit()
+        except Exception as update_error:
+            logger.error(f"Failed to update status to failed: {update_error}")
+
+
+def _trigger_llm_summary_async(session_id: str, token: str, appointment_data: dict):
+    """Trigger LLM summary generation asynchronously"""
+    # Use ThreadPoolExecutor to run in background
+    executor = ThreadPoolExecutor(max_workers=1)
+    future = executor.submit(
+        _generate_llm_summary_background, session_id, token, appointment_data
+    )
+    # Don't wait for completion, let it run in background
+    return future
+
+
+class AppointmentData(BaseModel):
+    """Patient appointment data model"""
+
+    q1: str = ""
+    q2: str = ""
+    q3: str = ""
+    q4: str = ""
+    q5: str = ""
+    q6: str = ""
+    q7: str = ""
+    q8: str = ""
+    q9: str = ""
+
+
+class PatientData(BaseModel):
+    """Patient profile data model"""
+
+    name: str = ""
+    age: int = 0
+    gender: str = ""
+    bloodGroup: str = ""
+    phone: str = ""
+    email: str = ""
+
+
+class AppointmentRequest(BaseModel):
+    """Appointment request model"""
+
+    token: str
+    patientData: PatientData = PatientData()
+    appointmentData: AppointmentData
+
+
+class AppointmentResponse(BaseModel):
+    """Appointment response model"""
+
+    key: str
+    message: str
+
+
+def get_db_connection():
+    """Get SQLite database connection"""
+    db_path = settings.db_url.replace("sqlite:///", "")
+    return sqlite3.connect(db_path)
+
+
+def create_appointment_table():
+    """Create appointment table if it doesn't exist"""
+    conn = get_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS appointments (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            appointment_id VARCHAR(50) UNIQUE NOT NULL,
+            token VARCHAR(100) NOT NULL,
+            q1 TEXT,
+            q2 TEXT,
+            q3 TEXT,
+            q4 TEXT,
+            q5 TEXT,
+            q6 TEXT,
+            q7 TEXT,
+            q8 TEXT,
+            q9 TEXT,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
+@router.post("/appointment", response_model=AppointmentResponse)
+async def save_appointment(request: AppointmentRequest):
+    """
+    Save patient appointment data to SQLite database
+
+    Args:
+        request: Appointment data with token
+
+    Returns:
+        Saved appointment information
+    """
+    logger.info(f"Saving appointment data for token: {request.token}")
+
+    try:
+        # Tables are already created by database schema
+
+        # Generate unique appointment ID
+        appointment_id = str(uuid.uuid4())
+
+        # Connect to database
+        conn = _get_db_connection()
+        cursor = conn.cursor()
+
+        # Create intake session first
+        session_id = str(uuid.uuid4())
+        cursor.execute(
+            """
+            INSERT INTO intake_session (id, token, status, created_at, expires_at)
+            VALUES (?, ?, 'SUBMITTED', datetime('now'), datetime('now', '+1 day'))
+            """,
+            (session_id, request.token),
+        )
+
+        # Prepare patient data
+        patient_data = {
+            "name": request.patientData.name,
+            "age": request.patientData.age,
+            "gender": request.patientData.gender,
+            "bloodGroup": request.patientData.bloodGroup,
+            "phone": request.patientData.phone,
+            "email": request.patientData.email,
+        }
+
+        # Insert appointment data into intake_payload
+        appointment_data = {
+            "q1": request.appointmentData.q1,
+            "q2": request.appointmentData.q2,
+            "q3": request.appointmentData.q3,
+            "q4": request.appointmentData.q4,
+            "q5": request.appointmentData.q5,
+            "q6": request.appointmentData.q6,
+            "q7": request.appointmentData.q7,
+            "q8": request.appointmentData.q8,
+            "q9": request.appointmentData.q9,
+        }
+
+        cursor.execute(
+            """
+            INSERT INTO intake_payload (session_id, patient_data, answers_json, ai_summary_status)
+            VALUES (?, ?, ?, ?)
+            """,
+            (
+                session_id,
+                json.dumps(patient_data),
+                json.dumps(appointment_data),
+                "pending",
+            ),
+        )
+
+        conn.commit()
+        conn.close()
+
+        # Trigger LLM summary generation in background
+        _trigger_llm_summary_async(session_id, request.token, appointment_data)
+
+        logger.info(f"Appointment saved successfully: {appointment_id}")
+
+        return AppointmentResponse(
+            key=appointment_id, message="Appointment data saved successfully"
+        )
+
+    except Exception as e:
+        logger.error(f"Failed to save appointment: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to save appointment: {e!s}"
+        )
+
+
+@router.get("/appointment/{token}")
+async def get_appointment(token: str):
+    """
+    Retrieve patient appointment data by token
+
+    Args:
+        token: Patient token
+
+    Returns:
+        Appointment data
+    """
+    logger.info(f"Retrieving appointment data for token: {token}")
+
+    try:
+        conn = get_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute(
+            """
+            SELECT appointment_id, q1, q2, q3, q4, q5, q6, q7, q8, q9, created_at
+            FROM appointments
+            WHERE token = ?
+            ORDER BY created_at DESC
+            LIMIT 1
+        """,
+            (token,),
+        )
+
+        result = cursor.fetchone()
+        conn.close()
+
+        if not result:
+            raise HTTPException(status_code=404, detail="Appointment not found")
+
+        # Convert to dictionary
+        appointment_data = {
+            "appointment_id": result[0],
+            "q1": result[1],
+            "q2": result[2],
+            "q3": result[3],
+            "q4": result[4],
+            "q5": result[5],
+            "q6": result[6],
+            "q7": result[7],
+            "q8": result[8],
+            "q9": result[9],
+            "created_at": result[10],
+        }
+
+        return appointment_data
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to retrieve appointment: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to retrieve appointment: {e!s}"
+        )
+
+
+@router.get("/appointment/{token}/summary")
+async def get_appointment_summary(token: str):
+    """
+    Get appointment data formatted for LLM summary
+
+    Args:
+        token: Patient token
+
+    Returns:
+        Formatted data for LLM summary
+    """
+    logger.info(f"Getting appointment summary data for token: {token}")
+
+    try:
+        # Get appointment data
+        appointment_data = await get_appointment(token)
+
+        # Format for LLM summary
+        summary_data = {
+            "encounterId": appointment_data["appointment_id"],
+            "patient": {
+                "age": 0,  # Default age, should be collected in form
+                "sex": "Unknown",  # Default sex, should be collected in form
+            },
+            "answers": {
+                "cc": appointment_data.get("q1", ""),
+                "onset": appointment_data.get("q2", ""),
+                "radiation": appointment_data.get("q3", ""),
+                "pmh": appointment_data.get("q4", ""),
+                "meds": appointment_data.get("q5", ""),
+                "exertion": appointment_data.get("q6", ""),
+                "relievedByRest": appointment_data.get("q7", ""),
+                "additional": appointment_data.get("q8", ""),
+                "notes": appointment_data.get("q9", ""),
+            },
+        }
+
+        return summary_data
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get appointment summary: {e!s}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to get appointment summary: {e!s}"
+        )
 
 
 @router.get("/profile")
-def get_profiles(token: Optional[str] = None):
-    """Return profiles stored in the patients table.
-
-    If `token` is provided, returns a single profile under profiles: [ ... ].
-    Otherwise returns all profiles.
+async def get_patient_profiles():
     """
+    Retrieve all patient profiles with their intake data.
+    """
+    logger.info("Retrieving all patient profiles")
     try:
-        with sqlite3.connect("data/app.db") as c:
-            c.execute(
-                "CREATE TABLE IF NOT EXISTS patients (token TEXT PRIMARY KEY, profile_json TEXT, medical_history_json TEXT, created_at TEXT, updated_at TEXT)"
+        conn = _get_db_connection()
+        with conn:
+            _ensure_table_exists(conn)
+            cursor = conn.cursor()
+            cursor.execute(
+                "SELECT session_id, patient_data, answers_json, ai_summary_status FROM intake_payload"
             )
-            if token:
-                row = c.execute(
-                    "SELECT token, profile_json, medical_history_json FROM patients WHERE token=?",
-                    (token,),
-                ).fetchone()
-                if not row:
-                    raise HTTPException(status_code=404, detail="not found")
-                token_v, profile_json, med_json = row
-                return {
-                    "ok": True,
-                    "profiles": [
-                        {
-                            "token": token_v,
-                            "profile": __import__("json").loads(profile_json)
-                            if profile_json
-                            else None,
-                            "medicalHistory": __import__("json").loads(med_json)
-                            if med_json
-                            else None,
-                        }
-                    ],
-                }
+            rows = cursor.fetchall()
 
-            rows = c.execute(
-                "SELECT token, profile_json, medical_history_json FROM patients"
-            ).fetchall()
             profiles = []
-            for r in rows:
-                token_v, profile_json, med_json = r
-                profiles.append(
-                    {
-                        "token": token_v,
-                        "profile": __import__("json").loads(profile_json)
-                        if profile_json
-                        else None,
-                        "medicalHistory": __import__("json").loads(med_json)
-                        if med_json
-                        else None,
-                    }
-                )
+            for row in rows:
+                try:
+                    patient_data = (
+                        json.loads(row["patient_data"]) if row["patient_data"] else {}
+                    )
+                    answers_data = (
+                        json.loads(row["answers_json"]) if row["answers_json"] else {}
+                    )
 
-        return {"ok": True, "profiles": profiles}
-    except HTTPException:
-        raise
+                    profiles.append(
+                        {
+                            "token": row["session_id"],
+                            "profile": patient_data,
+                            "appointment": answers_data,
+                            "ai_summary_status": row["ai_summary_status"] or "pending",
+                        }
+                    )
+                except json.JSONDecodeError as e:
+                    logger.warning(
+                        f"Failed to parse JSON for session {row['session_id']}: {e}"
+                    )
+                    continue
+
+            return {"profiles": profiles}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
+        logger.error(f"Failed to retrieve patient profiles: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve profiles: {e}")
 
 
 @router.delete("/profile/{token}")
-def delete_profile(token: str):
-    """Delete a patient's profile by token."""
+async def delete_patient_profile(token: str):
+    """
+    Delete patient profile and associated data by token.
+    """
+    logger.info(f"Deleting patient profile for token: {token}")
     try:
-        with sqlite3.connect("data/app.db", timeout=10) as c:
-            row = c.execute(
-                "SELECT token FROM patients WHERE token=?", (token,)
-            ).fetchone()
-            if not row:
-                raise HTTPException(status_code=404, detail="not found")
+        conn = _get_db_connection()
+        with conn:
+            _ensure_table_exists(conn)
+            cursor = conn.cursor()
 
-            c.execute("DELETE FROM patients WHERE token=?", (token,))
-            c.commit()
-        return {"ok": True, "token": token}
+            # First, get the session_id for this token
+            cursor.execute("SELECT id FROM intake_session WHERE token = ?", (token,))
+            session_row = cursor.fetchone()
+
+            if not session_row:
+                raise HTTPException(status_code=404, detail="Patient profile not found")
+
+            session_id = session_row["id"]
+
+            # Delete from intake_payload (this will cascade due to foreign key)
+            cursor.execute(
+                "DELETE FROM intake_payload WHERE session_id = ?", (session_id,)
+            )
+
+            # Delete from intake_session
+            cursor.execute("DELETE FROM intake_session WHERE id = ?", (session_id,))
+
+            conn.commit()
+
+            return {"message": "Patient profile deleted successfully", "token": token}
+
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
+        logger.error(f"Failed to delete patient profile: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to delete profile: {e}")
 
 
-@router.post("/profile")
-def submit_profile(body: ProfileIn = Body(...)):
-    """Accept a user's profile and persist it tied to the user token.
-
-    Request shape:
-      { token: str, profile: { name, age, gender, bloodGroup, phone, email } }
-
-    Stores/updates into table `patients` with columns (token, profile_json, medical_history_json, created_at, updated_at)
+@router.put("/profile/{token}")
+async def update_patient_profile(token: str, profile_data: dict):
     """
-    if not body.token:
-        raise HTTPException(status_code=400, detail="token required")
-
+    Update patient profile information.
+    """
+    logger.info(f"Updating patient profile for token: {token}")
     try:
-        with sqlite3.connect("data/app.db") as c:
-            c.execute(
-                "CREATE TABLE IF NOT EXISTS patients (token TEXT PRIMARY KEY, profile_json TEXT, medical_history_json TEXT, created_at TEXT, updated_at TEXT)"
+        conn = _get_db_connection()
+        with conn:
+            _ensure_table_exists(conn)
+            cursor = conn.cursor()
+
+            # Check if patient exists
+            cursor.execute("SELECT id FROM intake_session WHERE token = ?", (token,))
+            session_row = cursor.fetchone()
+
+            if not session_row:
+                raise HTTPException(status_code=404, detail="Patient profile not found")
+
+            # Update patient data in intake_payload
+            cursor.execute(
+                "UPDATE intake_payload SET patient_data = ? WHERE session_id = ?",
+                (json.dumps(profile_data), session_row["id"]),
             )
-            # check existing
-            row = c.execute(
-                "SELECT token FROM patients WHERE token=?", (body.token,)
-            ).fetchone()
-            now = datetime.utcnow().isoformat()
-            profile_json = __import__("json").dumps(body.profile)
-            if row:
-                c.execute(
-                    "UPDATE patients SET profile_json=json(?), updated_at=? WHERE token=?",
-                    (profile_json, now, body.token),
+
+            conn.commit()
+
+            return {"message": "Patient profile updated successfully", "token": token}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update patient profile: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to update profile: {e}")
+
+
+@router.get("/profile/{token}")
+async def get_patient_profile(token: str):
+    """
+    Get specific patient profile by token.
+    """
+    logger.info(f"Retrieving patient profile for token: {token}")
+    try:
+        conn = _get_db_connection()
+        with conn:
+            _ensure_table_exists(conn)
+            cursor = conn.cursor()
+
+            cursor.execute(
+                """
+                SELECT s.token, p.patient_data, p.answers_json
+                FROM intake_session s
+                JOIN intake_payload p ON s.id = p.session_id
+                WHERE s.token = ?
+                """,
+                (token,),
+            )
+            row = cursor.fetchone()
+
+            if not row:
+                raise HTTPException(status_code=404, detail="Patient profile not found")
+
+            patient_data = (
+                json.loads(row["patient_data"]) if row["patient_data"] else {}
+            )
+            appointment_data = (
+                json.loads(row["answers_json"]) if row["answers_json"] else {}
+            )
+
+            return {
+                "token": row["token"],
+                "profile": patient_data,
+                "appointment": appointment_data,
+            }
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to retrieve patient profile: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to retrieve profile: {e}")
+
+
+@router.get("/stats")
+async def get_patient_statistics():
+    """
+    Get patient statistics and analytics.
+    """
+    logger.info("Retrieving patient statistics")
+    try:
+        conn = _get_db_connection()
+        with conn:
+            _ensure_table_exists(conn)
+            cursor = conn.cursor()
+
+            # Total patients
+            cursor.execute("SELECT COUNT(*) as total FROM intake_session")
+            total_patients = cursor.fetchone()["total"]
+
+            # Patients by status
+            cursor.execute(
+                "SELECT status, COUNT(*) as count FROM intake_session GROUP BY status"
+            )
+            status_counts = {row["status"]: row["count"] for row in cursor.fetchall()}
+
+            # Recent patients (last 7 days)
+            cursor.execute("""
+                SELECT COUNT(*) as recent
+                FROM intake_session
+                WHERE created_at >= datetime('now', '-7 days')
+            """)
+            recent_patients = cursor.fetchone()["recent"]
+
+            # Patients by day (last 7 days)
+            cursor.execute("""
+                SELECT DATE(created_at) as date, COUNT(*) as count
+                FROM intake_session
+                WHERE created_at >= datetime('now', '-7 days')
+                GROUP BY DATE(created_at)
+                ORDER BY date
+            """)
+            daily_counts = [
+                {"date": row["date"], "count": row["count"]}
+                for row in cursor.fetchall()
+            ]
+
+            return {
+                "total_patients": total_patients,
+                "status_counts": status_counts,
+                "recent_patients": recent_patients,
+                "daily_counts": daily_counts,
+            }
+
+    except Exception as e:
+        logger.error(f"Failed to retrieve patient statistics: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to retrieve statistics: {e}"
+        )
+
+
+@router.get("/search")
+async def search_patients(query: str = "", limit: int = 10, offset: int = 0):
+    """
+    Search patients by name, email, or other criteria.
+    """
+    logger.info(f"Searching patients with query: {query}")
+    try:
+        conn = _get_db_connection()
+        with conn:
+            _ensure_table_exists(conn)
+            cursor = conn.cursor()
+
+            if query:
+                # Search in patient_data JSON
+                cursor.execute(
+                    """
+                    SELECT s.token, p.patient_data, p.answers_json
+                    FROM intake_session s
+                    JOIN intake_payload p ON s.id = p.session_id
+                    WHERE p.patient_data LIKE ? OR p.answers_json LIKE ?
+                    LIMIT ? OFFSET ?
+                """,
+                    (f"%{query}%", f"%{query}%", limit, offset),
                 )
             else:
-                c.execute(
-                    "INSERT INTO patients(token, profile_json, medical_history_json, created_at, updated_at) VALUES(?, json(?), NULL, ?, ?)",
-                    (body.token, profile_json, now, now),
+                # Return all patients with pagination
+                cursor.execute(
+                    """
+                    SELECT s.token, p.patient_data, p.answers_json
+                    FROM intake_session s
+                    JOIN intake_payload p ON s.id = p.session_id
+                    LIMIT ? OFFSET ?
+                """,
+                    (limit, offset),
                 )
-            c.commit()
 
-        return {"ok": True, "token": body.token}
+            rows = cursor.fetchall()
+            results = []
 
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
+            for row in rows:
+                try:
+                    patient_data = (
+                        json.loads(row["patient_data"]) if row["patient_data"] else {}
+                    )
+                    appointment_data = (
+                        json.loads(row["answers_json"]) if row["answers_json"] else {}
+                    )
 
-
-# --- Appointment endpoints
-
-
-class AppointmentIn(BaseModel):
-    token: str
-    appointmentData: dict
-
-
-@router.post("/appointment")
-def create_appointment(body: AppointmentIn = Body(...)):
-    """Create a new appointment entry for the user token.
-
-    The server will generate a key like `appointmentData-YYYYMMDDTHHMMSSZ` and store the
-    JSON payload. Returns { ok: True, key } on success.
-    """
-    if not body.token:
-        raise HTTPException(status_code=400, detail="token required")
-    key = f"appointmentData-{datetime.utcnow().strftime('%Y%m%dT%H%M%SZ')}"
-    try:
-        with sqlite3.connect("data/app.db") as c:
-            c.execute(
-                "CREATE TABLE IF NOT EXISTS patient_appointments (token TEXT, key TEXT PRIMARY KEY, payload_json TEXT, created_at TEXT)"
-            )
-            c.execute(
-                "INSERT INTO patient_appointments(token, key, payload_json, created_at) VALUES(?, ?, json(?), ?)",
-                (
-                    body.token,
-                    key,
-                    __import__("json").dumps(body.appointmentData),
-                    datetime.utcnow().isoformat(),
-                ),
-            )
-            c.commit()
-
-        return {"ok": True, "key": key}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
-
-
-@router.put("/appointment/{key}")
-def update_appointment(key: str, body: AppointmentIn = Body(...)):
-    """Update an existing appointment by key for the provided token."""
-    if not body.token:
-        raise HTTPException(status_code=400, detail="token required")
-    try:
-        with sqlite3.connect("data/app.db") as c:
-            row = c.execute(
-                "SELECT key FROM patient_appointments WHERE key=? AND token=?",
-                (key, body.token),
-            ).fetchone()
-            if not row:
-                raise HTTPException(status_code=404, detail="not found")
-            c.execute(
-                "UPDATE patient_appointments SET payload_json=json(?), created_at=? WHERE key=? AND token=?",
-                (
-                    __import__("json").dumps(body.appointmentData),
-                    datetime.utcnow().isoformat(),
-                    key,
-                    body.token,
-                ),
-            )
-            c.commit()
-        return {"ok": True, "key": key}
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
-
-@router.get("/appointment")
-def get_appointments(token: Optional[str] = None):
-    """Return appointments stored in the patient_appointments table.
-
-    If `token` is provided, returns only that user’s appointments.
-    Otherwise returns all appointments.
-    """
-    try:
-        with sqlite3.connect("data/app.db") as c:
-            c.execute(
-                "CREATE TABLE IF NOT EXISTS patient_appointments (token TEXT, key TEXT PRIMARY KEY, payload_json TEXT, created_at TEXT)"
-            )
-
-            if token:
-                rows = c.execute(
-                    "SELECT token, key, payload_json, created_at FROM patient_appointments WHERE token=?",
-                    (token,),
-                ).fetchall()
-                if not rows:
-                    raise HTTPException(status_code=404, detail="not found")
-                appts = []
-                for token_v, key, payload_json, created_at in rows:
-                    appts.append(
+                    results.append(
                         {
-                            "token": token_v,
-                            "key": key,
-                            "appointmentData": __import__("json").loads(payload_json) if payload_json else None,
-                            "createdAt": created_at,
+                            "token": row["token"],
+                            "profile": patient_data,
+                            "appointment": appointment_data,
                         }
                     )
-                return {"ok": True, "appointments": appts}
+                except json.JSONDecodeError:
+                    continue
 
-            # admin view → all appointments
-            rows = c.execute(
-                "SELECT token, key, payload_json, created_at FROM patient_appointments"
-            ).fetchall()
-            appointments = []
-            for token_v, key, payload_json, created_at in rows:
-                appointments.append(
-                    {
-                        "token": token_v,
-                        "key": key,
-                        "appointmentData": __import__("json").loads(payload_json) if payload_json else None,
-                        "createdAt": created_at,
-                    }
-                )
-        return {"ok": True, "appointments": appointments}
+            return {"results": results, "count": len(results)}
+
+    except Exception as e:
+        logger.error(f"Failed to search patients: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to search patients: {e}")
+
+
+@router.put("/profile/{token}/ai-summary-status")
+async def update_ai_summary_status(token: str, status: str = Body(...)):
+    """
+    Update AI summary status for a patient.
+    """
+    logger.info(f"Updating AI summary status for token: {token} to {status}")
+    try:
+        conn = _get_db_connection()
+        with conn:
+            _ensure_table_exists(conn)
+            cursor = conn.cursor()
+
+            # Check if patient exists
+            cursor.execute("SELECT id FROM intake_session WHERE token = ?", (token,))
+            session_row = cursor.fetchone()
+
+            if not session_row:
+                raise HTTPException(status_code=404, detail="Patient profile not found")
+
+            session_id = session_row["id"]
+
+            # Update AI summary status
+            cursor.execute(
+                "UPDATE intake_payload SET ai_summary_status = ? WHERE session_id = ?",
+                (status, session_id),
+            )
+
+            conn.commit()
+
+            return {
+                "message": "AI summary status updated successfully",
+                "token": token,
+                "status": status,
+            }
+
     except HTTPException:
         raise
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
+        logger.error(f"Failed to update AI summary status: {e}")
+        raise HTTPException(
+            status_code=500, detail=f"Failed to update AI summary status: {e}"
+        )
 
 
+@router.post("/profile", response_model=AppointmentResponse)
+async def save_patient_profile(profile_data: dict):
+    """
+    Save patient profile data.
+    """
+    logger.info("Saving patient profile data")
+
+    try:
+        conn = _get_db_connection()
+        with conn:
+            _ensure_table_exists(conn)
+            cursor = conn.cursor()
+
+            # Create intake session first
+            session_id = str(uuid.uuid4())
+            token = str(uuid.uuid4())
+            cursor.execute(
+                """
+                INSERT INTO intake_session (id, token, status, created_at, expires_at)
+                VALUES (?, ?, 'SUBMITTED', datetime('now'), datetime('now', '+1 day'))
+                """,
+                (session_id, token),
+            )
+
+            # Insert profile data into intake_payload
+            cursor.execute(
+                """
+                INSERT INTO intake_payload (session_id, patient_data, answers_json, ai_summary_status)
+                VALUES (?, ?, ?, ?)
+                """,
+                (session_id, json.dumps(profile_data), json.dumps({}), "pending"),
+            )
+
+            conn.commit()
+
+            return AppointmentResponse(
+                key=session_id, message="Patient profile saved successfully"
+            )
+
+    except Exception as e:
+        logger.error(f"Failed to save patient profile: {e}")
+        raise HTTPException(status_code=500, detail=f"Failed to save profile: {e}")

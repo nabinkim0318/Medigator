@@ -34,23 +34,28 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 CMD ["python", "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8082"]
 
 # Frontend stage
-FROM node:18-alpine AS frontend
+FROM node:20-alpine AS frontend
 
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
+COPY next.config.ts ./
+COPY tailwind.config.ts ./
+COPY postcss.config.* ./
+COPY tsconfig.json ./
 
 # Install dependencies (including dev dependencies for build)
 RUN npm ci
 
 # Copy source code
-COPY . ./
+COPY src/ ./src/
+COPY public/ ./public/
 
 # Build the application
 RUN npm run build
 
-# Production stage
+# Production stage - Backend only
 FROM python:3.12-slim AS production
 
 WORKDIR /app
@@ -70,9 +75,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY api/ ./api/
 COPY data/ ./data/
 COPY docs/ ./docs/
-
-# Copy built frontend
-COPY --from=frontend /app/dist ./app/dist
 
 # Set environment variables
 ENV PYTHONPATH=/app

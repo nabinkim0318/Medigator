@@ -144,11 +144,22 @@ const AppointmentsPage: React.FC = () => {
               <div style={{ width: 8, height: 8, borderRadius: 8, background: "#ef4444", position: "absolute", right: 8, top: 8 }} />
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <img
-                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face"
-                style={{ width: 40, height: 40, borderRadius: 999 }}
-                alt="Doctor"
-              />
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 999,
+                  backgroundColor: "#f59e0b",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                }}
+              >
+                Dr
+              </div>
               <div>
                 <div style={{ fontWeight: 700, color: "#334155" }}>Jonitha Cathrine</div>
                 <div style={{ fontSize: 12, color: "#94a3b8" }}>Doctor</div>

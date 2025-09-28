@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # Backend API with Frontend
   api:
@@ -7,7 +5,7 @@ services:
       context: ..
       dockerfile: docker/Dockerfile
     ports:
-      - "8082:8082"
+      - "8083:8082"
     environment:
       - DB_URL=sqlite:///./api/copilot.db
       - OPENAI_API_KEY=${OPENAI_API_KEY}
@@ -16,9 +14,10 @@ services:
       - HIPAA_MODE=false
       - enable_rag=true
     volumes:
-      - ./data:/app/data:ro
-      - ./api/reports:/app/api/reports
-      - ./logs:/app/logs
+      - ../data:/app/data:ro
+      - ../rag_index:/app/rag_index:ro
+      - ../api/reports:/app/api/reports
+      - ../logs:/app/logs
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
       interval: 30s
@@ -34,8 +33,14 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile.frontend
-    # No ports needed - this is just for building
-    # The built files will be copied to the main container
+    ports:
+      - "3005:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:8083
+    volumes:
+      - ../src:/app/src
+      - ../public:/app/public
+    command: npm run dev
 
   # Database (optional - for production)
   # postgres:

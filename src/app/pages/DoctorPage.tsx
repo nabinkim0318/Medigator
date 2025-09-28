@@ -18,6 +18,15 @@ export interface AppointmentRow {
   date: string; // DD/MM/YYYY
   patient: { name: string; initials: string; gender: Gender };
   doctor: string;
+  summary?: {
+    hpi?: string;
+    ros?: any;
+    pmh?: string;
+    meds?: string;
+    flags?: any;
+    codes?: any;
+  };
+  evidence?: any[];
 }
 
 export interface ClinicalUpdate {
@@ -192,11 +201,22 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
               />
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <img
-                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face"
-                style={{ width: 40, height: 40, borderRadius: 999 }}
-                alt="Doctor"
-              />
+              <div
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 999,
+                  backgroundColor: "#f59e0b",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: "white",
+                  fontSize: "16px",
+                  fontWeight: "600",
+                }}
+              >
+                Dr
+              </div>
               <div>
                 <div style={{ fontWeight: 800, color: "#334155" }}>
                   Jonitha Cathrine
@@ -378,16 +398,22 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
                     borderRadius: 10,
                   }}
                 >
-                  <img
-                    src={u.thumb}
-                    alt={u.title}
+                  <div
                     style={{
                       width: 36,
                       height: 36,
                       borderRadius: 999,
-                      objectFit: "cover",
+                      backgroundColor: "#f59e0b",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      color: "white",
+                      fontSize: "14px",
+                      fontWeight: "600",
                     }}
-                  />
+                  >
+                    {u.author.charAt(0)}
+                  </div>
                   <div style={{ flex: 1 }}>
                     <div
                       style={{

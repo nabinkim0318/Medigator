@@ -11,9 +11,9 @@ from typing import Any
 
 from fastapi import APIRouter, Body
 
-from services.evidence import select_evidence as static_cards
-from services.rag.retrieve import USE_RAG, init_retriever, retrieve
-from services.rag.summarize import to_cards
+from api.services.evidence import select_evidence as static_cards
+from api.services.rag.retrieve import USE_RAG, init_retriever, retrieve
+from api.services.rag.summarize import to_cards
 
 # Get logger
 logger = logging.getLogger(__name__)

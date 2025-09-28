@@ -1,8 +1,8 @@
 # api/routers/compliance.py
 from fastapi import APIRouter
 
-from core.config import settings
-from services.llm.client import get_client_status
+from api.core.config import settings
+from api.services.llm.client import get_client_status
 
 router = APIRouter(prefix="/compliance", tags=["compliance"])
 
