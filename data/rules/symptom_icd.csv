@@ -1,4 +1,11 @@
-symptom,pattern,icd_code,icd_label,weight,excludes,requires_flag,rationale_key
-Cough,.*cough.*,R05,Cough,1.0,,,"respiratory_rationale"
-Fever,.*fever.*,R50,Fever,0.8,.*cold.*,, "infection_rationale"
-Chest Pain,.*chest pain.*,R07.9,Chest pain,1.2,,requires_ecg,"cardiac_rationale"
+persona,symptom,pattern,icd_code,icd_label,weight,rationale
+Patient1,chest_pain,severe+rest_not_relieved,I21.9,Acute myocardial infarction,0.9,Sudden severe pain not relieved by rest
+Patient2,chest_pain,>30min_with_dizziness,I21.9,Acute myocardial infarction,0.9,Prolonged chest pain with dizziness
+Patient3,chest_pain,sharp_back_radiation,I21.9,Acute myocardial infarction,0.9,Severe pain radiating to back
+Patient4,chest_pain,recurrent>30min,I21.9,Acute myocardial infarction,0.8,Recurrent prolonged chest pain
+Patient5,chest_pain,exertional+relieved_by_rest,I20.9,Angina pectoris,0.8,Exertional pain relieved by rest
+Patient6,chest_pain,exercise_induced+relieved_by_nitro,I20.9,Angina pectoris,0.8,Exercise pain relieved by nitroglycerin
+Patient7,chest_pain,activity_induced_repeatedly,I20.9,Angina pectoris,0.8,Recurrent activity-related chest pain
+Patient8,chest_pain,after_eating+relieved_by_antacid,K21.9,Gastro-esophageal reflux disease,0.7,Burning pain after meals relieved by antacid
+Patient9,chest_pain,spicy_food_trigger,K21.9,Gastro-esophageal reflux disease,0.7,Pain triggered by spicy food
+Patient10,chest_pain,lying_down_after_meal,K21.9,Gastro-esophageal reflux disease,0.7,Burning retrosternal pain lying down after meal

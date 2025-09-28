@@ -43,11 +43,11 @@ def check_rag_system():
         return True
 
     try:
-        init_retriever()
-        logger.info("RAG system initialized successfully")
+        # Lazy loading: Defer RAG initialization to first use
+        logger.info("RAG system will be initialized on first use")
         return True
     except Exception as e:
-        logger.warning(f"RAG system initialization failed: {e!s}")
+        logger.warning(f"RAG system check failed: {e!s}")
         return False
 
 

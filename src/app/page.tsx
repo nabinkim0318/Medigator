@@ -1,7 +1,6 @@
 "use client";
 
-import { Sign } from "crypto";
-import DoctorPatientView from "./pages/DoctorPatientView";
+import DoctorDashboard from "./pages/DoctorDashboard";
 import OnboardingQuestionnaire from "./pages/OnboardingQuestionaire";
 import OnboardingThankYou from "./pages/OnboardingThankYou";
 import ProfileQuestionnaire from "./pages/ProfileQuestionnaire";

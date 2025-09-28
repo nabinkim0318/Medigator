@@ -1,4 +1,10 @@
-trigger,predicate,cpt,label,pos,bundling,payer_note,rationale_key,tags
-X-ray,image_quality > 0.8,71020,Chest X-ray,11|22,,"Check payer policy","imaging_rationale",imaging|radiology
-EKG,"len(patient_history) > 0",93000,Electrocardiogram,11,93005,"Bundle with EKG tracing","cardiac_rationale",cardiac|diagnostic
-Blood Test,"patient_age > 18",80053,Comprehensive Metabolic Panel,22,,"Requires medical necessity","lab_rationale",lab|chemistry
+trigger,cpt,cpt_label,rationale
+chest_pain+suspected_MI,93000,ECG with interpretation,Initial ischemia detection
+chest_pain+acs_ruleout,84484,Troponin quantitative,ACS biomarker test
+chest_pain+confirmed_MI,93454,Coronary angiography,Confirm and localize MI
+chest_pain+suspected_angina,93000,ECG with interpretation,Baseline ischemia check
+chest_pain+exertional,93015,Stress test,Functional ischemia test
+chest_pain+angina_followup,78452,Myocardial perfusion imaging,Perfusion evaluation
+chest_pain+suspected_GERD,91035,Esophageal pH monitoring,Confirm acid reflux
+chest_pain+food_related,43235,Upper GI endoscopy,Check esophagitis
+chest_pain+reflux_chronic,74220,Upper GI radiologic exam,Structural evaluation

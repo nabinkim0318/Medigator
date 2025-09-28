@@ -69,11 +69,7 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
     { code: "R07.9", description: "Chest pain, unspecified" },
     { code: "93000", description: "Electrocardiogram, routine ECG" },
   ];
-  const suspectedConditions = [
-    "Myocardial Infarction",
-    "Unstable Angina",
-    "Aortic Dissection",
-  ];
+  const suspectedConditions = ['Myocardial Infarction'];
   const recommendedResearch = [
     {
       title: "MI Biomarkers",
@@ -82,6 +78,7 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
       author: "Author Name",
       avatar:
         "https://images.unsplash.com/photo-1612349317150-e413f6a5b16d?w=40&h=40&fit=crop&crop=face",
+      summary: "High-sensitivity troponin detected myocardial infarction 3–6 hours earlier than standard methods.\nEarly detection improved patient outcomes by reducing time to treatment initiation."
     },
     {
       title: "PCI Outcomes in STEMI Patients",
@@ -90,6 +87,7 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
       author: "Carla Chen",
       avatar:
         "https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face",
+      summary: "ECG within 10 minutes of chest pain onset remains the gold standard for MI diagnosis.\nCombining ECG with biomarker testing reduces false negatives in early-stage infarction."
     },
   ];
   const similarPatients = [
@@ -108,7 +106,6 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
   ];
   const questions = [
     "How long does each episode of chest pain last?",
-    "Does the pain radiate to the jaw, back, or neck?",
   ];
 
   const InfoSection: React.FC<{ title: string; children: React.ReactNode }> = ({
@@ -597,59 +594,10 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
             </div>
 
             {/* ICD Codes and Suspected Conditions */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "2fr 1fr",
-                gap: "24px",
-              }}
-            >
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
               <div>
-                <h4
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    color: "#f59e0b",
-                    margin: "0 0 16px 0",
-                  }}
-                >
-                  Likely ICD-10 and CPT Codes
-                </h4>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "12px",
-                  }}
-                >
-                  {icdCodes.map((code, index) => (
-                    <div
-                      key={index}
-                      style={{
-                        backgroundColor: "#f97316",
-                        color: "white",
-                        padding: "12px 16px",
-                        borderRadius: "8px",
-                      }}
-                    >
-                      <div style={{ fontWeight: "600", fontSize: "14px" }}>
-                        {code.code}: {code.description}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <h4
-                  style={{
-                    fontSize: "16px",
-                    fontWeight: "600",
-                    color: "#f59e0b",
-                    margin: "0 0 16px 0",
-                  }}
-                >
-                  Suspected Conditions
+                <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#f59e0b', margin: '0 0 16px 0' }}>
+                  Suspected Condition(s)
                 </h4>
                 <div
                   style={{
@@ -674,6 +622,23 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                   ))}
                 </div>
               </div>
+              <div>
+                <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#f59e0b', margin: '0 0 16px 0' }}>
+                  Likely ICD-10 and CPT Codes
+                </h4>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                  {icdCodes.map((code, index) => (
+                    <div
+                      key={index}
+                      style={{ backgroundColor: '#f97316', color: 'white', padding: '12px 16px', borderRadius: '8px' }}
+                    >
+                      <div style={{ fontWeight: '600', fontSize: '14px' }}>
+                        {code.code}: {code.description}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
@@ -686,75 +651,6 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
               overflow: "auto",
             }}
           >
-            {/* Recommended Research */}
-            <InfoSection title="Recommended Research">
-              <div
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: "16px",
-                }}
-              >
-                {recommendedResearch.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{
-                      display: "flex",
-                      alignItems: "flex-start",
-                      gap: "12px",
-                      padding: "12px",
-                      backgroundColor: "#f9fafb",
-                      borderRadius: "8px",
-                    }}
-                  >
-                    <img
-                      src={item.avatar}
-                      alt={item.author}
-                      style={{
-                        width: "32px",
-                        height: "32px",
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                      }}
-                    />
-                    <div style={{ flex: 1 }}>
-                      <h5
-                        style={{
-                          fontSize: "14px",
-                          fontWeight: "600",
-                          color: "#1f2937",
-                          margin: "0 0 4px 0",
-                        }}
-                      >
-                        {item.title}
-                      </h5>
-                      <p
-                        style={{
-                          fontSize: "12px",
-                          color: "#6b7280",
-                          margin: "0 0 8px 0",
-                        }}
-                      >
-                        {item.subtitle}
-                      </p>
-                      <span
-                        style={{
-                          fontSize: "10px",
-                          fontWeight: "600",
-                          color: "#1f2937",
-                          backgroundColor: "#f59e0b",
-                          padding: "2px 6px",
-                          borderRadius: "4px",
-                        }}
-                      >
-                        {item.rank}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </InfoSection>
-
             {/* Similar Patient Cases */}
             <InfoSection title="Similar Patient Cases">
               <div
@@ -820,6 +716,83 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
               </div>
             </InfoSection>
 
+            {/* Recommended Research */}
+            <InfoSection title="Recommended Research">
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: "16px",
+                }}
+              >
+                {recommendedResearch.map((item, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      display: "flex",
+                      alignItems: "flex-start",
+                      gap: "12px",
+                      padding: "12px",
+                      backgroundColor: "#f9fafb",
+                      borderRadius: "8px",
+                    }}
+                  >
+                    <img
+                      src={item.avatar}
+                      alt={item.author}
+                      style={{
+                        width: "32px",
+                        height: "32px",
+                        borderRadius: "50%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    <div style={{ flex: 1 }}>
+                      <h5
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "600",
+                          color: "#1f2937",
+                          margin: "0 0 4px 0",
+                        }}
+                      >
+                        {item.title}
+                      </h5>
+                      <p
+                        style={{
+                          fontSize: "12px",
+                          color: "#6b7280",
+                          margin: "0 0 8px 0",
+                        }}
+                      >
+                        {item.subtitle}
+                      </p>
+                      <span
+                        style={{
+                          fontSize: "10px",
+                          fontWeight: "600",
+                          color: "#1f2937",
+                          backgroundColor: "#f59e0b",
+                          padding: "2px 6px",
+                          borderRadius: "4px",
+                        }}
+                      >
+                        {item.rank}
+                      </span>
+                      <p
+                        style={{
+                          fontSize: "12px",
+                          color: "#1f2937",
+                          margin: "8px 0 8px 0",
+                        }}>
+                        {item.summary}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </InfoSection>
+
             {/* Suggested Questions */}
             <InfoSection title="Suggested Questions">
               <div style={{ marginBottom: "16px" }}>
@@ -838,32 +811,10 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                       {question}
                     </div>
                     <div style={{ display: "flex", gap: "8px" }}>
-                      <button
-                        style={{
-                          padding: "6px 16px",
-                          backgroundColor: "#f3f4f6",
-                          border: "1px solid #d1d5db",
-                          borderRadius: "6px",
-                          fontSize: "12px",
-                          cursor: "pointer",
-                          color: "#374151",
-                        }}
-                      >
-                        Yes
-                      </button>
-                      <button
-                        style={{
-                          padding: "6px 16px",
-                          backgroundColor: "#f3f4f6",
-                          border: "1px solid #d1d5db",
-                          borderRadius: "6px",
-                          fontSize: "12px",
-                          cursor: "pointer",
-                          color: "#374151",
-                        }}
-                      >
-                        No
-                      </button>
+                      <textarea
+                        className="w-full min-h-[160px] rounded-2xl border border-gray-200 px-4 py-3 outline-none focus:ring-2 focus:ring-orange-200 resize-y"
+                        value={selectedQuestion === question ? selectedQuestion : ""}
+                        onChange={(e) => setSelectedQuestion(e.target.value)} />
                     </div>
                   </div>
                 ))}

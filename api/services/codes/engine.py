@@ -58,7 +58,7 @@ def load_icd_rules(path: str) -> list[ICDRule]:
                     weight=float(r.get("weight", "0") or 0),
                     excludes=_re_or(r["excludes"]) if r.get("excludes") else None,
                     requires_flag=(r.get("requires_flag") or "").strip(),
-                    rationale_key=r["rationale_key"].strip(),
+                    rationale_key=r["rationale"].strip(),
                 ),
             )
     return rules
@@ -71,13 +71,13 @@ def load_cpt_rules(path: str) -> list[CPTRule]:
             rules.append(
                 CPTRule(
                     trigger=r["trigger"].strip(),
-                    predicate=(r["predicate"] or "").strip(),
+                    predicate="",  # Not in CSV
                     code=r["cpt"].strip(),
-                    label=r["label"].strip(),
+                    label=r["cpt_label"].strip(),
                     pos=[p.strip() for p in (r.get("pos") or "").split("|") if p.strip()],
                     bundling=[b.strip() for b in (r.get("bundling") or "").split("|") if b.strip()],
                     payer_note=(r.get("payer_note") or "").strip(),
-                    rationale_key=r["rationale_key"].strip(),
+                    rationale_key=r["rationale"].strip(),
                     tags=[t.strip() for t in (r.get("tags") or "").split("|") if t.strip()],
                 ),
             )
@@ -95,7 +95,7 @@ def load_em_rules(path: str) -> list[EMRule]:
                     mdm_data=r["mdm_data"].strip(),
                     mdm_risk=r["mdm_risk"].strip(),
                     em_cpt=r["em_cpt"].strip(),
-                    rationale_key=r["rationale_key"].strip(),
+                    rationale_key=r["rationale"].strip(),
                 ),
             )
     return rules

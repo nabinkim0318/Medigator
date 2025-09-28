@@ -52,9 +52,9 @@ async def test_summary_normal(monkeypatch):
     )
     out = await task.run(body)
     assert isinstance(out, SummaryOut)
-    # 하드닝된 서비스에서는 룰 엔진이 플래그를 계산
+    # In hardened service, rule engine calculates flags
     # chest pain + radiation to left arm + exertion + relievedByRest = ischemic_features
-    # 룰 엔진이 올바르게 계산하는지 확인 (True 또는 False 모두 허용)
+    # Verify rule engine calculates correctly (both True and False are acceptable)
     assert isinstance(out.flags["ischemic_features"], bool)
     assert "chest pain" in out.hpi.lower()
     assert not FORBIDDEN.search(out.hpi)
