@@ -14,9 +14,23 @@ _PATTERNS = [
     re.compile(r"\b[0-9]{5}(?:-[0-9]{4})?\b"),  # ZIP
 ]
 
+# More specific phone number pattern for better matching
+_PHONE_PATTERN = re.compile(r"\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b")
+
 
 def _redact_text(s: str) -> str:
     out = s
+    # First, specifically handle phone numbers with multiple patterns
+    phone_patterns = [
+        r"\b\d{3}-\d{3}-\d{4}\b",  # 123-456-7890
+        r"\b\d{3}\.\d{3}\.\d{4}\b",  # 123.456.7890
+        r"\b\d{3}\s\d{3}\s\d{4}\b",  # 123 456 7890
+        r"\b\d{10}\b",  # 1234567890
+    ]
+    for pattern in phone_patterns:
+        out = re.sub(pattern, "[REDACTED]", out)
+
+    # Then apply other patterns
     for p in _PATTERNS:
         out = p.sub("[REDACTED]", out)
     return out
