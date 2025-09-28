@@ -21,6 +21,13 @@ export default function SignIn() {
     const form = e.target as HTMLFormElement;
     const formData = new FormData(form);
     const username = (formData.get("username") as string) ?? "";
+    const password = (formData.get("password") as string) ?? "";
+
+    // Quick local doctor shortcut: if doctor logs in with known demo creds, go to dashboard
+    if (username?.trim() === "doc" && password === "pass") {
+      router.push(`/DoctorPatientView`);
+      return;
+    }
 
     // Request token for this username from backend (creates persistent token per username)
     try {
@@ -42,8 +49,8 @@ export default function SignIn() {
         // user already has a token -> go to patient interface
         router.push(`/PatientInterface?token=${encodeURIComponent(token)}`);
       } else {
-        // new user -> onboarding
-        router.push(`/OnboardingQuestionaire?token=${encodeURIComponent(token)}`);
+        // new user -> profile questionnaire first
+        router.push(`/ProfileQuestionnaire?token=${encodeURIComponent(token)}`);
       }
     } catch (err) {
       // eslint-disable-next-line no-alert

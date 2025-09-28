@@ -1,5 +1,6 @@
 import sqlite3
 from datetime import datetime
+from typing import Optional
 
 from fastapi import APIRouter, Body, HTTPException
 from pydantic import BaseModel
@@ -10,6 +11,11 @@ router = APIRouter(prefix="/patient", tags=["patient"])
 class PatientDataIn(BaseModel):
     token: str
     medicalHistory: dict
+
+
+class ProfileIn(BaseModel):
+    token: str
+    profile: dict
 
 
 @router.post("/patientData")
@@ -35,6 +41,97 @@ def submit_patient_data(body: PatientDataIn = Body(...)):
                 "INSERT OR REPLACE INTO patient_medical_history(token, payload_json, created_at) VALUES(?, json(?), ?)",
                 (body.token, __import__("json").dumps(body.medicalHistory), datetime.utcnow().isoformat()),
             )
+            c.commit()
+
+        return {"ok": True, "token": body.token}
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
+
+
+@router.get("/profile")
+def get_profiles(token: Optional[str] = None):
+    """Return profiles stored in the patients table.
+
+    If `token` is provided, returns a single profile under profiles: [ ... ].
+    Otherwise returns all profiles.
+    """
+    try:
+        with sqlite3.connect("data/app.db") as c:
+            c.execute(
+                "CREATE TABLE IF NOT EXISTS patients (token TEXT PRIMARY KEY, profile_json TEXT, medical_history_json TEXT, created_at TEXT, updated_at TEXT)"
+            )
+            if token:
+                row = c.execute(
+                    "SELECT token, profile_json, medical_history_json FROM patients WHERE token=?",
+                    (token,),
+                ).fetchone()
+                if not row:
+                    raise HTTPException(status_code=404, detail="not found")
+                token_v, profile_json, med_json = row
+                return {
+                    "ok": True,
+                    "profiles": [
+                        {
+                            "token": token_v,
+                            "profile": __import__("json").loads(profile_json) if profile_json else None,
+                            "medicalHistory": __import__("json").loads(med_json) if med_json else None,
+                        }
+                    ],
+                }
+
+            rows = c.execute(
+                "SELECT token, profile_json, medical_history_json FROM patients"
+            ).fetchall()
+            profiles = []
+            for r in rows:
+                token_v, profile_json, med_json = r
+                profiles.append(
+                    {
+                        "token": token_v,
+                        "profile": __import__("json").loads(profile_json) if profile_json else None,
+                        "medicalHistory": __import__("json").loads(med_json) if med_json else None,
+                    }
+                )
+
+        return {"ok": True, "profiles": profiles}
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"db error: {e!s}")
+
+
+@router.post("/profile")
+def submit_profile(body: ProfileIn = Body(...)):
+    """Accept a user's profile and persist it tied to the user token.
+
+    Request shape:
+      { token: str, profile: { name, age, gender, bloodGroup, phone, email } }
+
+    Stores/updates into table `patients` with columns (token, profile_json, medical_history_json, created_at, updated_at)
+    """
+    if not body.token:
+        raise HTTPException(status_code=400, detail="token required")
+
+    try:
+        with sqlite3.connect("data/app.db") as c:
+            c.execute(
+                "CREATE TABLE IF NOT EXISTS patients (token TEXT PRIMARY KEY, profile_json TEXT, medical_history_json TEXT, created_at TEXT, updated_at TEXT)"
+            )
+            # check existing
+            row = c.execute("SELECT token FROM patients WHERE token=?", (body.token,)).fetchone()
+            now = datetime.utcnow().isoformat()
+            profile_json = __import__("json").dumps(body.profile)
+            if row:
+                c.execute(
+                    "UPDATE patients SET profile_json=json(?), updated_at=? WHERE token=?",
+                    (profile_json, now, body.token),
+                )
+            else:
+                c.execute(
+                    "INSERT INTO patients(token, profile_json, medical_history_json, created_at, updated_at) VALUES(?, json(?), NULL, ?, ?)",
+                    (body.token, profile_json, now, now),
+                )
             c.commit()
 
         return {"ok": True, "token": body.token}
