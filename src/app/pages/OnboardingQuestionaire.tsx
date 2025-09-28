@@ -19,21 +19,21 @@ const QUESTIONS: Q[] = [
     question:
       "Have you ever been diagnosed with or treated for any illnesses? (including surgeries or hospitalizations)",
     type: "textarea",
-    placeholder: "Please include condition, year, and any treatments..."
+    placeholder: "Please include condition, year, and any treatments...",
   },
   {
     id: "familyHistory",
     question:
       "Does anyone in your family have similar conditions or major illnesses (e.g., hypertension, diabetes, heart disease, cancer)?",
     type: "textarea",
-    placeholder: "List relatives and conditions, if known…"
+    placeholder: "List relatives and conditions, if known…",
   },
   {
     id: "allergies",
     question: "Do you have any allergies to medications or food?",
     type: "textarea",
-    placeholder: "E.g., penicillin (rash), peanuts (anaphylaxis)…"
-  }
+    placeholder: "E.g., penicillin (rash), peanuts (anaphylaxis)…",
+  },
 ];
 
 const PageShell: React.FC<{
@@ -48,18 +48,15 @@ const PageShell: React.FC<{
   return (
     <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
       <div className="mx-auto w-full max-w-3xl text-center">
-
         {/* Logo / Brand */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="h-6 w-6" >
+          <div className="h-6 w-6">
             <img src="/logo.png" alt="Medigator Logo" />
           </div>
           <div className="font-semibold text-orange-600">Medigator</div>
         </div>
 
-        <h1 className="text-3xl font-semibold text-gray-900 mb-6">
-          {title}
-        </h1>
+        <h1 className="text-3xl font-semibold text-gray-900 mb-6">{title}</h1>
 
         <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
           {children}
@@ -102,7 +99,7 @@ export default function OnboardingQuestionnaire() {
   const [answers, setAnswers] = useState<QA>({
     medicalHistory: "",
     familyHistory: "",
-    allergies: ""
+    allergies: "",
   });
 
   const current = QUESTIONS[currentStep];
@@ -166,8 +163,8 @@ export default function OnboardingQuestionnaire() {
                 isActive
                   ? "bg-orange-500"
                   : isDone
-                  ? "bg-green-500"
-                  : "bg-gray-300"
+                    ? "bg-green-500"
+                    : "bg-gray-300"
               }`}
               aria-label={`Go to step ${i + 1}`}
             />

@@ -64,7 +64,8 @@ async def limit_request_size(request: Request, call_next):
     if request.method in ["POST", "PUT", "PATCH"]:
         content_length = request.headers.get("content-length")
         if content_length and int(content_length) > 1024 * 1024:  # 1MB limit
-            logger.warning(f"Request too large: {content_length} bytes from {request.client.host}")
+            client_host = request.client.host if request.client else "unknown"
+            logger.warning(f"Request too large: {content_length} bytes from {client_host}")
             raise HTTPException(status_code=413, detail="Request too large (max 1MB)")
     return await call_next(request)
 

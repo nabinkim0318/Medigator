@@ -69,7 +69,7 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
     { code: "R07.9", description: "Chest pain, unspecified" },
     { code: "93000", description: "Electrocardiogram, routine ECG" },
   ];
-  const suspectedConditions = ['Myocardial Infarction'];
+  const suspectedConditions = ["Myocardial Infarction"];
   const recommendedResearch = [
     {
       title: "MI Biomarkers",
@@ -593,9 +593,22 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
             </div>
 
             {/* ICD Codes and Suspected Conditions */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 2fr', gap: '24px' }}>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 2fr",
+                gap: "24px",
+              }}
+            >
               <div>
-                <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#f59e0b', margin: '0 0 16px 0' }}>
+                <h4
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    color: "#f59e0b",
+                    margin: "0 0 16px 0",
+                  }}
+                >
                   Suspected Condition(s)
                 </h4>
                 <div
@@ -622,16 +635,34 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                 </div>
               </div>
               <div>
-                <h4 style={{ fontSize: '16px', fontWeight: '600', color: '#f59e0b', margin: '0 0 16px 0' }}>
+                <h4
+                  style={{
+                    fontSize: "16px",
+                    fontWeight: "600",
+                    color: "#f59e0b",
+                    margin: "0 0 16px 0",
+                  }}
+                >
                   Likely ICD-10 and CPT Codes
                 </h4>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "12px",
+                  }}
+                >
                   {icdCodes.map((code, index) => (
                     <div
                       key={index}
-                      style={{ backgroundColor: '#f97316', color: 'white', padding: '12px 16px', borderRadius: '8px' }}
+                      style={{
+                        backgroundColor: "#f97316",
+                        color: "white",
+                        padding: "12px 16px",
+                        borderRadius: "8px",
+                      }}
                     >
-                      <div style={{ fontWeight: '600', fontSize: '14px' }}>
+                      <div style={{ fontWeight: "600", fontSize: "14px" }}>
                         {code.code}: {code.description}
                       </div>
                     </div>

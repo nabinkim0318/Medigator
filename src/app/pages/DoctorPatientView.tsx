@@ -192,57 +192,88 @@ const DoctorPatientView: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", backgroundColor: "#f9fafb", width: "100%" }}>
+    <div
+      style={{
+        display: "flex",
+        height: "100vh",
+        backgroundColor: "#f9fafb",
+        width: "100%",
+      }}
+    >
       {/* Main */}
-      <div style={{display: "flex", flexDirection: "column", width: "100%", flex: 1}}>
-      {/* Top bar */}
       <div
         style={{
-          padding: "18px 28px",
-          background: "linear-gradient(180deg,#fff7ed, #fff)",
-          borderBottom: "1px solid #f1f5f9",
+          display: "flex",
+          flexDirection: "column",
+          width: "100%",
+          flex: 1,
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <h1 style={{ margin: 0, fontSize: 28, fontWeight: 700, color: "#374151" }}>Patients</h1>
-          <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <div
-              title="Notifications"
+        {/* Top bar */}
+        <div
+          style={{
+            padding: "18px 28px",
+            background: "linear-gradient(180deg,#fff7ed, #fff)",
+            borderBottom: "1px solid #f1f5f9",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <h1
               style={{
-                width: 36,
-                height: 36,
-                borderRadius: 18,
-                background: "white",
-                boxShadow: "0 1px 2px rgba(0,0,0,.05)",
-                position: "relative",
+                margin: 0,
+                fontSize: 28,
+                fontWeight: 700,
+                color: "#374151",
               }}
             >
+              Patients
+            </h1>
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
               <div
+                title="Notifications"
                 style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 8,
-                  background: "#ef4444",
-                  position: "absolute",
-                  right: 8,
-                  top: 8,
+                  width: 36,
+                  height: 36,
+                  borderRadius: 18,
+                  background: "white",
+                  boxShadow: "0 1px 2px rgba(0,0,0,.05)",
+                  position: "relative",
                 }}
-              />
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-              <img
-                src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face"
-                style={{ width: 40, height: 40, borderRadius: 999 }}
-                alt="Doctor"
-              />
-              <div>
-                <div style={{ fontWeight: 700, color: "#334155" }}>Jonitha Cathrine</div>
-                <div style={{ fontSize: 12, color: "#94a3b8" }}>Doctor</div>
+              >
+                <div
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: 8,
+                    background: "#ef4444",
+                    position: "absolute",
+                    right: 8,
+                    top: 8,
+                  }}
+                />
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                <img
+                  src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face"
+                  style={{ width: 40, height: 40, borderRadius: 999 }}
+                  alt="Doctor"
+                />
+                <div>
+                  <div style={{ fontWeight: 700, color: "#334155" }}>
+                    Jonitha Cathrine
+                  </div>
+                  <div style={{ fontSize: 12, color: "#94a3b8" }}>Doctor</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
         {/* Content */}
         <div

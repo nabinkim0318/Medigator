@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { Maximize2, ChevronDown, Users, ClipboardList, Pill, FlaskConical } from "lucide-react";
+import {
+  Maximize2,
+  ChevronDown,
+  Users,
+  ClipboardList,
+  Pill,
+  FlaskConical,
+} from "lucide-react";
 
 export type Gender = "Male" | "Female";
 
@@ -35,11 +42,11 @@ export interface DoctorDashboardProps {
   feeItems: PatientFeeItem[];
 }
 
-const StatTile: React.FC<{ icon: React.ReactNode; value: number | string; label: string }> = ({
-  icon,
-  value,
-  label,
-}) => (
+const StatTile: React.FC<{
+  icon: React.ReactNode;
+  value: number | string;
+  label: string;
+}> = ({ icon, value, label }) => (
   <div
     style={{
       background: "white",
@@ -67,13 +74,25 @@ const StatTile: React.FC<{ icon: React.ReactNode; value: number | string; label:
       {icon}
     </div>
     <div>
-      <div style={{ fontSize: 22, fontWeight: 800, color: "#1f2937", lineHeight: 1 }}>{value}</div>
+      <div
+        style={{
+          fontSize: 22,
+          fontWeight: 800,
+          color: "#1f2937",
+          lineHeight: 1,
+        }}
+      >
+        {value}
+      </div>
       <div style={{ fontSize: 13, color: "#64748b" }}>{label}</div>
     </div>
   </div>
 );
 
-const AvatarBadge: React.FC<{ initials: string; size?: number }> = ({ initials, size = 30 }) => (
+const AvatarBadge: React.FC<{ initials: string; size?: number }> = ({
+  initials,
+  size = 30,
+}) => (
   <div
     style={{
       width: size,
@@ -108,13 +127,21 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
       { pct: 12, label: "Diabetes (E11)", color: "#22c55e" },
       { pct: 8, label: "Others", color: "#f59e0b" },
     ],
-    []
+    [],
   );
 
   const rows = apptTab === "new" ? newAppointments : completedAppointments;
 
   return (
-    <main style={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0, height: "100vh" }}>
+    <main
+      style={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        minHeight: 0,
+        height: "100vh",
+      }}
+    >
       {/* Top Bar */}
       <div
         style={{
@@ -123,8 +150,23 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
           borderBottom: "1px solid #f1f5f9",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <h1 style={{ margin: 0, fontSize: 28, fontWeight: 800, color: "#374151" }}>Dashboard</h1>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <h1
+            style={{
+              margin: 0,
+              fontSize: 28,
+              fontWeight: 800,
+              color: "#374151",
+            }}
+          >
+            Dashboard
+          </h1>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
             <div
               title="Notifications"
@@ -156,7 +198,9 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
                 alt="Doctor"
               />
               <div>
-                <div style={{ fontWeight: 800, color: "#334155" }}>Jonitha Cathrine</div>
+                <div style={{ fontWeight: 800, color: "#334155" }}>
+                  Jonitha Cathrine
+                </div>
                 <div style={{ fontSize: 12, color: "#94a3b8" }}>Doctor</div>
               </div>
             </div>
@@ -178,7 +222,14 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
         }}
       >
         {/* Left column */}
-        <div style={{ display: "grid", gap: 24, gridTemplateRows: "1fr 1fr", minHeight: 0 }}>
+        <div
+          style={{
+            display: "grid",
+            gap: 24,
+            gridTemplateRows: "1fr 1fr",
+            minHeight: 0,
+          }}
+        >
           {/* Activity Overview */}
           <div
             style={{
@@ -192,8 +243,24 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
               minHeight: 0,
             }}
           >
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: 18 }}>
-              <h3 style={{ margin: 0, color: "#111827", fontSize: 16, fontWeight: 800 }}>Activity Overview</h3>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: 18,
+              }}
+            >
+              <h3
+                style={{
+                  margin: 0,
+                  color: "#111827",
+                  fontSize: 16,
+                  fontWeight: 800,
+                }}
+              >
+                Activity Overview
+              </h3>
               <button
                 style={{
                   display: "flex",
@@ -211,11 +278,33 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
             </div>
 
             <div style={{ padding: 18, overflowY: "auto", minHeight: 0 }}>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14 }}>
-                <StatTile icon={<ClipboardList size={22} />} value={100} label="Appointments" />
-                <StatTile icon={<Users size={22} />} value={50} label="New Patients" />
-                <StatTile icon={<Pill size={22} />} value={500} label="Medicines Sold" />
-                <StatTile icon={<FlaskConical size={22} />} value={100} label="Lab Tests" />
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(2, 1fr)",
+                  gap: 14,
+                }}
+              >
+                <StatTile
+                  icon={<ClipboardList size={22} />}
+                  value={100}
+                  label="Appointments"
+                />
+                <StatTile
+                  icon={<Users size={22} />}
+                  value={50}
+                  label="New Patients"
+                />
+                <StatTile
+                  icon={<Pill size={22} />}
+                  value={500}
+                  label="Medicines Sold"
+                />
+                <StatTile
+                  icon={<FlaskConical size={22} />}
+                  value={100}
+                  label="Lab Tests"
+                />
               </div>
             </div>
           </div>
@@ -242,7 +331,16 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
                 justifyContent: "space-between",
               }}
             >
-              <h3 style={{ margin: 0, color: "#111827", fontSize: 16, fontWeight: 800 }}>Clinical Updates</h3>
+              <h3
+                style={{
+                  margin: 0,
+                  color: "#111827",
+                  fontSize: 16,
+                  fontWeight: 800,
+                }}
+              >
+                Clinical Updates
+              </h3>
               <button
                 style={{
                   border: "none",
@@ -283,11 +381,26 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
                   <img
                     src={u.thumb}
                     alt={u.title}
-                    style={{ width: 36, height: 36, borderRadius: 999, objectFit: "cover" }}
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 999,
+                      objectFit: "cover",
+                    }}
                   />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 700, color: "#111827", fontSize: 14 }}>{u.title}</div>
-                    <div style={{ fontSize: 12, color: "#64748b" }}>{u.author}</div>
+                    <div
+                      style={{
+                        fontWeight: 700,
+                        color: "#111827",
+                        fontSize: 14,
+                      }}
+                    >
+                      {u.title}
+                    </div>
+                    <div style={{ fontSize: 12, color: "#64748b" }}>
+                      {u.author}
+                    </div>
                   </div>
                   <button
                     style={{
@@ -309,7 +422,14 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
         </div>
 
         {/* Right column */}
-        <div style={{ display: "grid", gap: 24, gridTemplateRows: "1fr 1fr", minHeight: 0 }}>
+        <div
+          style={{
+            display: "grid",
+            gap: 24,
+            gridTemplateRows: "1fr 1fr",
+            minHeight: 0,
+          }}
+        >
           {/* Appointments */}
           <div
             style={{
@@ -340,7 +460,10 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
                     border: "none",
                     background: "transparent",
                     color: apptTab === "new" ? "#ea580c" : "#64748b",
-                    borderBottom: apptTab === "new" ? "2px solid #ea580c" : "2px solid transparent",
+                    borderBottom:
+                      apptTab === "new"
+                        ? "2px solid #ea580c"
+                        : "2px solid transparent",
                     fontWeight: 800,
                     cursor: "pointer",
                     marginRight: 8,
@@ -355,7 +478,10 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
                     border: "none",
                     background: "transparent",
                     color: apptTab === "completed" ? "#ea580c" : "#64748b",
-                    borderBottom: apptTab === "completed" ? "2px solid #ea580c" : "2px solid transparent",
+                    borderBottom:
+                      apptTab === "completed"
+                        ? "2px solid #ea580c"
+                        : "2px solid transparent",
                     fontWeight: 800,
                     cursor: "pointer",
                   }}
@@ -379,7 +505,14 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
 
             <div style={{ flex: 1, minHeight: 0, overflowY: "auto" }}>
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
-                <thead style={{ background: "#f9fafb", position: "sticky", top: 0, zIndex: 1 }}>
+                <thead
+                  style={{
+                    background: "#f9fafb",
+                    position: "sticky",
+                    top: 0,
+                    zIndex: 1,
+                  }}
+                >
                   <tr>
                     {["Time", "Date", "Patient Name", "Doctor"].map((h) => (
                       <th
@@ -408,21 +541,45 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
                         transition: "background-color .2s",
                       }}
                       onMouseEnter={(e) =>
-                        ((e.currentTarget as HTMLTableRowElement).style.backgroundColor = "#fafafa")
+                        ((
+                          e.currentTarget as HTMLTableRowElement
+                        ).style.backgroundColor = "#fafafa")
                       }
                       onMouseLeave={(e) =>
-                        ((e.currentTarget as HTMLTableRowElement).style.backgroundColor = "transparent")
+                        ((
+                          e.currentTarget as HTMLTableRowElement
+                        ).style.backgroundColor = "transparent")
                       }
                     >
-                      <td style={{ padding: "12px 16px", color: "#475569" }}>{r.time}</td>
-                      <td style={{ padding: "12px 16px", color: "#475569" }}>{r.date}</td>
+                      <td style={{ padding: "12px 16px", color: "#475569" }}>
+                        {r.time}
+                      </td>
+                      <td style={{ padding: "12px 16px", color: "#475569" }}>
+                        {r.date}
+                      </td>
                       <td style={{ padding: "12px 16px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 10,
+                          }}
+                        >
                           <AvatarBadge initials={r.patient.initials} />
-                          <span style={{ color: "#111827", fontWeight: 700, fontSize: 14 }}>{r.patient.name}</span>
+                          <span
+                            style={{
+                              color: "#111827",
+                              fontWeight: 700,
+                              fontSize: 14,
+                            }}
+                          >
+                            {r.patient.name}
+                          </span>
                         </div>
                       </td>
-                      <td style={{ padding: "12px 16px", color: "#475569" }}>{r.doctor}</td>
+                      <td style={{ padding: "12px 16px", color: "#475569" }}>
+                        {r.doctor}
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -452,7 +609,16 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
                 justifyContent: "space-between",
               }}
             >
-              <h3 style={{ margin: 0, color: "#111827", fontSize: 16, fontWeight: 800 }}>Patient Fee</h3>
+              <h3
+                style={{
+                  margin: 0,
+                  color: "#111827",
+                  fontSize: 16,
+                  fontWeight: 800,
+                }}
+              >
+                Patient Fee
+              </h3>
               <button
                 style={{
                   border: "none",
@@ -490,8 +656,24 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
                 >
                   <AvatarBadge initials={p.initials} />
                   <div style={{ flex: 1 }}>
-                    <div style={{ fontWeight: 800, color: "#111827", fontSize: 14 }}>{p.name}</div>
-                    <div style={{ fontSize: 12, color: "#f97316", fontWeight: 700 }}>{p.status}</div>
+                    <div
+                      style={{
+                        fontWeight: 800,
+                        color: "#111827",
+                        fontSize: 14,
+                      }}
+                    >
+                      {p.name}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 12,
+                        color: "#f97316",
+                        fontWeight: 700,
+                      }}
+                    >
+                      {p.status}
+                    </div>
                   </div>
                   <button
                     style={{
@@ -514,7 +696,14 @@ const DoctorDashboard: React.FC<DoctorDashboardProps> = ({
         </div>
       </div>
 
-      <div style={{ textAlign: "center", color: "#cbd5e1", fontSize: 12, paddingBottom: 16 }}>
+      <div
+        style={{
+          textAlign: "center",
+          color: "#cbd5e1",
+          fontSize: 12,
+          paddingBottom: 16,
+        }}
+      >
         © 2025 Medigator. All rights reserved.
       </div>
     </main>
