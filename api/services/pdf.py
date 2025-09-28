@@ -204,7 +204,9 @@ class PDFService:
         # Chief complaint
         if "chief_complaint" in report_data:
             content.append(Paragraph("Chief complaint", self.styles["CustomHeading2"]))
-            content.append(Paragraph(report_data["chief_complaint"], self.styles["CustomBody"]))
+            content.append(
+                Paragraph(report_data["chief_complaint"], self.styles["CustomBody"])
+            )
             content.append(Spacer(1, 12))
 
         # History
@@ -216,13 +218,17 @@ class PDFService:
         # Physical exam
         if "physical_exam" in report_data:
             content.append(Paragraph("Physical exam", self.styles["CustomHeading2"]))
-            content.append(Paragraph(report_data["physical_exam"], self.styles["CustomBody"]))
+            content.append(
+                Paragraph(report_data["physical_exam"], self.styles["CustomBody"])
+            )
             content.append(Spacer(1, 12))
 
         # Test results
         if "test_results" in report_data:
             content.append(Paragraph("Test results", self.styles["CustomHeading2"]))
-            content.append(Paragraph(report_data["test_results"], self.styles["CustomBody"]))
+            content.append(
+                Paragraph(report_data["test_results"], self.styles["CustomBody"])
+            )
             content.append(Spacer(1, 12))
 
         return content

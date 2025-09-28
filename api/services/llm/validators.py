@@ -16,13 +16,39 @@ FORBIDDEN = re.compile(
 )
 
 # Duration enum validation
-VALID_DURATIONS = {"seconds", "1-5min", "5-30min", "30min+", "hours", "continuous", "intermittent"}
+VALID_DURATIONS = {
+    "seconds",
+    "1-5min",
+    "5-30min",
+    "30min+",
+    "hours",
+    "continuous",
+    "intermittent",
+}
 
 # Pain severity validation
-VALID_SEVERITY = {"0-2", "3-5", "6-7", "8-10", "mild", "moderate", "severe", "very severe"}
+VALID_SEVERITY = {
+    "0-2",
+    "3-5",
+    "6-7",
+    "8-10",
+    "mild",
+    "moderate",
+    "severe",
+    "very severe",
+}
 
 # Body location validation
-VALID_LOCATIONS = {"chest", "left arm", "right arm", "jaw", "neck", "back", "shoulder", "abdomen"}
+VALID_LOCATIONS = {
+    "chest",
+    "left arm",
+    "right arm",
+    "jaw",
+    "neck",
+    "back",
+    "shoulder",
+    "abdomen",
+}
 
 
 def _norm(s: str) -> str:
@@ -64,7 +90,9 @@ def sanitize_hpi(text: str) -> str:
 
     # Log if any redaction occurred
     if sanitized != text:
-        logger.warning(f"HPI sanitization applied: {len(text)} -> {len(sanitized)} chars")
+        logger.warning(
+            f"HPI sanitization applied: {len(text)} -> {len(sanitized)} chars"
+        )
 
     return sanitized
 
@@ -113,9 +141,13 @@ def validate_json_structure(data: dict[str, Any]) -> tuple[bool, list[str]]:
                     errors.append(f"ROS {system} must be object")
                 else:
                     ros_data = data["ros"][system]
-                    if "positive" not in ros_data or not isinstance(ros_data["positive"], list):
+                    if "positive" not in ros_data or not isinstance(
+                        ros_data["positive"], list
+                    ):
                         errors.append(f"ROS {system}.positive must be array")
-                    if "negative" not in ros_data or not isinstance(ros_data["negative"], list):
+                    if "negative" not in ros_data or not isinstance(
+                        ros_data["negative"], list
+                    ):
                         errors.append(f"ROS {system}.negative must be array")
 
     return len(errors) == 0, errors
@@ -185,7 +217,11 @@ def apply_corrections(data: dict[str, Any]) -> dict[str, Any]:
         data["meds"] = []
 
     if "flags" not in data:
-        data["flags"] = {"ischemic_features": False, "dm_followup": False, "labs_a1c_needed": False}
+        data["flags"] = {
+            "ischemic_features": False,
+            "dm_followup": False,
+            "labs_a1c_needed": False,
+        }
 
     if "ros" not in data:
         data["ros"] = {
@@ -202,6 +238,10 @@ def apply_corrections(data: dict[str, Any]) -> dict[str, Any]:
         data["meds"] = []
 
     if not isinstance(data["flags"], dict):
-        data["flags"] = {"ischemic_features": False, "dm_followup": False, "labs_a1c_needed": False}
+        data["flags"] = {
+            "ischemic_features": False,
+            "dm_followup": False,
+            "labs_a1c_needed": False,
+        }
 
     return data

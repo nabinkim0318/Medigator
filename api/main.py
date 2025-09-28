@@ -66,7 +66,9 @@ async def limit_request_size(request: Request, call_next):
         content_length = request.headers.get("content-length")
         if content_length and int(content_length) > 1024 * 1024:  # 1MB limit
             client_host = request.client.host if request.client else "unknown"
-            logger.warning(f"Request too large: {content_length} bytes from {client_host}")
+            logger.warning(
+                f"Request too large: {content_length} bytes from {client_host}"
+            )
             raise HTTPException(status_code=413, detail="Request too large (max 1MB)")
     return await call_next(request)
 
@@ -113,4 +115,6 @@ if __name__ == "__main__":
     import uvicorn
 
     logger.info("Starting uvicorn server on 0.0.0.0:8082")
-    uvicorn.run(app, host="0.0.0.0", port=8082)  # nosec B104 - Development server binding
+    uvicorn.run(
+        app, host="0.0.0.0", port=8082
+    )  # nosec B104 - Development server binding

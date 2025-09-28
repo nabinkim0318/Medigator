@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import json
 import logging
-from typing import Any, Dict
+from typing import Any
 
 from api.services.llm.client import chat_json
 from api.services.llm.fallback import templated as fallback_summary
@@ -33,8 +33,12 @@ class LLMService:
             log.debug("PHI redaction completed")
 
             # 2) Data normalization
-            normalized_intake, normalization_log = medical_normalizer.normalize_intake_data(safe)
-            log.info(f"Data normalization applied: {len(normalization_log)} fields processed")
+            normalized_intake, normalization_log = (
+                medical_normalizer.normalize_intake_data(safe)
+            )
+            log.info(
+                f"Data normalization applied: {len(normalization_log)} fields processed"
+            )
 
             # 3) Negation processing
             processed_intake, negation_log = negation_processor.process_intake_negation(
@@ -43,10 +47,15 @@ class LLMService:
             log.info(f"Negation processing completed: {negation_log}")
 
             # 4) Message construction with hardened prompts
-            sys = SYSTEM.replace("{INPUT_JSON}", json.dumps(processed_intake, ensure_ascii=False))
+            sys = SYSTEM.replace(
+                "{INPUT_JSON}", json.dumps(processed_intake, ensure_ascii=False)
+            )
             messages = [
                 {"role": "system", "content": sys},
-                {"role": "user", "content": json.dumps(processed_intake, ensure_ascii=False)},
+                {
+                    "role": "user",
+                    "content": json.dumps(processed_intake, ensure_ascii=False),
+                },
             ]
 
             # 5) LLM call with stabilized parameters
@@ -80,8 +89,8 @@ class LLMService:
 
             # 7) External flag calculation with rule engine
             log.info("Starting external flag calculation")
-            calculated_flags, flag_justifications = clinical_rule_engine.calculate_flags(
-                processed_intake, summary_data
+            calculated_flags, flag_justifications = (
+                clinical_rule_engine.calculate_flags(processed_intake, summary_data)
             )
 
             # Update flags in summary
@@ -92,7 +101,9 @@ class LLMService:
                 "normalization_log": normalization_log,
                 "negation_log": negation_log,
                 "flag_justifications": flag_justifications,
-                "processing_timestamp": json.dumps({"timestamp": "now"}),  # Simplified for demo
+                "processing_timestamp": json.dumps(
+                    {"timestamp": "now"}
+                ),  # Simplified for demo
             }
 
             log.info(f"Summary generation completed with flags: {calculated_flags}")
@@ -136,7 +147,9 @@ class LLMService:
         # Placeholder implementation
         return "Medical notes summarized"
 
-    async def chat_completion(self, messages, model=None, temperature=0.7, max_tokens=1000):
+    async def chat_completion(
+        self, messages, model=None, temperature=0.7, max_tokens=1000
+    ):
         # Placeholder implementation
         return {"response": "Chat completion response"}
 

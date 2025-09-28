@@ -13,10 +13,12 @@ from datetime import datetime
 from pathlib import Path
 
 # Add project root directory to Python path
-project_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+project_root = os.path.dirname(
+    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+)
 sys.path.insert(0, project_root)
 
-from api.core.config import settings
+from api.core.config import settings  # noqa: E402
 
 
 def create_database():

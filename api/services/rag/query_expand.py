@@ -5,7 +5,6 @@ import json
 import re
 from functools import lru_cache
 from pathlib import Path
-from typing import Dict, List
 
 _WORD = re.compile(r"[A-Za-z0-9+/.-]+")
 
@@ -34,7 +33,9 @@ def load_synonyms(path: str | Path) -> dict[str, list[str]]:
     return norm
 
 
-def expand_terms(terms: list[str], syn: dict[str, list[str]], max_per_term: int = 6) -> list[str]:
+def expand_terms(
+    terms: list[str], syn: dict[str, list[str]], max_per_term: int = 6
+) -> list[str]:
     """Expand term list with synonyms"""
     expanded: list[str] = []
     seen = set()
@@ -83,7 +84,9 @@ def bm25_or_clause(q: str, syn: dict[str, list[str]], max_per_term: int = 6) -> 
     return " AND ".join(groups)
 
 
-def boost_key_terms(q: str, syn: dict[str, list[str]], key_terms: list[str] | None = None) -> str:
+def boost_key_terms(
+    q: str, syn: dict[str, list[str]], key_terms: list[str] | None = None
+) -> str:
     """
     Boost key terms with weights (2x repetition for embedding weight↑)
     """

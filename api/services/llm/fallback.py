@@ -49,17 +49,23 @@ def templated(body: SummaryIn) -> dict:
     ros = {
         "cardiovascular": {
             "positive": (
-                ["chest pain"] if str(answers.get("cc", "")).lower().startswith("chest") else []
+                ["chest pain"]
+                if str(answers.get("cc", "")).lower().startswith("chest")
+                else []
             ),
             "negative": [],
         },
         "respiratory": {
-            "positive": ["dyspnea"] if "dyspnea" in (answers.get("associated") or []) else [],
+            "positive": (
+                ["dyspnea"] if "dyspnea" in (answers.get("associated") or []) else []
+            ),
             "negative": [],
         },
         "constitutional": {
             "positive": (
-                ["diaphoresis"] if "diaphoresis" in (answers.get("associated") or []) else []
+                ["diaphoresis"]
+                if "diaphoresis" in (answers.get("associated") or [])
+                else []
             ),
             "negative": [],
         },

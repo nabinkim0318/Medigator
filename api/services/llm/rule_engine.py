@@ -1,7 +1,6 @@
 # api/services/llm/rule_engine.py
-import json
 import logging
-from typing import Any, Dict, List, Tuple
+from typing import Any
 
 # Get logger
 logger = logging.getLogger(__name__)
@@ -69,7 +68,8 @@ class ClinicalRuleEngine:
 
             # Rule 1: Exertional chest pain relieved by rest
             exertion_worse = any(
-                "physical activity" in str(item).lower() or "exercise" in str(item).lower()
+                "physical activity" in str(item).lower()
+                or "exercise" in str(item).lower()
                 for item in q4_worse
             )
             rest_better = any(
@@ -81,7 +81,9 @@ class ClinicalRuleEngine:
                 justification.append("Exertional chest pain relieved by rest")
 
             # Rule 2: Left arm radiation
-            left_arm_radiation = any("left arm" in str(item).lower() for item in q2_location)
+            left_arm_radiation = any(
+                "left arm" in str(item).lower() for item in q2_location
+            )
             if left_arm_radiation:
                 justification.append("Pain radiates to left arm")
 
@@ -198,7 +200,9 @@ class ClinicalRuleEngine:
 
                 # Check for "due" indicators
                 for term in a1c_due_terms:
-                    if term in value_str and any(a1c_term in value_str for a1c_term in a1c_terms):
+                    if term in value_str and any(
+                        a1c_term in value_str for a1c_term in a1c_terms
+                    ):
                         justification.append(f"A1c monitoring indicator '{term}' found")
                         return True
 

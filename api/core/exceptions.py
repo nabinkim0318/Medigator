@@ -17,7 +17,12 @@ logger = logging.getLogger(__name__)
 class MedicalAPIException(Exception):
     """Base exception for medical API"""
 
-    def __init__(self, message: str, status_code: int = 500, details: dict[str, Any] | None = None):
+    def __init__(
+        self,
+        message: str,
+        status_code: int = 500,
+        details: dict[str, Any] | None = None,
+    ):
         self.message = message
         self.status_code = status_code
         self.details = details or {}
@@ -101,7 +106,9 @@ def setup_exception_handlers(app: FastAPI):
         )
 
     @app.exception_handler(RequestValidationError)
-    async def validation_exception_handler(request: Request, exc: RequestValidationError):
+    async def validation_exception_handler(
+        request: Request, exc: RequestValidationError
+    ):
         """Handle Pydantic validation errors"""
         logger.warning(
             f"Validation Error: {exc.errors()}",

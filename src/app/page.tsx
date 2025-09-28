@@ -13,7 +13,9 @@ export default function Home() {
       <div className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center py-4">
-            <h1 className="text-2xl font-bold text-gray-900">🏥 BBB Medical System</h1>
+            <h1 className="text-2xl font-bold text-gray-900">
+              🏥 BBB Medical System
+            </h1>
             <div className="flex space-x-4">
               <a
                 href="/patient"
@@ -40,14 +42,17 @@ export default function Home() {
               AI-Powered Medical System
             </h2>
             <p className="text-xl text-gray-600 mb-12 max-w-3xl mx-auto">
-              Advanced medical report generation with RAG capabilities, HIPAA compliance,
-              and intelligent symptom analysis for both patients and healthcare providers.
+              Advanced medical report generation with RAG capabilities, HIPAA
+              compliance, and intelligent symptom analysis for both patients and
+              healthcare providers.
             </p>
 
             <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
               <div className="bg-white p-8 rounded-lg shadow-lg">
                 <div className="text-6xl mb-4">👤</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Patient Interface</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Patient Interface
+                </h3>
                 <p className="text-gray-600 mb-6">
                   Interactive symptom questionnaire with AI-powered analysis and
                   personalized medical insights.
@@ -62,7 +67,9 @@ export default function Home() {
 
               <div className="bg-white p-8 rounded-lg shadow-lg">
                 <div className="text-6xl mb-4">👨‍⚕️</div>
-                <h3 className="text-2xl font-bold text-gray-900 mb-4">Doctor Dashboard</h3>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4">
+                  Doctor Dashboard
+                </h3>
                 <p className="text-gray-600 mb-6">
                   Comprehensive patient management with AI-generated reports,
                   evidence retrieval, and clinical decision support.

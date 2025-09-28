@@ -34,7 +34,11 @@ def to_cards(
         source = (chunk.get("source") or "").strip()
 
         # duplicate check (title, year, section combination)
-        key = (title.lower(), str(chunk.get("year", "")), chunk.get("section", "").lower())
+        key = (
+            title.lower(),
+            str(chunk.get("year", "")),
+            chunk.get("section", "").lower(),
+        )
         if key in seen:
             logger.debug(f"Skipping duplicate card: {title}")
             continue

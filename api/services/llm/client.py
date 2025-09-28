@@ -23,7 +23,9 @@ from api.core.config import settings
 logger = logging.getLogger("llm")
 
 # ---- Config normalization ----
-LLM_MODEL = getattr(settings, "LLM_MODEL", getattr(settings, "openai_model", "gpt-4o-mini"))
+LLM_MODEL = getattr(
+    settings, "LLM_MODEL", getattr(settings, "openai_model", "gpt-4o-mini")
+)
 LLM_TEMPERATURE = float(
     getattr(settings, "LLM_TEMPERATURE", getattr(settings, "openai_temperature", 0.1)),
 )
@@ -31,13 +33,19 @@ LLM_TOP_P = float(
     getattr(settings, "LLM_TOP_P", getattr(settings, "openai_top_p", 0.9)),
 )
 LLM_TIMEOUT_S = (
-    float(getattr(settings, "LLM_TIMEOUT_MS", getattr(settings, "openai_timeout_ms", 3500)))
+    float(
+        getattr(
+            settings, "LLM_TIMEOUT_MS", getattr(settings, "openai_timeout_ms", 3500)
+        )
+    )
     / 1000.0
 )
 LLM_SEED = int(
     getattr(settings, "LLM_SEED", getattr(settings, "openai_seed", 42)),
 )
-OPENAI_API_KEY = getattr(settings, "OPENAI_API_KEY", getattr(settings, "openai_api_key", None))
+OPENAI_API_KEY = getattr(
+    settings, "OPENAI_API_KEY", getattr(settings, "openai_api_key", None)
+)
 
 # Optional: Azure/OpenRouter etc custom endpoint
 OPENAI_BASE_URL = os.getenv("OPENAI_BASE_URL")  # if none, basic
@@ -164,7 +172,9 @@ async def _retry_async(fn, *, attempts=3, base_delay=0.25, max_delay=2.0):
             return await fn()
         except Exception as e:
             last = e
-            logger.warning(f"Attempt {i + 1}/{attempts} failed: {type(e).__name__}: {e}")
+            logger.warning(
+                f"Attempt {i + 1}/{attempts} failed: {type(e).__name__}: {e}"
+            )
 
             if not _is_retryable(e) or i == attempts - 1:
                 logger.error(f"Final attempt failed: {type(e).__name__}: {e}")

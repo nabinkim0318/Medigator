@@ -51,5 +51,7 @@ def suggest_icd(
             },
         )
     # symptom first sort
-    candidates.sort(key=lambda x: (not str(x["code"]).startswith("R"), x["score"]), reverse=True)
+    candidates.sort(
+        key=lambda x: (not str(x["code"]).startswith("R"), x["score"]), reverse=True
+    )
     return candidates[:k]
