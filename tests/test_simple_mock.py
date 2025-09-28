@@ -36,7 +36,9 @@ async def quick_test():
 
         print("\n✅ Summary Generated!")
         print(f"📝 HPI: {result.get('hpi', 'N/A')}")
-        print(f"🚩 Ischemic Features: {result.get('flags', {}).get('ischemic_features', 'N/A')}")
+        print(
+            f"🚩 Ischemic Features: {result.get('flags', {}).get('ischemic_features', 'N/A')}"
+        )
 
         return True
 
