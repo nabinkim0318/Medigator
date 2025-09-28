@@ -42,7 +42,9 @@ export default function SignIn() {
       <div className="mx-auto w-full max-w-md text-center">
         {/* Logo / Brand */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="h-6 w-6 rounded-md bg-orange-400" />
+          <div className="h-6 w-6" >
+            <img src="/logo.png" alt="Medigator Logo" />
+          </div>
           <div className="font-semibold text-orange-600">Medigator</div>
         </div>
 
