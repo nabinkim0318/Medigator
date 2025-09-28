@@ -1,5 +1,5 @@
-# Frontend Dockerfile for development
-FROM node:18-alpine
+# Frontend Dockerfile for production build
+FROM node:18-alpine AS frontend
 
 WORKDIR /app
 
@@ -12,8 +12,8 @@ RUN npm ci
 # Copy source code
 COPY . ./
 
-# Expose port
-EXPOSE 5173
+# Build for production
+RUN npm run build
 
-# Start development server
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]
+# Next.js with distDir: 'dist' will output to /app/dist
+# No need to copy, it's already in the right place

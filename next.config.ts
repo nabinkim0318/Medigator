@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   // Vercel optimization
   output: 'standalone',
+  distDir: 'dist',
 
   // Disable TypeScript checking for build
   typescript: {
