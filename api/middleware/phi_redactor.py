@@ -20,6 +20,11 @@ _PHONE_PATTERN = re.compile(r"\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b")
 
 def _redact_text(s: str) -> str:
     out = s
+
+    # Check if already redacted to avoid double redaction
+    if "[REDACTED]" in out:
+        return out
+
     # First, specifically handle phone numbers with multiple patterns
     phone_patterns = [
         r"\b\d{3}-\d{3}-\d{4}\b",  # 123-456-7890
@@ -28,11 +33,19 @@ def _redact_text(s: str) -> str:
         r"\b\d{10}\b",  # 1234567890
     ]
     for pattern in phone_patterns:
+        before = out
         out = re.sub(pattern, "[REDACTED]", out)
+        if before != out:
+            break  # Stop after first match to avoid double redaction
 
-    # Then apply other patterns
-    for p in _PATTERNS:
-        out = p.sub("[REDACTED]", out)
+    # Only apply other patterns if no phone number was found
+    if "[REDACTED]" not in out:
+        for p in _PATTERNS:
+            before = out
+            out = p.sub("[REDACTED]", out)
+            if before != out:
+                break  # Stop after first match
+
     return out
 
 
