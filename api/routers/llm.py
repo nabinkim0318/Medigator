@@ -10,9 +10,9 @@ from typing import Any
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from api.core.config import settings
-from api.core.exceptions import LLMServiceException
-from api.services.llm import llm_service
+from core.config import settings
+from core.exceptions import LLMServiceException
+from services.llm import llm_service
 
 # Get logger
 logger = logging.getLogger(__name__)

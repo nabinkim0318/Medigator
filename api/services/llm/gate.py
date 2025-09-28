@@ -1,6 +1,6 @@
 # api/services/llm/gate.py
-from api.core.config import settings
-from api.middleware.phi_redactor import redact_obj
+from core.config import settings
+from middleware.phi_redactor import redact_obj
 
 
 def guard_and_redact(payload: dict) -> dict:

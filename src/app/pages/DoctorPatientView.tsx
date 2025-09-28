@@ -1,101 +1,71 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Search, Calendar, Bell, Plus, Edit, X, Eye } from "lucide-react";
 import PatientInfoPopup, { Patient } from "./PatientInfoPopup";
 
 const DoctorPatientView: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filterDate, setFilterDate] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   // popup state
   const [isPopupOpen, setIsPopupOpen] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
 
-  const patients: Patient[] = [
-    {
-      id: "1",
-      name: "Elizabeth Polsan",
-      age: 24,
-      gender: "Female",
-      bloodGroup: "B+ve",
-      phone: "+91 12345 67890",
-      email: "elisabethpolsan@hotmail.com",
-      avatar:
-        "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face",
-      initials: "EP",
-    },
-    {
-      id: "2",
-      name: "John David",
-      age: 28,
-      gender: "Male",
-      bloodGroup: "B+ve",
-      phone: "+91 12345 67890",
-      email: "davidjohn22@gmail.com",
-      avatar: "",
-      initials: "JD",
-    },
-    {
-      id: "3",
-      name: "Krishtav Rajan",
-      age: 24,
-      gender: "Male",
-      bloodGroup: "AB+ve",
-      phone: "+91 12345 67890",
-      email: "krishnrajan23@gmail.com",
-      avatar: "",
-      initials: "KR",
-    },
-    {
-      id: "4",
-      name: "Sumanth Tinson",
-      age: 26,
-      gender: "Male",
-      bloodGroup: "O+ve",
-      phone: "+91 12345 67890",
-      email: "tintintn@gmail.com",
-      avatar:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face",
-      initials: "ST",
-    },
-    {
-      id: "5",
-      name: "EG Subramani",
-      age: 77,
-      gender: "Male",
-      bloodGroup: "AB+ve",
-      phone: "+91 12345 67890",
-      email: "egs3122@gmail.com",
-      avatar:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face",
-      initials: "ES",
-    },
-    {
-      id: "6",
-      name: "Ranjan Maari",
-      age: 77,
-      gender: "Male",
-      bloodGroup: "O+ve",
-      phone: "+91 12345 67890",
-      email: "ranjanmaari@yahoo.com",
-      avatar:
-        "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=40&h=40&fit=crop&crop=face",
-      initials: "RM",
-    },
-    {
-      id: "7",
-      name: "Philipile Gopal",
-      age: 55,
-      gender: "Male",
-      bloodGroup: "O-ve",
-      phone: "+91 12345 67890",
-      email: "gopal22@gmail.com",
-      avatar:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=40&h=40&fit=crop&crop=face",
-      initials: "PG",
-    },
-  ];
+  const [patients, setPatients] = useState<Patient[]>([]);
+
+  useEffect(() => {
+    const API_BASE = (process.env.NEXT_PUBLIC_API_URL as string) || "http://localhost:8082";
+    setLoading(true);
+    fetch(`${API_BASE}/api/v1/patient/profile`)
+      .then(async (res) => {
+        if (!res.ok) {
+          const t = await res.text();
+          throw new Error(`fetch failed: ${res.status} ${t}`);
+        }
+        return res.json();
+      })
+      .then((data) => {
+        // data.profiles: [{ token, profile: { name, age, gender, ... } }]
+        if (Array.isArray(data.profiles)) {
+          const mapped: Patient[] = data.profiles
+            .map((p: any, idx: number) => {
+              if (!p.profile) return null;
+              const prof = p.profile;
+              const initials = prof.name
+                ? prof.name
+                    .split(" ")
+                    .map((s: string) => s[0])
+                    .join("")
+                    .slice(0, 2)
+                    .toUpperCase()
+                : "??";
+              return {
+                id: p.token || String(idx + 1),
+                name: prof.name || "Unknown",
+                age: Number(prof.age) || 0,
+                gender: prof.gender || (prof.sex as any) || "Male",
+                bloodGroup: prof.bloodGroup || "",
+                phone: prof.phone || "",
+                email: prof.email || "",
+                avatar: prof.avatar || "",
+                initials,
+              } as Patient;
+            })
+            .filter(Boolean) as Patient[];
+          setPatients(mapped);
+        } else {
+          setPatients([]);
+        }
+        setLoading(false);
+      })
+      .catch((err) => {
+        setError(err.message);
+        setLoading(false);
+      });
+  }, []);
 
   const sidebarItems = [
     { icon: "📊", label: "Dashboard", active: false },
@@ -578,18 +548,32 @@ const DoctorPatientView: React.FC = () => {
                           />
                           <ActionButton
                             type="delete"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // delete logic here...
-                              alert(`Delete ${patient.name}`);
+                            onClick={async (e) => {
+                                e.stopPropagation();
+                                if (!confirm(`Are you sure you want to delete ${patient.name}?`)) return;
+
+                                try {
+                                  const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8082";
+                                  const res = await fetch(`${API_BASE}/api/v1/patient/profile/${patient.id}`, {
+                                    method: "DELETE",
+                                  });
+                                  if (!res.ok) {
+                                    const t = await res.text();
+                                    throw new Error(`Delete failed: ${res.status} ${t}`);
+                                  }
+
+                                  // remove from state
+                                  setPatients((prev) => prev.filter((p) => p.id !== patient.id));
+                                } catch (err: any) {
+                                  alert(`Error deleting: ${err.message}`);
+                                }
+                      
                             }}
                           />
                           <ActionButton
                             type="edit"
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              // edit logic here...
-                              alert(`Edit ${patient.name}`);
+                            onClick={async (e) => {
+                              alert(`Edit Placeholder`);
                             }}
                           />
                         </div>

@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
-from api.services.intake.tokens import mk_token, verify
+from services.intake.tokens import mk_token, verify
 
 router = APIRouter(prefix="/intake", tags=["intake"])
 
