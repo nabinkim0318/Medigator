@@ -17,26 +17,82 @@ type MultiAnswer = { selected: string[]; otherText?: string };
 type SingleAnswer = { selected?: string; otherText?: string };
 
 // --- Small UI atoms
-const PageShell: React.FC<{ step: number; total: number; title: string; subtitle?: string; children: React.ReactNode; onBack?: () => void; onNext?: () => void; nextDisabled?: boolean; }> = ({ step, total, title, subtitle, children, onBack, onNext, nextDisabled }) => {
+const PageShell: React.FC<{
+  step: number;
+  total: number;
+  title: string;
+  subtitle?: string;
+  children: React.ReactNode;
+  onBack?: () => void;
+  onNext?: () => void;
+  nextDisabled?: boolean;
+  onStepSelect?: (step: number) => void; // NEW: for progress dots
+}> = ({
+  step,
+  total,
+  title,
+  subtitle,
+  children,
+  onBack,
+  onNext,
+  nextDisabled,
+  onStepSelect,
+}) => {
   return (
     <div className="min-h-screen w-full bg-orange-50 flex items-center justify-center px-4">
       <div className="mx-auto w-full max-w-3xl text-center">
-        <div className="mb-8 text-gray-400 text-xs">Demo only — Not diagnostic • No PHI</div>
+
+        {/* Top-left greeting */}
+        <div className="absolute top-4 left-4 text-gray-700 font-medium">
+          Hi, [NAME]
+        </div>
+
+        {/* Top-right back link */}
+        <a
+          href="/medical-history" // adjust route if needed
+          className="absolute top-4 right-4 text-sm text-orange-600 hover:underline"
+        >
+          Edit Medical History
+        </a>
 
         {/* Logo / Brand */}
         <div className="flex items-center justify-center gap-2 mb-6">
-          <div className="h-6 w-6 rounded-md bg-orange-400" />
+          <div className="h-6 w-6" >
+            <img src="/logo.png" alt="Medigator Logo" />
+          </div>
           <div className="font-semibold text-orange-600">Medigator</div>
         </div>
-
-        {/* Progress */}
-        <div className="text-gray-500 text-sm mb-2">{step} / {total}</div>
 
         <h1 className="text-3xl font-semibold text-gray-900 mb-2">{title}</h1>
         {subtitle && <p className="text-gray-500 mb-6">{subtitle}</p>}
 
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8">
+        {/* Card: now scrollable when tall */}
+        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 sm:p-8 max-h-[50vh] overflow-y-auto">
           {children}
+        </div>
+
+        {/* Progress dots */}
+        <div className="mt-6 flex items-center justify-center gap-2">
+          {Array.from({ length: total }).map((_, i) => {
+            const dotStep = i + 1; // steps are 1-based here
+            const isActive = dotStep === step;
+            const isDone = dotStep < step;
+            return (
+              <button
+                key={i}
+                onClick={() => onStepSelect?.(dotStep)}
+                className={`h-3 w-3 rounded-full transition ${
+                  isActive
+                    ? "bg-orange-500"
+                    : isDone
+                    ? "bg-green-500"
+                    : "bg-gray-300"
+                }`}
+                aria-label={`Go to step ${dotStep}`}
+                title={`Step ${dotStep}`}
+              />
+            );
+          })}
         </div>
 
         <div className="mt-8 flex items-center justify-center gap-3">
@@ -50,7 +106,9 @@ const PageShell: React.FC<{ step: number; total: number; title: string; subtitle
           )}
           {onNext && (
             <button
-              className={`px-6 py-3 rounded-xl text-white ${nextDisabled ? "bg-orange-300 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"}`}
+              className={`px-6 py-3 rounded-xl text-white ${
+                nextDisabled ? "bg-orange-300 cursor-not-allowed" : "bg-orange-500 hover:bg-orange-600"
+              }`}
               onClick={onNext}
               disabled={nextDisabled}
             >
@@ -81,7 +139,9 @@ const SelectBox: React.FC<{
     >
       <div className="flex items-center gap-3">
         <span
-          className={`inline-flex h-5 w-5 items-center justify-center rounded-full border ${selected ? "border-green-500 bg-green-500 text-white" : "border-gray-300 bg-white text-transparent"}`}
+          className={`inline-flex h-5 w-5 items-center justify-center rounded-full border ${
+            selected ? "border-green-500 bg-green-500 text-white" : "border-gray-300 bg-white text-transparent"
+          }`}
         >
           {radio ? "●" : "✓"}
         </span>
@@ -396,6 +456,7 @@ export default function PatientChestPainQuestionnairePage() {
             subtitle="When did the pain start?"
             onNext={() => setStep(step + 1)}
             nextDisabled={nextDisabled}
+            onStepSelect={(s) => setStep(s)} // enable dot navigation
           >
             <SingleSelectQuestion choices={Q1_CHOICES} value={q1} onChange={setQ1} />
           </PageShell>
@@ -411,6 +472,7 @@ export default function PatientChestPainQuestionnairePage() {
             onBack={() => setStep(step - 1)}
             onNext={() => setStep(step + 1)}
             nextDisabled={nextDisabled}
+            onStepSelect={(s) => setStep(s)}
           >
             <MultiSelectQuestion choices={Q2_CHOICES} value={q2} onChange={setQ2} />
           </PageShell>
@@ -426,6 +488,7 @@ export default function PatientChestPainQuestionnairePage() {
             onBack={() => setStep(step - 1)}
             onNext={() => setStep(step + 1)}
             nextDisabled={nextDisabled}
+            onStepSelect={(s) => setStep(s)}
           >
             <MultiSelectQuestion choices={Q3_CHOICES} value={q3} onChange={setQ3} />
           </PageShell>
@@ -441,6 +504,7 @@ export default function PatientChestPainQuestionnairePage() {
             onBack={() => setStep(step - 1)}
             onNext={() => setStep(step + 1)}
             nextDisabled={nextDisabled}
+            onStepSelect={(s) => setStep(s)}
           >
             <MultiSelectQuestion choices={Q4_CHOICES} value={q4} onChange={setQ4} />
           </PageShell>
@@ -456,6 +520,7 @@ export default function PatientChestPainQuestionnairePage() {
             onBack={() => setStep(step - 1)}
             onNext={() => setStep(step + 1)}
             nextDisabled={nextDisabled}
+            onStepSelect={(s) => setStep(s)}
           >
             <MultiSelectQuestion choices={Q5_CHOICES} value={q5} onChange={setQ5} />
           </PageShell>
@@ -471,9 +536,10 @@ export default function PatientChestPainQuestionnairePage() {
             onBack={() => setStep(step - 1)}
             onNext={() => setStep(step + 1)}
             nextDisabled={nextDisabled}
+            onStepSelect={(s) => setStep(s)}
           >
             {/* Scrollable box like your mock (rows scroll, page doesn't) */}
-            <MultiSelectQuestion choices={Q6_CHOICES} value={q6} onChange={setQ6} scrollable />
+            <MultiSelectQuestion choices={Q6_CHOICES} value={q6} onChange={setQ6} />
           </PageShell>
         );
 
@@ -487,6 +553,7 @@ export default function PatientChestPainQuestionnairePage() {
             onBack={() => setStep(step - 1)}
             onNext={() => setStep(step + 1)}
             nextDisabled={nextDisabled}
+            onStepSelect={(s) => setStep(s)}
           >
             <SingleSelectQuestion choices={Q7_CHOICES} value={q7} onChange={setQ7} />
           </PageShell>
@@ -502,6 +569,7 @@ export default function PatientChestPainQuestionnairePage() {
             onBack={() => setStep(step - 1)}
             onNext={() => setStep(step + 1)}
             nextDisabled={nextDisabled}
+            onStepSelect={(s) => setStep(s)}
           >
             <SingleSelectQuestion choices={Q8_CHOICES} value={q8} onChange={setQ8} />
           </PageShell>
@@ -517,6 +585,7 @@ export default function PatientChestPainQuestionnairePage() {
             onBack={() => setStep(step - 1)}
             onNext={submit}
             nextDisabled={nextDisabled}
+            onStepSelect={(s) => setStep(s)}
           >
             <SingleSelectQuestion choices={Q9_CHOICES} value={q9} onChange={setQ9} />
           </PageShell>

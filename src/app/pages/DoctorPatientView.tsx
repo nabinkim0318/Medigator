@@ -127,7 +127,10 @@ const DoctorPatientView: React.FC = () => {
       alignItems: "center",
       justifyContent: "center",
       ...(t === "edit" && { color: "#ea580c", backgroundColor: "transparent" }),
-      ...(t === "delete" && { color: "#dc2626", backgroundColor: "transparent" }),
+      ...(t === "delete" && {
+        color: "#dc2626",
+        backgroundColor: "transparent",
+      }),
       ...(t === "view" && { color: "#6b7280", backgroundColor: "transparent" }),
     });
 
@@ -189,7 +192,9 @@ const DoctorPatientView: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", height: "100vh", backgroundColor: "#f9fafb" }}>
+    <div
+      style={{ display: "flex", height: "100vh", backgroundColor: "#f9fafb" }}
+    >
       {/* Sidebar */}
       <div
         style={{
@@ -214,7 +219,9 @@ const DoctorPatientView: React.FC = () => {
             >
               <span style={{ color: "white", fontWeight: "bold" }}>+</span>
             </div>
-            <span style={{ fontSize: "20px", fontWeight: 600, color: "#1f2937" }}>
+            <span
+              style={{ fontSize: "20px", fontWeight: 600, color: "#1f2937" }}
+            >
               Medigator
             </span>
           </div>
@@ -243,12 +250,14 @@ const DoctorPatientView: React.FC = () => {
               }}
               onMouseEnter={(e) => {
                 if (!item.active) {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = "#f9fafb";
+                  (e.currentTarget as HTMLElement).style.backgroundColor =
+                    "#f9fafb";
                 }
               }}
               onMouseLeave={(e) => {
                 if (!item.active) {
-                  (e.currentTarget as HTMLElement).style.backgroundColor = "transparent";
+                  (e.currentTarget as HTMLElement).style.backgroundColor =
+                    "transparent";
                 }
               }}
             >
@@ -258,7 +267,14 @@ const DoctorPatientView: React.FC = () => {
           ))}
         </nav>
 
-        <div style={{ position: "absolute", bottom: "16px", left: "16px", right: "16px" }}>
+        <div
+          style={{
+            position: "absolute",
+            bottom: "16px",
+            left: "16px",
+            right: "16px",
+          }}
+        >
           <button
             style={{
               display: "flex",
@@ -274,10 +290,12 @@ const DoctorPatientView: React.FC = () => {
               cursor: "pointer",
             }}
             onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#f9fafb";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                "#f9fafb";
             }}
             onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
+              (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                "transparent";
             }}
           >
             <span style={{ fontSize: "18px" }}>🚪</span>
@@ -302,7 +320,14 @@ const DoctorPatientView: React.FC = () => {
               justifyContent: "space-between",
             }}
           >
-            <h1 style={{ fontSize: "24px", fontWeight: 600, color: "#1f2937", margin: 0 }}>
+            <h1
+              style={{
+                fontSize: "24px",
+                fontWeight: 600,
+                color: "#1f2937",
+                margin: 0,
+              }}
+            >
               Patient Details
             </h1>
             <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
@@ -318,10 +343,12 @@ const DoctorPatientView: React.FC = () => {
                   transition: "all 0.2s",
                 }}
                 onMouseEnter={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#f3f4f6";
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    "#f3f4f6";
                 }}
                 onMouseLeave={(e) => {
-                  (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
+                  (e.currentTarget as HTMLButtonElement).style.backgroundColor =
+                    "transparent";
                 }}
               >
                 <Bell style={{ width: 20, height: 20 }} />
@@ -337,7 +364,9 @@ const DoctorPatientView: React.FC = () => {
                   }}
                 />
               </button>
-              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+              <div
+                style={{ display: "flex", alignItems: "center", gap: "12px" }}
+              >
                 <img
                   src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?w=40&h=40&fit=crop&crop=face"
                   alt="Doctor"
@@ -349,10 +378,18 @@ const DoctorPatientView: React.FC = () => {
                   }}
                 />
                 <div>
-                  <div style={{ fontSize: "14px", fontWeight: 500, color: "#1f2937" }}>
+                  <div
+                    style={{
+                      fontSize: "14px",
+                      fontWeight: 500,
+                      color: "#1f2937",
+                    }}
+                  >
                     Jonitha Cathrine
                   </div>
-                  <div style={{ fontSize: "12px", color: "#6b7280" }}>Doctor</div>
+                  <div style={{ fontSize: "12px", color: "#6b7280" }}>
+                    Doctor
+                  </div>
                 </div>
               </div>
             </div>
@@ -405,7 +442,9 @@ const DoctorPatientView: React.FC = () => {
                   justifyContent: "space-between",
                 }}
               >
-                <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "16px" }}
+                >
                   <div style={{ position: "relative" }}>
                     <Search
                       style={{
@@ -499,12 +538,14 @@ const DoctorPatientView: React.FC = () => {
                     fontWeight: 500,
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                      "#ea580c";
+                    (
+                      e.currentTarget as HTMLButtonElement
+                    ).style.backgroundColor = "#ea580c";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.backgroundColor =
-                      "#f97316";
+                    (
+                      e.currentTarget as HTMLButtonElement
+                    ).style.backgroundColor = "#f97316";
                   }}
                 >
                   <Plus style={{ width: 16, height: 16 }} />
@@ -518,25 +559,74 @@ const DoctorPatientView: React.FC = () => {
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead style={{ backgroundColor: "#f9fafb" }}>
                   <tr>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Patient Name
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Age
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Gender
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Blood Group
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Phone Number
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       Email ID
                     </th>
-                    <th style={{ textAlign: "left", padding: "16px", fontWeight: 500, color: "#374151" }}>
+                    <th
+                      style={{
+                        textAlign: "left",
+                        padding: "16px",
+                        fontWeight: 500,
+                        color: "#374151",
+                      }}
+                    >
                       User Action
                     </th>
                   </tr>
@@ -552,27 +642,53 @@ const DoctorPatientView: React.FC = () => {
                         cursor: "pointer",
                       }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLTableRowElement).style.backgroundColor = "#f9fafb";
+                        (
+                          e.currentTarget as HTMLTableRowElement
+                        ).style.backgroundColor = "#f9fafb";
                       }}
                       onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLTableRowElement).style.backgroundColor = "transparent";
+                        (
+                          e.currentTarget as HTMLTableRowElement
+                        ).style.backgroundColor = "transparent";
                       }}
                     >
                       <td style={{ padding: "16px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "12px",
+                          }}
+                        >
                           <Avatar patient={patient} />
                           <span style={{ fontWeight: 500, color: "#1f2937" }}>
                             {patient.name}
                           </span>
                         </div>
                       </td>
-                      <td style={{ padding: "16px", color: "#6b7280" }}>{patient.age}</td>
-                      <td style={{ padding: "16px", color: "#6b7280" }}>{patient.gender}</td>
-                      <td style={{ padding: "16px", color: "#6b7280" }}>{patient.bloodGroup}</td>
-                      <td style={{ padding: "16px", color: "#6b7280" }}>{patient.phone}</td>
-                      <td style={{ padding: "16px", color: "#6b7280" }}>{patient.email}</td>
+                      <td style={{ padding: "16px", color: "#6b7280" }}>
+                        {patient.age}
+                      </td>
+                      <td style={{ padding: "16px", color: "#6b7280" }}>
+                        {patient.gender}
+                      </td>
+                      <td style={{ padding: "16px", color: "#6b7280" }}>
+                        {patient.bloodGroup}
+                      </td>
+                      <td style={{ padding: "16px", color: "#6b7280" }}>
+                        {patient.phone}
+                      </td>
+                      <td style={{ padding: "16px", color: "#6b7280" }}>
+                        {patient.email}
+                      </td>
                       <td style={{ padding: "16px" }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
                           {/* VIEW button with its own onClick */}
                           <ActionButton
                             type="view"
@@ -625,7 +741,9 @@ const DoctorPatientView: React.FC = () => {
                 >
                   Previous
                 </button>
-                <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <div
+                  style={{ display: "flex", alignItems: "center", gap: "8px" }}
+                >
                   <button
                     style={{
                       width: "32px",
@@ -655,10 +773,14 @@ const DoctorPatientView: React.FC = () => {
                         transition: "background-color 0.2s",
                       }}
                       onMouseEnter={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = "#f3f4f6";
+                        (
+                          e.currentTarget as HTMLButtonElement
+                        ).style.backgroundColor = "#f3f4f6";
                       }}
                       onMouseLeave={(e) => {
-                        (e.currentTarget as HTMLButtonElement).style.backgroundColor = "transparent";
+                        (
+                          e.currentTarget as HTMLButtonElement
+                        ).style.backgroundColor = "transparent";
                       }}
                     >
                       {p}
@@ -675,10 +797,12 @@ const DoctorPatientView: React.FC = () => {
                     transition: "color 0.2s",
                   }}
                   onMouseEnter={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.color = "#ea580c";
+                    (e.currentTarget as HTMLButtonElement).style.color =
+                      "#ea580c";
                   }}
                   onMouseLeave={(e) => {
-                    (e.currentTarget as HTMLButtonElement).style.color = "#6b7280";
+                    (e.currentTarget as HTMLButtonElement).style.color =
+                      "#6b7280";
                   }}
                 >
                   Next
