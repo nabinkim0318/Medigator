@@ -46,7 +46,6 @@ const Sidebar: React.FC<SidebarProps> = ({ active = "Dashboard", onSelect }) => 
             style={{
               width: 36,
               height: 36,
-              background: "#f59e0b",
               color: "white",
               borderRadius: 10,
               display: "flex",
@@ -56,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ active = "Dashboard", onSelect }) => 
               fontSize: 18,
             }}
           >
-            +
+            <img src="/logo.png" alt="Medigator Logo" style={{ width: 24, height: 24 }} />
           </div>
           <div style={{ color: "#ef6c00", fontWeight: 800, fontSize: 18 }}>Medigator</div>
         </div>

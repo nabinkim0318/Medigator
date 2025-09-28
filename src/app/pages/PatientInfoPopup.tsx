@@ -69,11 +69,6 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
     { code: "R07.9", description: "Chest pain, unspecified" },
     { code: "93000", description: "Electrocardiogram, routine ECG" },
   ];
-  const suspectedConditions = [
-    "Myocardial Infarction",
-    "Unstable Angina",
-    "Aortic Dissection",
-  ];
   const suspectedConditions = ['Myocardial Infarction'];
   const recommendedResearch = [
     {
