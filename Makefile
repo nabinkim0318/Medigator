@@ -146,25 +146,25 @@ pdf:
 # ====== Docker ======
 docker-build:
 	@echo "🐳 Building Docker images..."
-	@docker build -t bbb-medical-api .
-	@docker build -f Dockerfile.frontend -t bbb-medical-frontend .
+	@docker build -t bbb-medical-api -f docker/Dockerfile .
+	@docker build -t bbb-medical-frontend -f docker/Dockerfile.frontend .
 	@echo "✅ Docker images built."
 
 docker-up:
 	@echo "🐳 Starting services with Docker Compose..."
-	@docker-compose up -d
+	@cd docker && docker-compose up -d
 	@echo "✅ Services started. API: http://localhost:8082, UI: http://localhost:5173"
 
 docker-down:
 	@echo "🐳 Stopping Docker services..."
-	@docker-compose down
+	@cd docker && docker-compose down
 	@echo "✅ Services stopped."
 
 docker-logs:
-	@docker-compose logs -f
+	@cd docker && docker-compose logs -f
 
 docker-shell:
-	@docker-compose exec api bash
+	@cd docker && docker-compose exec api bash
 
 # ====== Housekeeping ======
 demo-clean:

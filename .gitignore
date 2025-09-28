@@ -91,6 +91,9 @@ build/
 .next/
 .vite/
 .cache/
+node_modules/
+venv/
+.venv/
 *.exe
 *.out
 *.a
