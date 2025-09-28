@@ -86,7 +86,7 @@ lint:
 	@npx prettier --write "src/**/*.{ts,tsx,js,jsx,json,css,md}"
 
 fmt:
-	@cd $(API_DIR) && isort . && black .
+	@cd $(API_DIR) && ruff check --fix . && ruff format .
 	@npx prettier --write "src/**/*.{ts,tsx,js,jsx,json,css,md}"
 
 # type:
