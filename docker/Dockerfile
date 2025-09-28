@@ -1,5 +1,5 @@
 # Multi-stage build for BBB Medical Report API
-FROM python:3.12-slim as backend
+FROM python:3.12-slim AS backend
 
 # Set working directory
 WORKDIR /app
@@ -34,7 +34,7 @@ HEALTHCHECK --interval=30s --timeout=30s --start-period=5s --retries=3 \
 CMD ["python", "-m", "uvicorn", "api.main:app", "--host", "0.0.0.0", "--port", "8082"]
 
 # Frontend stage
-FROM node:18-alpine as frontend
+FROM node:18-alpine AS frontend
 
 WORKDIR /app
 
@@ -51,7 +51,7 @@ COPY . ./
 RUN npm run build
 
 # Production stage
-FROM python:3.12-slim as production
+FROM python:3.12-slim AS production
 
 WORKDIR /app
 
