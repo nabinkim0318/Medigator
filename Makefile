@@ -20,7 +20,9 @@ help:
 	@echo "  setup          Create venv, install deps, seed DB, install UI deps"
 	@echo "  dev            Run API (8082) + UI (5173) together"
 	@echo "  api            Run FastAPI locally (reload)"
-	@echo "  ui             Run Next.js dev server"
+	@echo "  ui             Run Next.js dev server (unified)"
+	@echo "  ui-patient     Run Patient Frontend on port 3000"
+	@echo "  ui-doctor      Run Doctor Frontend on port 3001"
 	@echo "  seed           Load CSV/JSON seeds into SQLite"
 	@echo "  test           Run backend tests"
 	@echo "  test-hardening Run hardening component tests"
@@ -34,10 +36,14 @@ help:
 	@echo "  build          Build prod UI + check API import"
 	@echo "  pdf            Generate a sample PDF report (api/reports/)"
 	@echo "  docker-build   Build Docker images"
-	@echo "  docker-up      Start services with Docker Compose"
+	@echo "  docker-up      Start services with Docker Compose (unified)"
+	@echo "  docker-up-separate Start separate frontend services (3000, 3001)"
 	@echo "  docker-down    Stop Docker services"
 	@echo "  docker-logs    Show Docker logs"
 	@echo "  docker-shell   Open shell in running container"
+	@echo "  deploy-patient Deploy Patient Frontend to Vercel"
+	@echo "  deploy-doctor  Deploy Doctor Frontend to Vercel"
+	@echo "  deploy-all     Deploy both frontends to Vercel"
 	@echo "  clean          Remove __pycache__, caches, build artifacts"
 	@echo "  distclean      Also remove venv and node_modules"
 
@@ -76,6 +82,14 @@ api:
 
 ui:
 	@npm run dev
+
+ui-patient:
+	@echo "🏥 Starting Patient Frontend on port 3000..."
+	@npm run dev:patient
+
+ui-doctor:
+	@echo "👨‍⚕️ Starting Doctor Frontend on port 3001..."
+	@npm run dev:doctor
 
 # ====== Quality ======
 test:
@@ -146,8 +160,9 @@ pdf:
 # ====== Docker ======
 docker-build:
 	@echo "🐳 Building Docker images..."
-	@docker build -t bbb-medical-api -f docker/Dockerfile .
-	@docker build -t bbb-medical-frontend -f docker/Dockerfile.frontend .
+	@docker build -t bbb-medical-api:latest -f docker/Dockerfile .
+	@docker build -t bbb-medical-patient:latest -f docker/Dockerfile.patient .
+	@docker build -t bbb-medical-doctor:latest -f docker/Dockerfile.doctor .
 	@echo "✅ Docker images built."
 
 docker-up:
@@ -155,16 +170,43 @@ docker-up:
 	@cd docker && docker-compose up -d
 	@echo "✅ Services started. API: http://localhost:8082, UI: http://localhost:5173"
 
+docker-up-separate:
+	@echo "🐳 Starting separate frontend services..."
+	@cd docker && docker-compose -f docker-compose-separate.yml up -d
+	@echo "✅ Services started. API: http://localhost:8082, Patient: http://localhost:3000, Doctor: http://localhost:3001"
+
 docker-down:
 	@echo "🐳 Stopping Docker services..."
 	@cd docker && docker-compose down
 	@echo "✅ Services stopped."
 
+docker-down-separate:
+	@echo "🐳 Stopping separate services..."
+	@cd docker && docker-compose -f docker-compose-separate.yml down
+	@echo "✅ Services stopped."
+
 docker-logs:
 	@cd docker && docker-compose logs -f
 
+docker-logs-separate:
+	@cd docker && docker-compose -f docker-compose-separate.yml logs -f
+
 docker-shell:
 	@cd docker && docker-compose exec api bash
+
+# ====== Deployment ======
+deploy-patient:
+	@echo "🚀 Deploying Patient Frontend to Vercel..."
+	@npm run deploy:patient
+
+deploy-doctor:
+	@echo "🚀 Deploying Doctor Frontend to Vercel..."
+	@npm run deploy:doctor
+
+deploy-all:
+	@echo "🚀 Deploying both frontends to Vercel..."
+	@npm run deploy:patient
+	@npm run deploy:doctor
 
 # ====== Housekeeping ======
 demo-clean:

@@ -16,14 +16,15 @@ AI-powered medical report generation and analysis system with RAG (Retrieval-Aug
 git clone <repository-url>
 cd BBB
 
-# Start with Docker
+# Start with unified Docker (single frontend)
 make docker-build
 make docker-up
+# Access: API: http://localhost:8082, Frontend: http://localhost:5173
 
-# Access the application
-# API: http://localhost:8082
-# Frontend: http://localhost:5173
-# API Docs: http://localhost:8082/docs
+# OR start with separate frontends (recommended for production)
+make docker-build
+make docker-up-separate
+# Access: API: http://localhost:8082, Patient: http://localhost:3000, Doctor: http://localhost:3001
 ```
 
 ### Option 2: Local Development
@@ -31,12 +32,14 @@ make docker-up
 # Setup (one-time)
 make setup
 
-# Run development servers
+# Run unified development server
 make dev
+# Access: API: http://localhost:8082, Frontend: http://localhost:5173
 
-# Access the application
-# API: http://localhost:8082
-# Frontend: http://localhost:5173
+# OR run separate frontend services
+make api &          # Backend API (port 8082)
+make ui-patient &   # Patient Frontend (port 3000)
+make ui-doctor &    # Doctor Frontend (port 3001)
 ```
 
 ## 📋 Prerequisites
@@ -85,7 +88,7 @@ make distclean      # Remove all dependencies
 
 ```
 BBB/
-├── api/                    # FastAPI Backend
+├── api/                    # FastAPI Backend (Port 8082)
 │   ├── core/              # Core functionality
 │   ├── routers/           # API endpoints
 │   ├── services/          # Business logic
@@ -93,8 +96,16 @@ BBB/
 │   └── tests/             # Backend tests
 ├── src/                    # Next.js Frontend
 │   ├── app/               # App router pages
+│   │   ├── page.tsx       # Unified interface (Port 5173)
+│   │   ├── patient/       # Patient interface (Port 3000)
+│   │   └── doctor/        # Doctor interface (Port 3001)
 │   ├── components/        # React components
 │   └── lib/               # Utilities
+├── docker/                 # Docker configurations
+│   ├── Dockerfile         # Backend API
+│   ├── Dockerfile.patient # Patient frontend
+│   ├── Dockerfile.doctor  # Doctor frontend
+│   └── docker-compose*.yml # Service orchestration
 ├── data/                   # Sample data
 ├── docs/                   # Documentation
 └── scripts/               # Utility scripts
@@ -215,6 +226,8 @@ For questions or issues:
 ## 🔧 Recent Updates
 
 ### Latest Improvements
+- **Separate Frontend Ports**: Patient (3000) and Doctor (3001) interfaces
+- **Vercel Deployment**: Separate Vercel projects for Patient and Doctor frontends
 - **LLM Hardening**: JSON schema validation, rule engine, normalization
 - **RAG Quality**: Query expansion, MMR diversity, metadata extraction
 - **Docker Support**: Multi-stage builds, production optimization
