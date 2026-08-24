@@ -10,8 +10,8 @@ export default function SyntheticDataNotice() {
         Do not enter real patient names, phones, emails, or other identifiers.
         Demo mode does not make real information safe. Use{" "}
         <code className="rounded bg-white px-1">@example.com</code> emails and
-        phone numbers starting with <code className="rounded bg-white px-1">555</code>
-        .
+        phone numbers starting with{" "}
+        <code className="rounded bg-white px-1">555</code>.
       </p>
     </div>
   );

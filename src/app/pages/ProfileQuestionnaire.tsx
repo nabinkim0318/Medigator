@@ -37,14 +37,12 @@ export default function ProfileQuestionnaire() {
     if (!bloodGroup) e.bloodGroup = "Select blood group";
     if (!/^\d{10}$/.test(phone) || !phone.startsWith("555"))
       e.phone = "Use a synthetic 555-prefixed 10-digit number";
-    if (
-      !(
-        email.includes("@") &&
-        (email.endsWith("@example.com") ||
-          email.endsWith("@demo.local") ||
-          email.endsWith("@test.local"))
-      )
-    )
+    if (!(
+      email.includes("@") &&
+      (email.endsWith("@example.com") ||
+        email.endsWith("@demo.local") ||
+        email.endsWith("@test.local"))
+    ))
       e.email = "Use a synthetic @example.com / @demo.local address";
     return e;
   }, [name, age, gender, bloodGroup, phone, email]);
