@@ -179,7 +179,7 @@ async def generate_medical_report(request: ReportGenerationRequest):
 @router.post("/treatment-plan")
 async def suggest_treatment_plan(request: TreatmentPlanRequest):
     """
-    Suggest treatment plan based on diagnosis
+    Research-prototype care-plan sketch. Not a treatment recommendation.
 
     Args:
         request: Treatment plan request

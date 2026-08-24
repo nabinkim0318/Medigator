@@ -18,6 +18,7 @@ def codes(
     intake: dict[str, Any] = Body(None),
     emr: dict[str, Any] = Body(None),
 ):
+    """Research-prototype code suggestions. Not automatic clinical coding."""
     logger.info("Code generation request received")
     try:
         result = generate_codes(summary, intake or {}, emr or {})

@@ -6,7 +6,11 @@
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
 [![Docker](https://img.shields.io/badge/Docker-supported-blue.svg)](https://www.docker.com/)
 
-AI-powered medical report generation and analysis system with RAG (Retrieval-Augmented Generation) capabilities.
+**Research prototype.** Synthetic/demo data only. Not for diagnosis,
+treatment, clinical use, or production. Does **not** claim HIPAA compliance.
+
+Demo medical-intake UI with optional RAG helpers. Suggested summaries and
+codes are research artifacts, not clinical decisions or automatic coding.
 
 ## 🚀 Quick Start
 
@@ -21,7 +25,7 @@ make docker-build
 make docker-up
 # Access: API: http://localhost:8082, Frontend: http://localhost:5173
 
-# OR start with separate frontends (recommended for production)
+# OR start with separate frontends (local two-app demo)
 make docker-build
 make docker-up-separate
 # Access: API: http://localhost:8082, Patient: http://localhost:3000, Doctor: http://localhost:3001
@@ -117,27 +121,28 @@ BBB/
 ## 🔧 Features
 
 ### Core Functionality
-- **Medical Report Generation**: AI-powered report creation
-- **Symptom Analysis**: Intelligent symptom interpretation
-- **Code Generation**: Automatic ICD-10/CPT coding
-- **Evidence Retrieval**: RAG-based evidence search
-- **PDF Export**: Professional report formatting
+- **Demo report sketches**: research-prototype text generation, not clinical reports
+- **Symptom notes**: demo interpretation helpers, not diagnosis
+- **Code suggestions**: optional ICD-10/CPT lookup for the prototype, not automatic coding
+- **Evidence retrieval**: RAG search over bundled guideline snippets
+- **PDF export**: demo formatting with a research-prototype watermark
 
 ### Technical Features
 - **FastAPI Backend**: High-performance Python API
 - **Next.js Frontend**: Modern TypeScript UI with App Router
 - **RAG Integration**: FAISS + Sentence Transformers with query expansion
-- **Comprehensive Logging**: Structured logging with PHI protection
+- **Sanitized logging**: event names/status/paths only (not a HIPAA control)
 - **Error Handling**: Global exception management
 - **Health Checks**: Application monitoring
-- **Docker Support**: Multi-stage builds for production
+- **Docker Support**: Local/demo container builds
 - **CI/CD Pipeline**: GitHub Actions with automated testing
 
 ## 🔒 Security
 
-This is a **portfolio prototype**, not production security. It does **not**
-claim HIPAA compliance. Synthetic/demo data only: `DEMO_MODE` does **not**
-make real identifiers safe. See `docs/SECURITY.md`.
+This is a **research prototype**, not production security and **not** for
+diagnosis, treatment, or clinical use. It does **not** claim HIPAA
+compliance. Synthetic/demo data only: `DEMO_MODE` does **not** make real
+identifiers safe. See `docs/SECURITY.md`.
 
 - **Synthetic-data guard**: obvious real identifiers are rejected on intake writes
 - **Deny-by-default API boundary**: UI routing is not authorization
@@ -178,12 +183,12 @@ make test-llm
 
 ## 🚀 Deployment
 
-### Docker Deployment
+### Docker (local demo)
 ```bash
-# Build production image
+# Build image
 docker build -t bbb-medical:latest .
 
-# Run production container
+# Run container
 docker run -p 8082:8082 \
   -e OPENAI_API_KEY=your_key \
   -e DEMO_ACCESS_CODE=your_code \
@@ -195,7 +200,7 @@ docker run -p 8082:8082 \
 OPENAI_API_KEY=your_openai_key
 DEMO_ACCESS_CODE=your_demo_code
 DEMO_MODE=true
-HIPAA_MODE=false
+HIPAA_MODE=false   # config flag only; does not mean HIPAA compliance
 enable_rag=true
 LLM_TEMPERATURE=0.1
 LLM_TOP_P=0.9
@@ -204,10 +209,9 @@ LLM_SEED=42
 
 ## 📈 Performance
 
-- **Response Time**: < 2s for most operations
-- **Concurrent Users**: Supports multiple simultaneous requests
-- **Memory Usage**: Optimized for production workloads
-- **Database**: SQLite for development, PostgreSQL for production
+- **Response Time**: informal local-demo target, not an SLA
+- **Concurrent Users**: not sized or promised
+- **Database**: SQLite for this prototype (optional Postgres is not a production deployment)
 
 ## 🤝 Contributing
 
@@ -235,7 +239,7 @@ For questions or issues:
 - **Vercel Deployment**: Separate Vercel projects for Patient and Doctor frontends
 - **LLM Hardening**: JSON schema validation, rule engine, normalization
 - **RAG Quality**: Query expansion, MMR diversity, metadata extraction
-- **Docker Support**: Multi-stage builds, production optimization
+- **Docker Support**: Local/demo container builds
 - **CI/CD Pipeline**: GitHub Actions with automated testing
 - **Test Coverage**: Comprehensive test suite with mock data
 - **Security**: Enhanced PHI masking, CORS configuration
