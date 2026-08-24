@@ -1,7 +1,8 @@
-# Security boundary (portfolio prototype)
+# Security boundary (research prototype)
 
-This repository is a **synthetic/demo-data prototype**. It is **not** production
-security and makes **no** HIPAA or production-compliance claims.
+**Research prototype.** Synthetic/demo data only.
+**Not for diagnosis, treatment, clinical use, or production.** It is **not**
+production security and makes **no** HIPAA or production-compliance claims.
 
 `DEMO_MODE=true` does **not** make arbitrary identifiers safe. Obvious
 real-looking identifiers are rejected where practical; this is not

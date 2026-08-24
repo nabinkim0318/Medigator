@@ -16,21 +16,18 @@ from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
+from api.core.claims import PDF_WATERMARK, RESEARCH_PROTOTYPE_DISCLAIMER
 from api.core.config import settings
 
 # Get logger
 logger = logging.getLogger(__name__)
 
-# Disclaimer text based on demo mode
-DISCLAIMER = (
-    "DEMO — NOT FOR DIAGNOSIS OR TREATMENT"
-    if settings.DEMO_MODE
-    else "For clinical use. See audit log."
-)
+# Always a research-prototype watermark. Never claim clinical use.
+DISCLAIMER = PDF_WATERMARK
 
 
 def add_watermark(canvas):
-    """Add watermark to PDF based on demo mode"""
+    """Add a research-prototype watermark. Never claim clinical use."""
     canvas.setFont("Helvetica-Bold", 10)
     canvas.setFillGray(0.7, 0.7)
     canvas.rotate(45)
@@ -237,7 +234,7 @@ class PDFService:
         """Create footer."""
         footer_text = f"""
         Report creation date: {datetime.now().strftime("%Y %m %d %H:%M")}<br/>
-        This report is written by the doctor, please refer to the patient's treatment.
+        {RESEARCH_PROTOTYPE_DISCLAIMER}
         """
         return Paragraph(footer_text, self.styles["Header"])
 

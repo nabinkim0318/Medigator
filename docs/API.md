@@ -1,11 +1,15 @@
 # 🔌 API Documentation
 
+**Research prototype.** Synthetic/demo data only. Not for diagnosis,
+treatment, clinical use, or production. Does **not** claim HIPAA compliance.
+This document is a local demo map, not a production OpenAPI contract.
+
 BBB Medical System API endpoints and usage guide.
 
 ## 🌐 Base URL
 
 - **Development**: `http://localhost:8082`
-- **Production**: `https://your-domain.com`
+- There is no production API host for this research prototype.
 
 ## 📋 Endpoints
 

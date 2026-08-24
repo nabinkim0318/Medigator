@@ -11,6 +11,7 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
+from api.core.claims import RESEARCH_PROTOTYPE_DISCLAIMER
 from api.core.config import settings
 from api.core.safe_logging import SensitiveLogFilter, log_info, log_warning
 from api.middleware.access_boundary import AccessBoundaryMiddleware
@@ -35,8 +36,10 @@ startup_results = perform_startup_checks()
 app = FastAPI(
     title="BBB Medical Report API",
     description=(
-        "Portfolio prototype for synthetic/demo medical-intake workflows. "
-        "Not a production security control. Synthetic data only."
+        f"{RESEARCH_PROTOTYPE_DISCLAIMER} "
+        "OpenAPI here is a local demo surface, not a production contract. "
+        "Suggested codes and summaries are research artifacts, not diagnosis, "
+        "treatment, or automatic clinical coding."
     ),
     version="1.0.0",
     docs_url="/docs",
@@ -116,7 +119,7 @@ async def root():
         "version": "1.0.0",
         "docs": "/docs",
         "synthetic_data_only": True,
-        "note": "Portfolio prototype. Not production security. Synthetic/demo data only.",
+        "note": RESEARCH_PROTOTYPE_DISCLAIMER,
     }
 
 

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import ResearchPrototypeBanner from "./components/ResearchPrototypeBanner";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -15,7 +16,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Medigator",
   description:
-    "Portfolio prototype for synthetic/demo medical-intake workflows. Not production security.",
+    "Research prototype. Synthetic/demo data only. Not for diagnosis, treatment, clinical use, or production. Does not claim HIPAA compliance.",
 };
 
 export default function RootLayout({
@@ -29,6 +30,7 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         suppressHydrationWarning={true}
       >
+        <ResearchPrototypeBanner />
         {children}
       </body>
     </html>

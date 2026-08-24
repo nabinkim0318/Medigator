@@ -148,7 +148,7 @@ async def generate_report(request: ReportRequest):
 @router.post("/analyze", response_model=AnalysisResponse)
 async def analyze_symptoms(request: AnalysisRequest):
     """
-    Analyze symptoms and suggest diagnosis.
+    Research-prototype symptom analysis. Not a diagnosis.
 
     Args:
         request: Symptom analysis request
