@@ -34,14 +34,14 @@ const getIconSrc = (value: unknown): string => {
   return "";
 };
 
-const NAV_ITEMS: { icon: any; label: NavItem }[] = [
-  { icon: dashboard as any, label: "Dashboard" },
-  { icon: patients as any, label: "Patients" },
-  { icon: appointments as any, label: "Appointments" },
-  { icon: doctors as any, label: "Doctors" },
-  { icon: messages as any, label: "Messages" },
-  { icon: clinical_updates as any, label: "Clinical Updates" },
-  { icon: settings as any, label: "Settings" },
+const NAV_ITEMS: { icon: string; label: NavItem }[] = [
+  { icon: dashboard, label: "Dashboard" },
+  { icon: patients, label: "Patients" },
+  { icon: appointments, label: "Appointments" },
+  { icon: doctors, label: "Doctors" },
+  { icon: messages, label: "Messages" },
+  { icon: clinical_updates, label: "Clinical Updates" },
+  { icon: settings, label: "Settings" },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({

@@ -37,6 +37,20 @@ class LLMServiceException(MedicalAPIException):
         super().__init__(message, 503, details)
 
 
+class PlaceholderClinicalException(MedicalAPIException):
+    """Stub clinical method invoked. Not a real diagnosis/treatment path."""
+
+    def __init__(self, message: str = "placeholder clinical endpoint"):
+        super().__init__(
+            message,
+            501,
+            {
+                "error_type": "not_implemented",
+                "reason": "research prototype placeholder",
+            },
+        )
+
+
 class RAGServiceException(MedicalAPIException):
     """RAG service related exceptions"""
 

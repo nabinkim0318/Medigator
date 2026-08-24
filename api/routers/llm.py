@@ -12,7 +12,9 @@ from pydantic import BaseModel
 
 from api.core.config import settings
 from api.core.exceptions import LLMServiceException
+from api.core.provenance import provenance
 from api.services.llm import llm_service
+from api.services.llm.client import get_client_status
 
 # Get logger
 logger = logging.getLogger(__name__)
@@ -298,10 +300,19 @@ async def chat_completion(request: ChatRequest):
 
 @router.get("/health")
 async def health_check():
-    """LLM service health check"""
+    """LLM client status. Does not claim a live clinical service."""
+    status = get_client_status()
+    available = bool(status.get("available"))
     return {
         "service": "llm",
-        "status": "healthy",
+        "status": "available" if available else "unavailable",
+        "available": available,
         "model": llm_service.model,
+        "demo_mode": settings.DEMO_MODE,
+        "provenance": status.get("provenance")
+        or provenance(
+            source="none",
+            note="No LLM provider configured",
+        ),
         "timestamp": datetime.now().isoformat(),
     }

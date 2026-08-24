@@ -19,7 +19,12 @@ de-identification.
   using `DEMO_ACCESS_CODE`. Send `Authorization: Bearer <operator_session>`.
 - Username-derived UUIDs are **not** authentication. `POST /api/v1/auth/login` is disabled.
 - File, notification, export, search, token-in-path reads, RAG index builds,
-  PDF export, and unauthenticated LLM/chat/report generation are **disabled**.
+  and unauthenticated patient dumps are **disabled** (403).
+- Placeholder clinical LLM/report generation returns **501** (not implemented),
+  not a fake 200 diagnosis or treatment plan.
+- Live demo helpers (`/summary`, `/codes`, `/evidence`) include a `provenance`
+  object (`openai` / `fallback` / `rules` / `rag` / `static`). They are not
+  clinical decisions.
 - UI routing is not authorization.
 
 ## Token transport

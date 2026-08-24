@@ -5,6 +5,8 @@ import json
 import logging
 from typing import Any
 
+from api.core.exceptions import PlaceholderClinicalException
+from api.core.provenance import provenance
 from api.services.llm.client import chat_json
 from api.services.llm.fallback import templated as fallback_summary
 from api.services.llm.gate import guard_and_redact
@@ -58,8 +60,11 @@ class LLMService:
                 },
             ]
 
-            # 5) LLM call with stabilized parameters
+            source = "openai"
+
             def _fallback():
+                nonlocal source
+                source = "fallback"
                 log.warning("Using fallback summary generation")
                 return fallback_summary(intake)  # type: ignore
 
@@ -104,77 +109,71 @@ class LLMService:
                 "processing_timestamp": json.dumps(
                     {"timestamp": "now"}
                 ),  # Simplified for demo
+                "provenance": provenance(
+                    source=source,
+                    provider="openai" if source == "openai" else "template",
+                    model=self.model if source == "openai" else None,
+                    note=(
+                        "Live OpenAI JSON completion"
+                        if source == "openai"
+                        else "Templated fallback; not a model diagnosis"
+                    ),
+                ),
             }
 
             log.info(f"Summary generation completed with flags: {calculated_flags}")
             return summary_data
 
         except Exception as e:
-            log.error(f"Summary generation failed: {e}")
+            log.error("Summary generation failed: %s", type(e).__name__)
             log.warning("Falling back to basic summary")
-            return fallback_summary(intake)  # type: ignore
+            fallback = fallback_summary(intake)  # type: ignore
+            if isinstance(fallback, dict):
+                fallback["_metadata"] = {
+                    "provenance": provenance(
+                        source="fallback",
+                        provider="template",
+                        note="Templated fallback; not a model diagnosis",
+                    )
+                }
+            return fallback
 
-    # Placeholder methods for compatibility (hackathon scope)
+    def _placeholder(self, name: str):
+        raise PlaceholderClinicalException(
+            f"{name} is a research-prototype placeholder, not a clinical API"
+        )
+
     async def medical_analysis(self, symptoms, patient_age, medical_history):
-        # Placeholder implementation
-        return {
-            "primary_diagnosis": "General evaluation needed",
-            "differential_diagnoses": [],
-            "recommended_tests": [],
-            "risk_level": "Low",
-            "urgency": "Routine",
-            "treatment_recommendations": [],
-        }
+        self._placeholder("medical_analysis")
 
     async def generate_report(self, patient_data, analysis_data):
-        # Placeholder implementation
-        return {"report": "Generated medical report"}
+        self._placeholder("generate_report")
 
     async def treatment_plan(self, diagnosis, patient_data):
-        # Placeholder implementation
-        return {"plan": "Treatment plan generated"}
+        self._placeholder("treatment_plan")
 
     async def extract_entities(self, text):
-        # Placeholder implementation
-        return {
-            "symptoms": [],
-            "diagnoses": [],
-            "body_parts": [],
-            "vital_signs": [],
-        }
+        self._placeholder("extract_entities")
 
     async def summarize_medical_notes(self, notes):
-        # Placeholder implementation
-        return "Medical notes summarized"
+        self._placeholder("summarize_medical_notes")
 
     async def chat_completion(
         self, messages, model=None, temperature=0.7, max_tokens=1000
     ):
-        # Placeholder implementation
-        return {"response": "Chat completion response"}
+        self._placeholder("chat_completion")
 
     async def generate_medical_report(self, patient_data, analysis_data):
-        # Placeholder implementation
-        return {"report": "Generated medical report"}
+        self._placeholder("generate_medical_report")
 
     async def suggest_treatment_plan(self, diagnosis, patient_data):
-        # Placeholder implementation
-        return {"plan": "Treatment plan generated"}
+        self._placeholder("suggest_treatment_plan")
 
     async def analyze_symptoms(self, symptoms, patient_age, medical_history):
-        # Placeholder implementation
-        return {
-            "primary_diagnosis": "General evaluation needed",
-            "differential_diagnoses": [],
-            "recommended_tests": [],
-            "risk_level": "Low",
-            "urgency": "Routine",
-            "treatment_recommendations": [],
-        }
+        self._placeholder("analyze_symptoms")
 
     async def suggest_treatment(self, diagnosis, patient_data):
-        # Placeholder implementation
-        return {"treatment": "Treatment suggested"}
+        self._placeholder("suggest_treatment")
 
 
 llm_service = LLMService()

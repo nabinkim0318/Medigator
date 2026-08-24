@@ -5,12 +5,11 @@ const nextConfig: NextConfig = {
   output: 'standalone',
   distDir: 'dist',
 
-  // Disable TypeScript checking for build
   typescript: {
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,
   },
 
-  // Disable ESLint checking for build
+  // ESLint is not configured in this repo; do not pretend the build lints.
   eslint: {
     ignoreDuringBuilds: true,
   },

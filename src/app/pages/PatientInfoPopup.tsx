@@ -10,6 +10,8 @@ export interface Patient {
   age?: number;
   gender?: string;
   bloodType?: string;
+  bloodGroup?: string;
+  initials?: string;
   phone?: string;
   email?: string;
   ai_summary_status?: string;

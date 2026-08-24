@@ -206,6 +206,9 @@ async def chat_json(
     Falls back to fallback_func if provided.
     """
     if not async_client:
+        if fallback_func:
+            logger.info("LLM client unavailable; using fallback")
+            return fallback_func()
         raise RuntimeError("LLM client unavailable (no OPENAI_API_KEY)")
 
     # Force JSON schema setting
@@ -316,6 +319,12 @@ def get_client_status() -> dict:
         "config_status": config_status,
         "cache": cache_stats,
         "clients": {"sync": sync_client is not None, "async": async_client is not None},
+        "provenance": {
+            "source": "openai" if async_client is not None else "none",
+            "provider": "openai" if async_client is not None else None,
+            "model": LLM_MODEL,
+            "has_api_key": bool(OPENAI_API_KEY),
+        },
     }
 
 
