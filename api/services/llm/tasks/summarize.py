@@ -38,6 +38,6 @@ async def run(body: SummaryIn) -> SummaryOut:
         except Exception:
             return SummaryOut.model_validate(data)
 
-    except Exception as e:
-        logger.error(f"Summary generation failed: {e}")
+    except Exception:
+        logger.error("Summary generation failed")
         return SummaryOut.model_validate(templated(body))

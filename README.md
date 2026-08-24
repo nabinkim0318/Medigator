@@ -127,7 +127,6 @@ BBB/
 - **FastAPI Backend**: High-performance Python API
 - **Next.js Frontend**: Modern TypeScript UI with App Router
 - **RAG Integration**: FAISS + Sentence Transformers with query expansion
-- **HIPAA Compliance**: PHI masking and security
 - **Comprehensive Logging**: Structured logging with PHI protection
 - **Error Handling**: Global exception management
 - **Health Checks**: Application monitoring
@@ -136,11 +135,14 @@ BBB/
 
 ## 🔒 Security
 
-- **PHI Masking**: Automatic PII/PHI redaction
-- **Write Guards**: Demo mode protection
-- **CORS Configuration**: Secure cross-origin requests
-- **Input Validation**: Comprehensive data validation
-- **Security Logging**: Audit trail for sensitive operations
+This is a **portfolio prototype**, not production security. It does **not**
+claim HIPAA compliance. Synthetic/demo data only: `DEMO_MODE` does **not**
+make real identifiers safe. See `docs/SECURITY.md`.
+
+- **Synthetic-data guard**: obvious real identifiers are rejected on intake writes
+- **Deny-by-default API boundary**: UI routing is not authorization
+- **Operator session**: doctor/admin-style reads require `DEMO_ACCESS_CODE`
+- **Sanitized logging**: no request bodies, tokens, raw queries, or model output
 
 ## 📊 API Endpoints
 
@@ -256,7 +258,7 @@ For questions or issues:
 - **Database**: SQLite (dev), PostgreSQL (prod)
 - **AI/ML**: OpenAI GPT-4, Sentence Transformers, FAISS
 - **Deployment**: Docker, Vercel, GitHub Actions
-- **Security**: HIPAA compliant, PHI masking
+- **Security**: Prototype synthetic-data boundary (not production IAM)
 
 ## 🎯 Roadmap
 

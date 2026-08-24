@@ -1,9 +1,14 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useToast } from "../components/ErrorToast";
 import StyledQuestionShell from "./StyledQuestionShell";
+import {
+  API_BASE,
+  getOrCreateDemoSessionId,
+  jsonHeaders,
+} from "@/lib/demoSession";
 
 // --- Types
 type Choice = {
@@ -269,8 +274,6 @@ const TOTAL_STEPS = 9;
 
 export default function PatientChestPainQuestionnairePage() {
   const router = useRouter();
-  const searchParams = useSearchParams();
-  const token = searchParams?.get("token") ?? "";
   const { showToast, ToastContainer } = useToast();
   // Answers
   const [q1, setQ1] = useState<SingleAnswer>({}); // When did the pain start? (single)
@@ -454,14 +457,14 @@ export default function PatientChestPainQuestionnairePage() {
       q9: convertAnswer(q9),
     };
     // POST appointment payload to backend under the user's token
-    const API_BASE =
-      (process.env.NEXT_PUBLIC_API_URL as string) || "http://localhost:8082";
-
-    const body = { token, appointmentData: payload };
+    const body = {
+      session_id: getOrCreateDemoSessionId(),
+      appointmentData: payload,
+    };
 
     fetch(`${API_BASE}/api/v1/patient/appointment`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: jsonHeaders(),
       body: JSON.stringify(body),
     })
       .then(async (res) => {
@@ -471,11 +474,8 @@ export default function PatientChestPainQuestionnairePage() {
         }
         return res.json();
       })
-      .then((data) => {
-        // show user the key so they can reference or copy it
-        // eslint-disable-next-line no-alert
-        router.push(`/PatientThankYou?token=${encodeURIComponent(token)}`);
-        console.log(`Saved appointment data as ${data.key}`);
+      .then(() => {
+        router.push(`/PatientThankYou`);
       })
       .catch((err) => {
         showToast(`Failed to save appointment: ${err.message}`, "error");

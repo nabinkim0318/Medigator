@@ -26,13 +26,13 @@ def check_database_connection():
             tables = cursor.fetchall()
             conn.close()
 
-            logger.info(f"Database connection successful: {db_path}")
-            logger.info(f"Found {len(tables)} tables: {[table[0] for table in tables]}")
+            logger.info("Database connection successful")
+            logger.info("Found %s tables", len(tables))
             return True
-        logger.warning(f"Database file not found: {db_path}")
+        logger.warning("Database file not found")
         return False
-    except Exception as e:
-        logger.error(f"Database connection failed: {e!s}")
+    except Exception:
+        logger.error("Database connection failed")
         return False
 
 
@@ -46,8 +46,8 @@ def check_rag_system():
         # Lazy loading: Defer RAG initialization to first use
         logger.info("RAG system will be initialized on first use")
         return True
-    except Exception as e:
-        logger.warning(f"RAG system check failed: {e!s}")
+    except Exception:
+        logger.warning("RAG system check failed")
         return False
 
 
@@ -71,8 +71,8 @@ def check_file_permissions():
         logger.info("Reports directory permissions OK")
 
         return True
-    except Exception as e:
-        logger.error(f"File permission check failed: {e!s}")
+    except Exception:
+        logger.error("File permission check failed")
         return False
 
 
@@ -85,14 +85,13 @@ def check_environment_variables():
     }
 
     for var_name, var_value in critical_vars.items():
-        if var_value is None:
-            logger.warning(f"Environment variable {var_name} not set")
-        # Mask sensitive values
-        elif "KEY" in var_name:
-            masked_value = f"{str(var_value)[:8]}..." if var_value else "None"
-            logger.info(f"{var_name}: {masked_value}")
+        if "KEY" in var_name:
+            if var_value:
+                logger.info("Environment variable %s is set", var_name)
+            else:
+                logger.warning("Environment variable %s is unset", var_name)
         else:
-            logger.info(f"{var_name}: {var_value}")
+            logger.info("Environment variable %s configured", var_name)
 
 
 def perform_startup_checks():
@@ -109,8 +108,8 @@ def perform_startup_checks():
     for check_name, check_func in checks.items():
         try:
             results[check_name] = check_func()
-        except Exception as e:
-            logger.error(f"{check_name} check failed with exception: {e!s}")
+        except Exception:
+            logger.error("%s check failed", check_name)
             results[check_name] = False
 
     # Log environment variables

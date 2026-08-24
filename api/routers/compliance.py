@@ -15,6 +15,7 @@ def compliance_status():
         "llm": get_client_status(),
         "logging": {"store_bodies": False},
         "disclaimer": (
-            "Demo only. No real PHI." if settings.DEMO_MODE else "Not for diagnosis."
+            "Synthetic/demo data only. DEMO_MODE does not make real identifiers safe. "
+            "Not a production security control."
         ),
     }

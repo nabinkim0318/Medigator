@@ -114,8 +114,9 @@ async def analyze_symptoms(request: MedicalAnalysisRequest):
         Analysis results
     """
     logger.info(
-        f"Medical analysis requested for age {request.patient_age} with {len(request.symptoms)} symptoms",
+        "Medical analysis requested",
     )
+    _demo_guard()
     try:
         analysis = await llm_service.medical_analysis(
             symptoms=request.symptoms,
@@ -132,11 +133,12 @@ async def analyze_symptoms(request: MedicalAnalysisRequest):
             treatment_recommendations=analysis.get("treatment_recommendations", []),
         )
 
-    except Exception as e:
-        logger.error(f"Medical analysis failed: {e!s}")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.error("Medical analysis failed")
         raise LLMServiceException(
             message="Medical analysis failed",
-            details={"error": str(e), "symptoms_count": len(request.symptoms)},
         )
 
 
@@ -152,6 +154,7 @@ async def generate_medical_report(request: ReportGenerationRequest):
         Generated report
     """
     try:
+        _demo_guard()
         report = await llm_service.generate_medical_report(
             patient_data=request.patient_data,
             analysis_data={
@@ -164,12 +167,13 @@ async def generate_medical_report(request: ReportGenerationRequest):
         return {
             "report": report,
             "generated_at": datetime.now().isoformat(),
-            "patient_name": request.patient_data.get("name", "N/A"),
         }
 
-    except Exception as e:
-        logger.error(f"Report generation failed: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Report generation error: {e!s}")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.error("Report generation failed")
+        raise HTTPException(status_code=500, detail="Report generation error")
 
 
 @router.post("/treatment-plan")
@@ -183,6 +187,7 @@ async def suggest_treatment_plan(request: TreatmentPlanRequest):
     Returns:
         Treatment plan
     """
+    _demo_guard()
     try:
         plan = await llm_service.suggest_treatment_plan(
             diagnosis=request.diagnosis,
@@ -195,9 +200,11 @@ async def suggest_treatment_plan(request: TreatmentPlanRequest):
 
         return plan
 
-    except Exception as e:
-        logger.error(f"Treatment plan generation failed: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Treatment plan error: {e!s}")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.error("Treatment plan generation failed")
+        raise HTTPException(status_code=500, detail="Treatment plan error")
 
 
 @router.post("/extract-entities", response_model=EntityExtractionResponse)
@@ -212,6 +219,7 @@ async def extract_medical_entities(request: EntityExtractionRequest):
         Extracted entities
     """
     try:
+        _demo_guard()
         entities = await llm_service.extract_entities(request.text)
 
         return EntityExtractionResponse(
@@ -224,9 +232,11 @@ async def extract_medical_entities(request: EntityExtractionRequest):
             vital_signs=entities.get("vital_signs", []),
         )
 
-    except Exception as e:
-        logger.error(f"Entity extraction failed: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Entity extraction error: {e!s}")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.error("Entity extraction failed")
+        raise HTTPException(status_code=500, detail="Entity extraction error")
 
 
 @router.post("/summarize-notes")
@@ -241,6 +251,7 @@ async def summarize_medical_notes(request: NoteSummarizationRequest):
         Summarized notes
     """
     try:
+        _demo_guard()
         summary = await llm_service.summarize_medical_notes(request.notes)
 
         return {
@@ -249,9 +260,11 @@ async def summarize_medical_notes(request: NoteSummarizationRequest):
             "generated_at": datetime.now().isoformat(),
         }
 
-    except Exception as e:
-        logger.error(f"Note summarization failed: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Note summarization error: {e!s}")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.error("Note summarization failed")
+        raise HTTPException(status_code=500, detail="Note summarization error")
 
 
 @router.post("/chat")
@@ -266,6 +279,7 @@ async def chat_completion(request: ChatRequest):
         Chat completion response
     """
     try:
+        _demo_guard()
         response = await llm_service.chat_completion(
             messages=request.messages,
             model=request.model,
@@ -275,9 +289,11 @@ async def chat_completion(request: ChatRequest):
 
         return response
 
-    except Exception as e:
-        logger.error(f"Chat completion failed: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Chat completion error: {e!s}")
+    except HTTPException:
+        raise
+    except Exception:
+        logger.error("Chat completion failed")
+        raise HTTPException(status_code=500, detail="Chat completion error")
 
 
 @router.get("/health")

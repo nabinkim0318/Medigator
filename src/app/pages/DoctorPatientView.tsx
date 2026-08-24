@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Search, Calendar, Bell, Plus, Edit, X, Eye } from "lucide-react";
 import PatientInfoPopup, { Patient } from "./PatientInfoPopup";
 import { useToast } from "../components/ErrorToast";
+import { operatorHeaders } from "@/lib/demoSession";
 
 const DoctorPatientView: React.FC = () => {
   const router = useRouter();
@@ -41,8 +42,15 @@ const DoctorPatientView: React.FC = () => {
 
     const fetchPatients = () => {
       setLoading(true);
-      fetch(`${API_BASE}/api/v1/patient/profile`)
+      fetch(`${API_BASE}/api/v1/patient/profile`, {
+        headers: operatorHeaders(),
+      })
         .then(async (res) => {
+          if (res.status === 401) {
+            throw new Error(
+              "Operator session required. Sign in with the demo access code. UI routing is not authorization.",
+            );
+          }
           if (!res.ok) {
             const t = await res.text();
             throw new Error(`fetch failed: ${res.status} ${t}`);
@@ -798,9 +806,10 @@ const DoctorPatientView: React.FC = () => {
                                     process.env.NEXT_PUBLIC_API_URL ||
                                     "http://localhost:8082";
                                   const res = await fetch(
-                                    `${API_BASE}/api/v1/patient/profile/${patient.token || patient.id}`,
+                                    `${API_BASE}/api/v1/patient/profile/${patient.id}`,
                                     {
                                       method: "DELETE",
+                                      headers: operatorHeaders(),
                                     },
                                   );
                                   if (!res.ok) {

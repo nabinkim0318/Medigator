@@ -8,6 +8,7 @@ import logging.config
 from pathlib import Path
 
 from api.core.config import settings
+from api.core.safe_logging import SensitiveLogFilter, log_info, log_warning
 
 
 def setup_logging():
@@ -112,12 +113,17 @@ def setup_logging():
     # Apply configuration
     logging.config.dictConfig(logging_config)
 
-    # Log startup information
+    sensitive_filter = SensitiveLogFilter()
+    for existing_logger in logging.root.manager.loggerDict.values():
+        if isinstance(existing_logger, logging.Logger):
+            existing_logger.addFilter(sensitive_filter)
+    logging.getLogger().addFilter(sensitive_filter)
+
     logger = logging.getLogger("api")
-    logger.info("BBB Medical Report API logging initialized")
-    logger.info(f"Demo mode: {settings.DEMO_MODE}")
-    logger.info(f"HIPAA mode: {settings.HIPAA_MODE}")
-    logger.info(f"RAG enabled: {settings.enable_rag}")
+    log_info(logger, "logging_initialized")
+    log_info(logger, "demo_mode", enabled=settings.DEMO_MODE)
+    log_info(logger, "synthetic_data_only", enabled=settings.SYNTHETIC_DATA_ONLY)
+    log_info(logger, "rag_enabled", enabled=settings.enable_rag)
 
     return logger
 
@@ -128,23 +134,25 @@ def get_logger(name: str) -> logging.Logger:
 
 
 def log_security_event(event_type: str, details: str, user_id: str | None = None):
-    """Log security-related events"""
+    """Log security-related events without content payloads."""
     security_logger = logging.getLogger("security")
-    security_logger.warning(
-        f"Security event: {event_type} - {details} - User: {user_id or 'Unknown'}",
+    log_warning(
+        security_logger,
+        "security_event",
+        reason=event_type,
+        resource=event_type,
     )
 
 
 def log_performance_metric(operation: str, duration: float, details: str | None = None):
     """Log performance metrics"""
     logger = logging.getLogger("api.performance")
-    logger.info(f"Performance: {operation} took {duration:.3f}s - {details or ''}")
+    log_info(
+        logger, "performance", resource=operation, duration_ms=int(duration * 1000)
+    )
 
 
 def log_phi_access(operation: str, patient_id: str | None = None):
-    """Log PHI access events (HIPAA compliance)"""
-    if settings.HIPAA_MODE:
-        security_logger = logging.getLogger("security")
-        security_logger.warning(
-            f"PHI Access: {operation} - Patient: {patient_id or 'Unknown'}"
-        )
+    """Log that a sensitive operation occurred, without identifiers."""
+    security_logger = logging.getLogger("security")
+    log_warning(security_logger, "sensitive_operation", resource=operation)

@@ -80,7 +80,7 @@ async def create_notification(request: NotificationRequest):
     """
     Create a new notification for a patient.
     """
-    logger.info(f"Creating notification for patient: {request.patient_token}")
+    logger.info("Creating notification")
     try:
         conn = _get_db_connection()
         with conn:
@@ -133,7 +133,7 @@ async def get_patient_notifications(token: str, status: Optional[str] = None):
     """
     Get notifications for a specific patient.
     """
-    logger.info(f"Retrieving notifications for patient: {token}")
+    logger.info("Retrieving notifications")
     try:
         conn = _get_db_connection()
         with conn:

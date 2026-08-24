@@ -1,39 +1,63 @@
-import sqlite3
-import uuid
-from datetime import datetime
+"""Demo operator session — not production authentication."""
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Request
 from pydantic import BaseModel
 
+from api.core.access import (
+    access_code_matches,
+    issue_operator_session,
+    is_operator_request,
+    revoke_operator_session,
+)
+
 router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+class OperatorIn(BaseModel):
+    access_code: str
 
 
 class LoginIn(BaseModel):
     username: str
 
 
-@router.post("/login")
-def login(body: LoginIn):
-    uname = body.username.strip()
-    if not uname:
-        raise HTTPException(status_code=400, detail="username required")
+@router.post("/demo-operator")
+def demo_operator(body: OperatorIn):
+    if not access_code_matches(body.access_code):
+        raise HTTPException(status_code=401, detail="invalid demo access code")
+    session = issue_operator_session()
+    return {
+        "operator_session": session,
+        "token_type": "bearer",
+        "note": "Prototype operator session. Not production authentication.",
+    }
 
-    # Ensure DB/table exists and then either return existing token or create a new one
-    with sqlite3.connect("copilot.db") as c:
-        c.execute(
-            "CREATE TABLE IF NOT EXISTS user_tokens (username TEXT PRIMARY KEY, token TEXT UNIQUE, created_at TEXT)"
-        )
-        row = c.execute(
-            "SELECT token FROM user_tokens WHERE username=?", (uname,)
-        ).fetchone()
-        if row:
-            return {"username": uname, "token": row[0], "existing": True}
-        # create a stable token for this username
-        token = str(uuid.uuid5(uuid.NAMESPACE_DNS, uname))
-        created_at = datetime.utcnow().isoformat()
-        c.execute(
-            "INSERT INTO user_tokens(username, token, created_at) VALUES(?,?,?)",
-            (uname, token, created_at),
-        )
-        c.commit()
-    return {"username": uname, "token": token, "existing": False}
+
+@router.post("/logout")
+def logout(request: Request):
+    header = request.headers.get("authorization") or ""
+    parts = header.split(None, 1)
+    if len(parts) == 2:
+        revoke_operator_session(parts[1].strip())
+    return {"ok": True}
+
+
+@router.get("/status")
+def status(request: Request):
+    return {
+        "operator": is_operator_request(request),
+        "auth_model": "demo_operator_session",
+        "username_derived_uuid_is_auth": False,
+    }
+
+
+@router.post("/login")
+def login(_body: LoginIn):
+    """Disabled: deterministic username-derived UUIDs are not authentication."""
+    raise HTTPException(
+        status_code=403,
+        detail=(
+            "Disabled. Username-derived tokens are not authentication. "
+            "Patients use a local demo session id; operators use /auth/demo-operator."
+        ),
+    )

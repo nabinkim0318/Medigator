@@ -1,12 +1,17 @@
 "use client";
 
 import React, { useMemo, useState } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
+import SyntheticDataNotice from "../components/SyntheticDataNotice";
+import {
+  API_BASE,
+  getOrCreateDemoSessionId,
+  jsonHeaders,
+} from "@/lib/demoSession";
 
 export default function ProfileQuestionnaire() {
   const router = useRouter();
-  const sp = useSearchParams();
-  const token = sp?.get("token") ?? "";
+  const sessionId = getOrCreateDemoSessionId();
 
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
@@ -30,9 +35,15 @@ export default function ProfileQuestionnaire() {
       e.age = "Select a valid age";
     if (!gender.trim()) e.gender = "Gender is required";
     if (!bloodGroup) e.bloodGroup = "Select blood group";
-    if (!/^\d{10}$/.test(phone)) e.phone = "Phone must be 10 digits";
-    if (!(email.includes("@") && email.includes(".com")))
-      e.email = "Email not valid";
+    if (!/^\d{10}$/.test(phone) || !phone.startsWith("555"))
+      e.phone = "Use a synthetic 555-prefixed 10-digit number";
+    if (!(
+      email.includes("@") &&
+      (email.endsWith("@example.com") ||
+        email.endsWith("@demo.local") ||
+        email.endsWith("@test.local"))
+    ))
+      e.email = "Use a synthetic @example.com / @demo.local address";
     return e;
   }, [name, age, gender, bloodGroup, phone, email]);
 
@@ -45,14 +56,12 @@ export default function ProfileQuestionnaire() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const payload = {
-      token,
+      session_id: sessionId,
       profile: { name, age, gender, bloodGroup, phone, email },
     };
-    const API_BASE =
-      (process.env.NEXT_PUBLIC_API_URL as string) || "http://localhost:8082";
     fetch(`${API_BASE}/api/v1/patient/profile`, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: jsonHeaders(),
       body: JSON.stringify(payload),
     })
       .then(async (res) => {
@@ -63,9 +72,7 @@ export default function ProfileQuestionnaire() {
         return res.json();
       })
       .then(() => {
-        router.push(
-          `/OnboardingQuestionaire?token=${encodeURIComponent(token)}`,
-        );
+        router.push(`/OnboardingQuestionaire`);
       })
       .catch((err) => {
         // eslint-disable-next-line no-alert
@@ -80,6 +87,7 @@ export default function ProfileQuestionnaire() {
           <h1 className="text-2xl font-semibold text-gray-900 mb-4">
             Personal Profile Details
           </h1>
+          <SyntheticDataNotice />
           <form
             onSubmit={handleSubmit}
             className="flex flex-col gap-3 text-left"
@@ -166,7 +174,7 @@ export default function ProfileQuestionnaire() {
                 }
                 onBlur={() => handleBlur("phone")}
                 name="phone"
-                placeholder="Phone number (10 digits)"
+                placeholder="Phone number (synthetic 555…)"
                 className="w-full rounded-xl border border-gray-200 px-4 py-3"
                 maxLength={10}
               />
@@ -181,7 +189,7 @@ export default function ProfileQuestionnaire() {
                 onChange={(e) => setEmail(e.target.value)}
                 onBlur={() => handleBlur("email")}
                 name="email"
-                placeholder="Email"
+                placeholder="demo.user@example.com"
                 className="w-full rounded-xl border border-gray-200 px-4 py-3"
               />
               {touched.email && errors.email && (

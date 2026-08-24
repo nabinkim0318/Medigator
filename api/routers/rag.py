@@ -6,6 +6,7 @@ from fastapi import APIRouter
 from pydantic import BaseModel
 
 from api.core.exceptions import RAGServiceException
+from api.core.safe_logging import log_error, log_info, log_warning
 from api.services.rag import build_index, init_retriever, make_query, retrieve
 from api.services.rag.retrieve import USE_RAG
 
@@ -66,7 +67,7 @@ class RAGStatusResponse(BaseModel):
 @router.get("/status", response_model=RAGStatusResponse)
 async def get_rag_status():
     """Get RAG system status"""
-    logger.info("RAG status check requested")
+    log_info(logger, "rag_status_check")
 
     try:
         status = {
@@ -81,28 +82,26 @@ async def get_rag_status():
             try:
                 init_retriever()
                 status["initialized"] = True
-                logger.info("RAG system is initialized and ready")
-            except Exception as e:
-                logger.warning(f"RAG initialization failed: {e!s}")
+                log_info(logger, "rag_initialized")
+            except Exception:
+                log_warning(logger, "rag_initialization_failed")
                 status["initialized"] = False
 
         return RAGStatusResponse(**status)
 
-    except Exception as e:
-        logger.error(f"RAG status check failed: {e!s}")
-        raise RAGServiceException(
-            message="Failed to get RAG status", details={"error": str(e)}
-        )
+    except Exception:
+        log_error(logger, "rag_status_failed")
+        raise RAGServiceException(message="Failed to get RAG status")
 
 
 @router.post("/search", response_model=SearchResponse)
 async def search_documents(request: SearchRequest):
     """Search documents using RAG"""
-    logger.info(f"RAG search requested: query='{request.query[:50]}...', k={request.k}")
+    log_info(logger, "rag_search_requested")
 
     try:
         if not USE_RAG:
-            logger.warning("RAG search requested but RAG is disabled")
+            log_warning(logger, "rag_search_disabled")
             return SearchResponse(
                 results=[],
                 query=request.query,
@@ -113,11 +112,9 @@ async def search_documents(request: SearchRequest):
         # Initialize RAG if not already done
         try:
             init_retriever()
-        except Exception as e:
-            logger.error(f"RAG initialization failed: {e!s}")
-            raise RAGServiceException(
-                message="RAG system not available", details={"error": str(e)}
-            )
+        except Exception:
+            log_error(logger, "rag_initialization_failed")
+            raise RAGServiceException(message="RAG system not available")
 
         # Create summary-like structure for query
         summary = {
@@ -130,7 +127,7 @@ async def search_documents(request: SearchRequest):
         # Perform search
         k_value = request.k or 4  # Default to 4 if None
         results = retrieve(summary, k=k_value)
-        logger.info(f"RAG search completed: {len(results)} results found")
+        log_info(logger, "rag_search_completed", result_count=len(results))
 
         # Convert results to response format
         search_results = []
@@ -158,20 +155,15 @@ async def search_documents(request: SearchRequest):
 
     except RAGServiceException:
         raise
-    except Exception as e:
-        logger.error(f"RAG search failed: {e!s}")
-        raise RAGServiceException(
-            message="Search failed",
-            details={"error": str(e), "query": request.query},
-        )
+    except Exception:
+        log_error(logger, "rag_search_failed")
+        raise RAGServiceException(message="Search failed")
 
 
 @router.post("/build-index", response_model=IndexResponse)
 async def build_rag_index(request: IndexRequest):
     """Build RAG index from documents"""
-    logger.info(
-        f"RAG index build requested: docs_dir={request.docs_dir}, out_dir={request.out_dir}",
-    )
+    log_info(logger, "rag_index_build_requested")
 
     try:
         # Build index
@@ -183,24 +175,21 @@ async def build_rag_index(request: IndexRequest):
             max_docs=request.max_docs,
         )
 
-        logger.info(f"RAG index built successfully: {stats}")
+        log_info(logger, "rag_index_built")
 
         return IndexResponse(
             success=True, message="Index built successfully", stats=stats
         )
 
-    except Exception as e:
-        logger.error(f"RAG index build failed: {e!s}")
-        raise RAGServiceException(
-            message="Index build failed",
-            details={"error": str(e), "docs_dir": request.docs_dir},
-        )
+    except Exception:
+        log_error(logger, "rag_index_build_failed")
+        raise RAGServiceException(message="Index build failed")
 
 
 @router.get("/query-example")
 async def get_query_example():
     """Get example of how to construct queries for RAG search"""
-    logger.info("Query example requested")
+    log_info(logger, "rag_query_example")
 
     example_summary = {
         "flags": {"ischemic_features": True, "dm_followup": False},
@@ -215,7 +204,7 @@ async def get_query_example():
 
     try:
         query = make_query(example_summary)
-        logger.info(f"Generated example query: {query}")
+        log_info(logger, "rag_query_example_generated")
 
         return {
             "example_summary": example_summary,
@@ -223,18 +212,15 @@ async def get_query_example():
             "description": "This shows how to structure input for RAG search",
         }
 
-    except Exception as e:
-        logger.error(f"Query example generation failed: {e!s}")
-        raise RAGServiceException(
-            message="Failed to generate query example",
-            details={"error": str(e)},
-        )
+    except Exception:
+        log_error(logger, "rag_query_example_failed")
+        raise RAGServiceException(message="Failed to generate query example")
 
 
 @router.get("/health")
 async def health_check():
     """RAG service health check"""
-    logger.info("RAG health check requested")
+    log_info(logger, "rag_health_check")
 
     try:
         health_status = {
@@ -248,16 +234,13 @@ async def health_check():
             try:
                 init_retriever()
                 health_status["initialized"] = True
-                logger.info("RAG health check passed")
-            except Exception as e:
+                log_info(logger, "rag_health_ok")
+            except Exception:
                 health_status["status"] = "unhealthy"
-                health_status["error"] = str(e)
-                logger.warning(f"RAG health check failed: {e!s}")
+                log_warning(logger, "rag_health_failed")
 
         return health_status
 
-    except Exception as e:
-        logger.error(f"RAG health check failed: {e!s}")
-        raise RAGServiceException(
-            message="Health check failed", details={"error": str(e)}
-        )
+    except Exception:
+        log_error(logger, "rag_health_failed")
+        raise RAGServiceException(message="Health check failed")

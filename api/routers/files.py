@@ -84,7 +84,7 @@ async def upload_file(
     """
     Upload a file for a patient.
     """
-    logger.info(f"Uploading file for patient: {patient_token}")
+    logger.info("Uploading file")
 
     if not _is_allowed_file(file.filename):
         raise HTTPException(
@@ -155,7 +155,7 @@ async def get_patient_files(patient_token: str):
     """
     Get all files for a specific patient.
     """
-    logger.info(f"Retrieving files for patient: {patient_token}")
+    logger.info("Retrieving files")
     try:
         conn = _get_db_connection()
         with conn:

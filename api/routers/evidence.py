@@ -90,8 +90,8 @@ async def _rag_cards(
         )
 
         return to_cards(rets, max_cards=max_cards, keywords=kw)  # type: ignore
-    except Exception as e:
-        logger.info(f"RAG timeout/fail → []: {e!s}")
+    except Exception:
+        logger.info("RAG timeout/fail")
         return []
 
 

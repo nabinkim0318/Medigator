@@ -7,7 +7,10 @@ import re
 from pathlib import Path
 from typing import Any
 
-from sentence_transformers import SentenceTransformer
+try:
+    from sentence_transformers import SentenceTransformer
+except ImportError:  # pragma: no cover - optional when RAG deps are absent
+    SentenceTransformer = None  # type: ignore
 
 from .query_expand import (
     bm25_or_clause,
@@ -47,6 +50,8 @@ _tokenized: list[list[str]] | None = None
 
 
 def _get_model() -> SentenceTransformer:
+    if SentenceTransformer is None:
+        raise RuntimeError("RAG embedding dependencies are not installed")
     global _model
     if _model is None:
         _model = SentenceTransformer(MODEL_NAME)
