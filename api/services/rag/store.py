@@ -6,8 +6,12 @@ import os
 from pathlib import Path
 from typing import Any
 
-import faiss  # pip install faiss-cpu
-import numpy as np
+try:
+    import faiss  # pip install faiss-cpu
+    import numpy as np
+except ImportError:  # pragma: no cover - optional when RAG deps are absent
+    faiss = None  # type: ignore
+    np = None  # type: ignore
 
 
 class RAGStore:
@@ -26,6 +30,8 @@ class RAGStore:
         self.index_path = self.dir / "index.faiss"
         self.meta_path = self.dir / "meta.json"
 
+        if faiss is None or np is None:
+            raise RuntimeError("RAG store dependencies are not installed")
         if not self.index_path.exists() or not self.meta_path.exists():
             raise FileNotFoundError(
                 f"Missing index/meta under {self.dir}. "

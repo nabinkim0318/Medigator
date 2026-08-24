@@ -4,12 +4,13 @@ Centralized error handling for the application
 """
 
 import logging
-import traceback
 from typing import Any
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
+
+from api.core.safe_logging import log_error, log_warning
 
 logger = logging.getLogger(__name__)
 
@@ -57,20 +58,38 @@ class ValidationException(MedicalAPIException):
         super().__init__(message, 400, details)
 
 
+def _public_exception_details(details: dict[str, Any] | None) -> dict[str, Any]:
+    if not details:
+        return {}
+    allowed = {"error_type", "resource", "reason"}
+    return {k: v for k, v in details.items() if k in allowed}
+
+
+def _safe_validation_details(errors: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    safe = []
+    for err in errors:
+        safe.append(
+            {
+                "loc": err.get("loc"),
+                "type": err.get("type"),
+            }
+        )
+    return safe
+
+
 def setup_exception_handlers(app: FastAPI):
     """Setup global exception handlers for the application"""
 
     @app.exception_handler(MedicalAPIException)
     async def medical_api_exception_handler(request: Request, exc: MedicalAPIException):
         """Handle custom medical API exceptions"""
-        logger.error(
-            f"Medical API Exception: {exc.message}",
-            extra={
-                "status_code": exc.status_code,
-                "details": exc.details,
-                "path": request.url.path,
-                "method": request.method,
-            },
+        log_error(
+            logger,
+            "medical_api_exception",
+            status_code=exc.status_code,
+            path=request.url.path,
+            method=request.method,
+            error_type=type(exc).__name__,
         )
 
         return JSONResponse(
@@ -78,7 +97,7 @@ def setup_exception_handlers(app: FastAPI):
             content={
                 "error": "Medical API Error",
                 "message": exc.message,
-                "details": exc.details,
+                "details": _public_exception_details(exc.details),
                 "path": request.url.path,
             },
         )
@@ -86,13 +105,12 @@ def setup_exception_handlers(app: FastAPI):
     @app.exception_handler(HTTPException)
     async def http_exception_handler(request: Request, exc: HTTPException):
         """Handle HTTP exceptions with logging"""
-        logger.warning(
-            f"HTTP Exception: {exc.detail}",
-            extra={
-                "status_code": exc.status_code,
-                "path": request.url.path,
-                "method": request.method,
-            },
+        log_warning(
+            logger,
+            "http_exception",
+            status_code=exc.status_code,
+            path=request.url.path,
+            method=request.method,
         )
 
         return JSONResponse(
@@ -109,14 +127,14 @@ def setup_exception_handlers(app: FastAPI):
     async def validation_exception_handler(
         request: Request, exc: RequestValidationError
     ):
-        """Handle Pydantic validation errors"""
-        logger.warning(
-            f"Validation Error: {exc.errors()}",
-            extra={
-                "path": request.url.path,
-                "method": request.method,
-                "body": str(exc.body) if hasattr(exc, "body") else None,
-            },
+        """Handle Pydantic validation errors without logging request bodies."""
+        errors = exc.errors()
+        log_warning(
+            logger,
+            "validation_failed",
+            path=request.url.path,
+            method=request.method,
+            error_count=len(errors),
         )
 
         return JSONResponse(
@@ -124,7 +142,7 @@ def setup_exception_handlers(app: FastAPI):
             content={
                 "error": "Validation Error",
                 "message": "Request validation failed",
-                "details": exc.errors(),
+                "details": _safe_validation_details(errors),
                 "path": request.url.path,
             },
         )
@@ -132,31 +150,32 @@ def setup_exception_handlers(app: FastAPI):
     @app.exception_handler(ValueError)
     async def value_error_handler(request: Request, exc: ValueError):
         """Handle ValueError exceptions"""
-        logger.error(
-            f"Value Error: {exc!s}",
-            extra={"path": request.url.path, "method": request.method},
+        log_error(
+            logger,
+            "value_error",
+            path=request.url.path,
+            method=request.method,
+            error_type="ValueError",
         )
 
         return JSONResponse(
             status_code=400,
             content={
                 "error": "Value Error",
-                "message": str(exc),
+                "message": "Invalid request",
                 "path": request.url.path,
             },
         )
 
     @app.exception_handler(Exception)
     async def general_exception_handler(request: Request, exc: Exception):
-        """Handle all other unhandled exceptions"""
-        logger.error(
-            f"Unhandled Exception: {exc!s}",
-            extra={
-                "path": request.url.path,
-                "method": request.method,
-                "exception_type": type(exc).__name__,
-                "traceback": traceback.format_exc(),
-            },
+        """Handle all other unhandled exceptions without third-party payloads."""
+        log_error(
+            logger,
+            "unhandled_exception",
+            path=request.url.path,
+            method=request.method,
+            error_type=type(exc).__name__,
         )
 
         return JSONResponse(

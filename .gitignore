@@ -101,9 +101,20 @@ venv/
 *.dll
 
 # ----------------------------
-# Reports / Generated assets
+# Runtime artifacts (never commit)
 # ----------------------------
-reports/**
+uploads/
+api/uploads/
+rag_index/*.faiss
+rag_index/build_summary.json
+data/*.db
+data/*.sqlite*
+*.pdf
+!docs/**/*.pdf
+
+# ----------------------------
+# Reports / Generated assets
+# ----------------------------reports/**
 !reports/.gitkeep
 api/reports/**
 !api/reports/.gitkeep

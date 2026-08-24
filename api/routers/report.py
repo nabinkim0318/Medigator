@@ -96,7 +96,7 @@ async def generate_report(request: ReportRequest):
     Returns:
         Created report information
     """
-    logger.info(f"Generating report for patient: {request.patient.name}")
+    logger.info("Generating report")
     try:
         # Use LLM to generate report
         report_content = await llm_service.generate_report(
@@ -137,12 +137,11 @@ async def generate_report(request: ReportRequest):
         logger.info(f"Report generated successfully: {report_id}")
         return response
 
-    except Exception as e:
-        logger.error(f"Report generation failed: {e!s}")
+    except Exception:
+        logger.error("Report generation failed")
         raise MedicalAPIException(
             message="Report generation failed",
             status_code=500,
-            details={"error": str(e), "patient_name": request.patient.name},
         )
 
 
@@ -172,9 +171,9 @@ async def analyze_symptoms(request: AnalysisRequest):
             recommended_tests=analysis.get("recommended_tests"),
         )
 
-    except Exception as e:
-        logger.error(f"Symptom analysis failed: {e!s}")
-        raise HTTPException(status_code=500, detail=f"Symptom analysis error: {e!s}")
+    except Exception:
+        logger.error("Symptom analysis failed")
+        raise HTTPException(status_code=500, detail="Symptom analysis error")
 
 
 @router.get("/symptoms/{symptom}/icd")

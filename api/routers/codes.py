@@ -25,6 +25,6 @@ def codes(
             f"Generated codes: {len(result.get('icd', []))} ICD, {len(result.get('cpt', []))} CPT, {len(result.get('em', []))} EM",
         )
         return result
-    except Exception as e:
-        logger.error(f"Code generation failed: {e!s}")
+    except Exception:
+        logger.error("Code generation failed")
         raise

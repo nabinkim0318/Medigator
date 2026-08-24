@@ -162,7 +162,7 @@ def parse_and_validate(text: str) -> SummaryOut:
         # Structure validation
         is_valid, errors = validate_json_structure(data)
         if not is_valid:
-            logger.error(f"JSON structure validation failed: {errors}")
+            logger.error("JSON structure validation failed")
             raise ValueError(f"Structure validation failed: {'; '.join(errors)}")
 
         # Sanitize HPI
@@ -171,7 +171,7 @@ def parse_and_validate(text: str) -> SummaryOut:
 
         # Validate content constraints
         if "hpi" in data and len(data["hpi"]) > 600:
-            logger.warning(f"HPI too long ({len(data['hpi'])} chars), truncating")
+            logger.warning("HPI too long, truncating")
             data["hpi"] = data["hpi"][:600]
 
         # Create and validate Pydantic model
@@ -180,12 +180,12 @@ def parse_and_validate(text: str) -> SummaryOut:
         logger.info("JSON validation successful")
         return summary
 
-    except json.JSONDecodeError as e:
-        logger.error(f"JSON parsing failed: {e}")
-        raise ValueError(f"Invalid JSON: {e}")
-    except Exception as e:
-        logger.error(f"Validation failed: {e}")
-        raise ValueError(f"Validation error: {e}")
+    except json.JSONDecodeError:
+        logger.error("JSON parsing failed")
+        raise ValueError("Invalid JSON")
+    except Exception:
+        logger.error("Validation failed")
+        raise ValueError("Validation error")
 
 
 def retry_with_correction(data: dict[str, Any], max_retries: int = 2) -> SummaryOut:
@@ -193,8 +193,8 @@ def retry_with_correction(data: dict[str, Any], max_retries: int = 2) -> Summary
     for attempt in range(max_retries):
         try:
             return parse_and_validate(json.dumps(data, ensure_ascii=False))
-        except Exception as e:
-            logger.warning(f"Retry attempt {attempt + 1} failed: {e}")
+        except Exception:
+            logger.warning("Retry attempt failed")
             if attempt < max_retries - 1:
                 # Apply corrections
                 data = apply_corrections(data)

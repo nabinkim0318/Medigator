@@ -13,9 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "🏥 BBB Medical System",
+  title: "Medigator",
   description:
-    "AI-powered medical report generation with RAG, HIPAA compliance, and dual interface for patients and doctors",
+    "Portfolio prototype for synthetic/demo medical-intake workflows. Not production security.",
 };
 
 export default function RootLayout({

@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     cors_origins: list[str] = [
         "http://localhost:5173",
         "http://localhost:3000",
+        "http://localhost:3001",
         "http://localhost:8080",
     ]
 
@@ -38,8 +39,12 @@ class Settings(BaseSettings):
     LLM_SEED: int = 42  # Fixed seed for reproducibility
 
     # Demo settings
+    # DEMO_MODE does not make arbitrary identifiers safe. See SYNTHETIC_DATA_ONLY.
     DEMO_MODE: bool = True
+    SYNTHETIC_DATA_ONLY: bool = True
+    # Leftover flag from earlier prototypes; not a compliance certification.
     HIPAA_MODE: bool = False
+    # Shared demo operator password for portfolio use only — not production IAM.
     DEMO_ACCESS_CODE: str = "HACKGT25"
 
     # PDF settings

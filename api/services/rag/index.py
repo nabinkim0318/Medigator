@@ -9,11 +9,16 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-import faiss
-import numpy as np
-from sentence_transformers import (
-    SentenceTransformer,
-)  # pip install sentence-transformers
+try:
+    import faiss
+    import numpy as np
+    from sentence_transformers import (
+        SentenceTransformer,
+    )
+except ImportError:  # pragma: no cover - optional when RAG deps are absent
+    faiss = None  # type: ignore
+    np = None  # type: ignore
+    SentenceTransformer = None  # type: ignore
 
 # Get logger
 logger = logging.getLogger(__name__)
@@ -139,7 +144,8 @@ def build_index(
     Build FAISS index and metadata from local docs.
     Returns a small summary dict.
     """
-    logger.info(f"Starting RAG index build: docs_dir={docs_dir}, out_dir={out_dir}")
+    if SentenceTransformer is None or faiss is None or np is None:
+        raise RuntimeError("RAG index dependencies are not installed")
     logger.info(
         f"Parameters: chunk_size={chunk_size}, overlap={overlap}, max_docs={max_docs}"
     )

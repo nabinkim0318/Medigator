@@ -4,6 +4,8 @@ Patient API router
 Handles patient intake data storage and retrieval
 """
 
+import asyncio
+import inspect
 import json
 import logging
 import sqlite3
@@ -14,6 +16,8 @@ from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
 
 from api.core.config import settings
+from api.core.safe_logging import log_error, log_info, log_warning
+from api.core.synthetic import enforce_synthetic_payload, enforce_synthetic_profile
 from api.services.llm import llm_service
 
 # Get logger
@@ -67,12 +71,12 @@ def _generate_llm_summary_background(
 ):
     """Generate LLM summary in background"""
     try:
-        logger.info(f"Starting LLM summary generation for session {session_id}")
+        log_info(logger, "llm_summary_started")
 
         # Prepare data for LLM
         summary_data = {
-            "encounterId": token,
-            "patient": {},  # Will be populated from patient_data if available
+            "encounterId": "demo-session",
+            "patient": {},
             "answers": {
                 "chief_complaint": appointment_data.get("q1", ""),
                 "location": appointment_data.get("q2", ""),
@@ -86,9 +90,10 @@ def _generate_llm_summary_background(
             },
         }
 
-        # Generate LLM summary
-        summary_result = llm_service.summary(summary_data)
-        logger.info(f"LLM summary result: {summary_result}")
+        result = llm_service.summary(summary_data)
+        if inspect.isawaitable(result):
+            asyncio.run(result)
+        log_info(logger, "llm_summary_result_received")
 
         # Update AI summary status to 'done'
         conn = _get_db_connection()
@@ -100,10 +105,10 @@ def _generate_llm_summary_background(
             )
             conn.commit()
 
-        logger.info(f"LLM summary generation completed for session {session_id}")
+        log_info(logger, "llm_summary_completed")
 
-    except Exception as e:
-        logger.error(f"Failed to generate LLM summary for session {session_id}: {e}")
+    except Exception:
+        log_error(logger, "llm_summary_failed")
         # Update status to 'failed' if needed
         try:
             conn = _get_db_connection()
@@ -114,8 +119,8 @@ def _generate_llm_summary_background(
                     ("failed", session_id),
                 )
                 conn.commit()
-        except Exception as update_error:
-            logger.error(f"Failed to update status to failed: {update_error}")
+        except Exception:
+            log_error(logger, "llm_summary_status_update_failed")
 
 
 def _trigger_llm_summary_async(session_id: str, token: str, appointment_data: dict):
@@ -155,11 +160,15 @@ class PatientData(BaseModel):
 
 
 class AppointmentRequest(BaseModel):
-    """Appointment request model"""
+    """Appointment request model. session_id is a correlation id, not authentication."""
 
-    token: str
+    session_id: str = ""
+    token: str = ""  # legacy alias for session_id; not an access token
     patientData: PatientData = PatientData()
     appointmentData: AppointmentData
+
+    def correlation_id(self) -> str:
+        return (self.session_id or self.token).strip()
 
 
 class AppointmentResponse(BaseModel):
@@ -214,16 +223,19 @@ async def save_appointment(request: AppointmentRequest):
     Returns:
         Saved appointment information
     """
-    logger.info(f"Saving appointment data for token: {request.token}")
+    logger.info("Saving appointment data")
 
     try:
-        # Tables are already created by database schema
+        correlation_id = request.correlation_id() or str(uuid.uuid4())
+        enforce_synthetic_profile(request.patientData.model_dump())
+        enforce_synthetic_payload(request.appointmentData.model_dump())
 
         # Generate unique appointment ID
         appointment_id = str(uuid.uuid4())
 
         # Connect to database
         conn = _get_db_connection()
+        _ensure_table_exists(conn)
         cursor = conn.cursor()
 
         # Create intake session first
@@ -233,7 +245,7 @@ async def save_appointment(request: AppointmentRequest):
             INSERT INTO intake_session (id, token, status, created_at, expires_at)
             VALUES (?, ?, 'SUBMITTED', datetime('now'), datetime('now', '+1 day'))
             """,
-            (session_id, request.token),
+            (session_id, correlation_id),
         )
 
         # Prepare patient data
@@ -276,19 +288,19 @@ async def save_appointment(request: AppointmentRequest):
         conn.close()
 
         # Trigger LLM summary generation in background
-        _trigger_llm_summary_async(session_id, request.token, appointment_data)
+        _trigger_llm_summary_async(session_id, correlation_id, appointment_data)
 
-        logger.info(f"Appointment saved successfully: {appointment_id}")
+        log_info(logger, "appointment_saved")
 
         return AppointmentResponse(
             key=appointment_id, message="Appointment data saved successfully"
         )
 
-    except Exception as e:
-        logger.error(f"Failed to save appointment: {e!s}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to save appointment: {e!s}"
-        )
+    except HTTPException:
+        raise
+    except Exception:
+        log_error(logger, "appointment_save_failed")
+        raise HTTPException(status_code=500, detail="Failed to save appointment")
 
 
 @router.get("/appointment/{token}")
@@ -302,7 +314,7 @@ async def get_appointment(token: str):
     Returns:
         Appointment data
     """
-    logger.info(f"Retrieving appointment data for token: {token}")
+    log_info(logger, "appointment_get")
 
     try:
         conn = get_db_connection()
@@ -344,11 +356,9 @@ async def get_appointment(token: str):
 
     except HTTPException:
         raise
-    except Exception as e:
-        logger.error(f"Failed to retrieve appointment: {e!s}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to retrieve appointment: {e!s}"
-        )
+    except Exception:
+        log_error(logger, "appointment_get_failed")
+        raise HTTPException(status_code=500, detail="Failed to retrieve appointment")
 
 
 @router.get("/appointment/{token}/summary")
@@ -362,7 +372,7 @@ async def get_appointment_summary(token: str):
     Returns:
         Formatted data for LLM summary
     """
-    logger.info(f"Getting appointment summary data for token: {token}")
+    log_info(logger, "appointment_summary_get")
 
     try:
         # Get appointment data
@@ -392,11 +402,9 @@ async def get_appointment_summary(token: str):
 
     except HTTPException:
         raise
-    except Exception as e:
-        logger.error(f"Failed to get appointment summary: {e!s}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to get appointment summary: {e!s}"
-        )
+    except Exception:
+        log_error(logger, "appointment_summary_failed")
+        raise HTTPException(status_code=500, detail="Failed to get appointment summary")
 
 
 @router.get("/profile")
@@ -404,14 +412,18 @@ async def get_patient_profiles():
     """
     Retrieve all patient profiles with their intake data.
     """
-    logger.info("Retrieving all patient profiles")
+    log_info(logger, "patient_profiles_list")
     try:
         conn = _get_db_connection()
         with conn:
             _ensure_table_exists(conn)
             cursor = conn.cursor()
             cursor.execute(
-                "SELECT session_id, patient_data, answers_json, ai_summary_status FROM intake_payload"
+                """
+                SELECT s.token, p.patient_data, p.answers_json, p.ai_summary_status
+                FROM intake_payload p
+                JOIN intake_session s ON s.id = p.session_id
+                """
             )
             rows = cursor.fetchall()
 
@@ -427,22 +439,21 @@ async def get_patient_profiles():
 
                     profiles.append(
                         {
-                            "token": row["session_id"],
+                            "id": row["token"],
+                            "token": row["token"],
                             "profile": patient_data,
                             "appointment": answers_data,
                             "ai_summary_status": row["ai_summary_status"] or "pending",
                         }
                     )
-                except json.JSONDecodeError as e:
-                    logger.warning(
-                        f"Failed to parse JSON for session {row['session_id']}: {e}"
-                    )
+                except json.JSONDecodeError:
+                    log_warning(logger, "patient_profile_json_parse_failed")
                     continue
 
             return {"profiles": profiles}
-    except Exception as e:
-        logger.error(f"Failed to retrieve patient profiles: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve profiles: {e}")
+    except Exception:
+        log_error(logger, "patient_profiles_list_failed")
+        raise HTTPException(status_code=500, detail="Failed to retrieve profiles")
 
 
 @router.delete("/profile/{token}")
@@ -450,7 +461,7 @@ async def delete_patient_profile(token: str):
     """
     Delete patient profile and associated data by token.
     """
-    logger.info(f"Deleting patient profile for token: {token}")
+    log_info(logger, "patient_profile_delete")
     try:
         conn = _get_db_connection()
         with conn:
@@ -480,9 +491,9 @@ async def delete_patient_profile(token: str):
 
     except HTTPException:
         raise
-    except Exception as e:
-        logger.error(f"Failed to delete patient profile: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to delete profile: {e}")
+    except Exception:
+        log_error(logger, "patient_profile_delete_failed")
+        raise HTTPException(status_code=500, detail="Failed to delete profile")
 
 
 @router.put("/profile/{token}")
@@ -490,7 +501,7 @@ async def update_patient_profile(token: str, profile_data: dict):
     """
     Update patient profile information.
     """
-    logger.info(f"Updating patient profile for token: {token}")
+    log_info(logger, "patient_profile_update")
     try:
         conn = _get_db_connection()
         with conn:
@@ -516,9 +527,9 @@ async def update_patient_profile(token: str, profile_data: dict):
 
     except HTTPException:
         raise
-    except Exception as e:
-        logger.error(f"Failed to update patient profile: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to update profile: {e}")
+    except Exception:
+        log_error(logger, "patient_profile_update_failed")
+        raise HTTPException(status_code=500, detail="Failed to update profile")
 
 
 @router.get("/profile/{token}")
@@ -526,7 +537,7 @@ async def get_patient_profile(token: str):
     """
     Get specific patient profile by token.
     """
-    logger.info(f"Retrieving patient profile for token: {token}")
+    log_info(logger, "patient_profile_get")
     try:
         conn = _get_db_connection()
         with conn:
@@ -562,9 +573,9 @@ async def get_patient_profile(token: str):
 
     except HTTPException:
         raise
-    except Exception as e:
-        logger.error(f"Failed to retrieve patient profile: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to retrieve profile: {e}")
+    except Exception:
+        log_error(logger, "patient_profile_get_failed")
+        raise HTTPException(status_code=500, detail="Failed to retrieve profile")
 
 
 @router.get("/stats")
@@ -572,7 +583,7 @@ async def get_patient_statistics():
     """
     Get patient statistics and analytics.
     """
-    logger.info("Retrieving patient statistics")
+    log_info(logger, "patient_stats")
     try:
         conn = _get_db_connection()
         with conn:
@@ -617,11 +628,9 @@ async def get_patient_statistics():
                 "daily_counts": daily_counts,
             }
 
-    except Exception as e:
-        logger.error(f"Failed to retrieve patient statistics: {e}")
-        raise HTTPException(
-            status_code=500, detail=f"Failed to retrieve statistics: {e}"
-        )
+    except Exception:
+        log_error(logger, "patient_stats_failed")
+        raise HTTPException(status_code=500, detail="Failed to retrieve statistics")
 
 
 @router.get("/search")
@@ -629,7 +638,7 @@ async def search_patients(query: str = "", limit: int = 10, offset: int = 0):
     """
     Search patients by name, email, or other criteria.
     """
-    logger.info(f"Searching patients with query: {query}")
+    log_info(logger, "patient_search")
     try:
         conn = _get_db_connection()
         with conn:
@@ -684,9 +693,9 @@ async def search_patients(query: str = "", limit: int = 10, offset: int = 0):
 
             return {"results": results, "count": len(results)}
 
-    except Exception as e:
-        logger.error(f"Failed to search patients: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to search patients: {e}")
+    except Exception:
+        log_error(logger, "patient_search_failed")
+        raise HTTPException(status_code=500, detail="Failed to search patients")
 
 
 @router.put("/profile/{token}/ai-summary-status")
@@ -694,7 +703,7 @@ async def update_ai_summary_status(token: str, status: str = Body(...)):
     """
     Update AI summary status for a patient.
     """
-    logger.info(f"Updating AI summary status for token: {token} to {status}")
+    log_info(logger, "ai_summary_status_update")
     try:
         conn = _get_db_connection()
         with conn:
@@ -726,44 +735,62 @@ async def update_ai_summary_status(token: str, status: str = Body(...)):
 
     except HTTPException:
         raise
-    except Exception as e:
-        logger.error(f"Failed to update AI summary status: {e}")
+    except Exception:
+        log_error(logger, "ai_summary_status_update_failed")
         raise HTTPException(
-            status_code=500, detail=f"Failed to update AI summary status: {e}"
+            status_code=500, detail="Failed to update AI summary status"
         )
 
 
 @router.post("/profile", response_model=AppointmentResponse)
 async def save_patient_profile(profile_data: dict):
     """
-    Save patient profile data.
+    Save patient profile data. session_id is a correlation id, not authentication.
     """
-    logger.info("Saving patient profile data")
+    log_info(logger, "patient_profile_save")
 
     try:
+        nested = profile_data.get("profile")
+        profile = nested if isinstance(nested, dict) else profile_data
+        identity = {
+            k: profile.get(k)
+            for k in ("name", "age", "gender", "bloodGroup", "phone", "email")
+            if k in profile
+        }
+        enforce_synthetic_profile(identity)
+        enforce_synthetic_payload(
+            {k: v for k, v in profile.items() if k not in identity}
+        )
+
+        correlation_id = str(
+            profile_data.get("session_id") or profile_data.get("token") or uuid.uuid4()
+        )
+
         conn = _get_db_connection()
         with conn:
             _ensure_table_exists(conn)
             cursor = conn.cursor()
 
-            # Create intake session first
             session_id = str(uuid.uuid4())
-            token = str(uuid.uuid4())
             cursor.execute(
                 """
                 INSERT INTO intake_session (id, token, status, created_at, expires_at)
                 VALUES (?, ?, 'SUBMITTED', datetime('now'), datetime('now', '+1 day'))
                 """,
-                (session_id, token),
+                (session_id, correlation_id),
             )
 
-            # Insert profile data into intake_payload
             cursor.execute(
                 """
                 INSERT INTO intake_payload (session_id, patient_data, answers_json, ai_summary_status)
                 VALUES (?, ?, ?, ?)
                 """,
-                (session_id, json.dumps(profile_data), json.dumps({}), "pending"),
+                (
+                    session_id,
+                    json.dumps(identity or profile),
+                    json.dumps({}),
+                    "pending",
+                ),
             )
 
             conn.commit()
@@ -772,6 +799,8 @@ async def save_patient_profile(profile_data: dict):
                 key=session_id, message="Patient profile saved successfully"
             )
 
-    except Exception as e:
-        logger.error(f"Failed to save patient profile: {e}")
-        raise HTTPException(status_code=500, detail=f"Failed to save profile: {e}")
+    except HTTPException:
+        raise
+    except Exception:
+        log_error(logger, "patient_profile_save_failed")
+        raise HTTPException(status_code=500, detail="Failed to save profile")

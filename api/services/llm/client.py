@@ -173,11 +173,11 @@ async def _retry_async(fn, *, attempts=3, base_delay=0.25, max_delay=2.0):
         except Exception as e:
             last = e
             logger.warning(
-                f"Attempt {i + 1}/{attempts} failed: {type(e).__name__}: {e}"
+                "Attempt %s/%s failed: %s", i + 1, attempts, type(e).__name__
             )
 
             if not _is_retryable(e) or i == attempts - 1:
-                logger.error(f"Final attempt failed: {type(e).__name__}: {e}")
+                logger.error("Final attempt failed: %s", type(e).__name__)
                 raise
 
             delay = min(max_delay, base_delay * (2**i))
@@ -237,8 +237,7 @@ async def chat_json(
             try:
                 return json.loads(txt)
             except json.JSONDecodeError as e:
-                logger.error(f"JSON parsing failed: {e}")
-                logger.error(f"Raw response: {txt[:200]}...")
+                logger.error("JSON parsing failed")
 
                 # Embedded JSON extraction attempt
                 import re
@@ -254,7 +253,7 @@ async def chat_json(
                 raise ValueError(f"JSON parsing failed: {e!s}")
 
         except Exception as e:
-            logger.error(f"LLM API call failed: {type(e).__name__}: {e}")
+            logger.error("LLM API call failed: %s", type(e).__name__)
             raise
 
     try:
@@ -264,7 +263,7 @@ async def chat_json(
         return data
 
     except Exception as e:
-        logger.error(f"LLM chat_json failed after retries: {type(e).__name__}: {e}")
+        logger.error("LLM chat_json failed after retries: %s", type(e).__name__)
 
         # Use fallback function if available
         if fallback_func:
@@ -273,7 +272,9 @@ async def chat_json(
                 fallback_result = fallback_func()
                 return fallback_result
             except Exception as fallback_error:
-                logger.error(f"Fallback function also failed: {fallback_error}")
+                logger.error(
+                    "Fallback function also failed: %s", type(fallback_error).__name__
+                )
 
         raise
 
