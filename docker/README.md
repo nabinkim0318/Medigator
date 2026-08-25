@@ -1,112 +1,58 @@
-# 🐳 Docker Configuration
+# Local container workflow
 
-This directory contains Docker configurations for the BBB Medical System.
+`docker/docker-compose.yml` is the canonical reproducible demo environment.
+It is a local research-prototype workflow, not a production or staging
+deployment.
 
-## 📁 Files
+Run from the repository root:
 
-- `Dockerfile` - Backend API container
-- `Dockerfile.patient` - Patient frontend container (Port 3000)
-- `Dockerfile.doctor` - Doctor frontend container (Port 3001)
-- `docker-compose.yml` - Unified services (single frontend)
-- `docker-compose-separate.yml` - Separate frontend services
-- `.dockerignore` - Files to exclude from Docker builds
-
-## 🚀 Quick Start
-
-### Unified Services (Single Frontend)
 ```bash
-# Build and start all services
-make docker-build
 make docker-up
-
-# Access:
-# - API: http://localhost:8082
-# - Frontend: http://localhost:5173
+# or: docker compose -f docker/docker-compose.yml up --build -d
 ```
 
-### Separate Frontend Services (Recommended)
-```bash
-# Build and start separate services
-make docker-build
-make docker-up-separate
+| Service | Container port | Host port | Runtime |
+| --- | ---: | ---: | --- |
+| `api` | 8082 | 8082 | Uvicorn/FastAPI |
+| `frontend` | 3000 | 3000 | Next.js development/demo server |
 
-# Access:
-# - API: http://localhost:8082
-# - Patient Frontend: http://localhost:3000
-# - Doctor Frontend: http://localhost:3001
-```
-
-## 🔧 Service Configuration
-
-### Backend API (Port 8082)
-- FastAPI application
-- SQLite at `data/medigator.db` (`DB_URL`; not PostgreSQL)
-- RAG system
-- Health checks
-
-### Patient Frontend (Port 3000)
-- Next.js application
-- Patient interface
-- Symptom input forms
-- Report viewing
-
-### Doctor Frontend (Port 3001)
-- Next.js application
-- Doctor dashboard
-- Report analysis
-- Code generation
-
-## 🛠️ Development
-
-### Local Development
-```bash
-# Run individual services
-make api &          # Backend API
-make ui-patient &   # Patient frontend
-make ui-doctor &    # Doctor frontend
-```
-
-### Docker Development
-```bash
-# Build specific service
-docker build -f docker/Dockerfile.patient -t bbb-patient .
-docker build -f docker/Dockerfile.doctor -t bbb-doctor .
-
-# Run specific service
-docker run -p 3000:3000 bbb-patient
-docker run -p 3001:3001 bbb-doctor
-```
-
-## 📊 Port Mapping
-
-| Service | Port | Description |
-|---------|------|-------------|
-| API | 8082 | Backend API |
-| Patient | 3000 | Patient interface |
-| Doctor | 3001 | Doctor interface |
-| Unified | 5173 | Single frontend (dev) |
-
-## 🔍 Troubleshooting
-
-### Common Issues
-
-1. **Port conflicts**: Ensure ports 3000, 3001, 8082 are available
-2. **Build failures**: Check Docker daemon is running
-3. **Service not starting**: Check logs with `make docker-logs-separate`
-
-### Useful Commands
+The image build context is the repository root (`..` relative to the Compose
+file). Standalone image builds therefore use:
 
 ```bash
-# View logs
-make docker-logs-separate
-
-# Stop services
-make docker-down-separate
-
-# Rebuild services
-make docker-build
-make docker-up-separate
-
-# Clean up
-docker system prune -f
+docker build -f docker/Dockerfile .
+docker build -f docker/Dockerfile.frontend .
 ```
+
+Do not use `cd docker && docker build .`; required `api/`, `src/`, `data/`,
+and package files are outside that context.
+
+## Volumes and environment
+
+- `data/` → `/app/data` (writable): canonical SQLite
+  `/app/data/medigator.db`, visible on the host as `data/medigator.db`.
+- `rag_index/` → `/app/rag_index` (read-only): committed demo fixtures.
+- `logs/` → `/app/logs` (writable, generated and gitignored).
+- `reports/` → `/app/reports` (writable, generated and gitignored).
+- `src/` and `public/` are source bind mounts for the development/demo
+  frontend.
+
+Compose sets `DB_URL=sqlite:///data/medigator.db`, `DEMO_MODE=true`,
+`SYNTHETIC_DATA_ONLY=true`, and `ENABLE_RAG=false`. `OPENAI_API_KEY` is
+optional and is not used by startup or health checks. RAG is disabled so
+runtime startup does not download an embedding model.
+
+## Verification
+
+```bash
+make docker-smoke
+```
+
+The smoke command uses bounded HTTP polling rather than a fixed sleep. It
+checks `/health` for HTTP 200 and `status=healthy`, checks the frontend root,
+writes synthetic data to SQLite, restarts the API container, verifies the
+record remains available, and shuts Compose down with a trap.
+
+The optional `docker/docker-compose-separate.yml` runs patient and doctor
+frontends on host ports 3000 and 3001. It is development/demo-only and is not
+part of the reproducibility CI gate.

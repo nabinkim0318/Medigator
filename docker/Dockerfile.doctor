@@ -1,20 +1,16 @@
-# Doctor Frontend Dockerfile
+# Optional built doctor frontend for the two-app local demo.
+# Not part of the canonical reproducibility gate or a production deployment.
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Use the repository lockfile for reproducible dependencies.
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Install dependencies
-RUN npm install
-
-# Copy source code
 COPY src ./src
-COPY next.config.ts ./
-COPY tsconfig.json ./
-COPY tailwind.config.ts ./
-COPY postcss.config.js ./
+COPY public ./public
+COPY next.config.ts tsconfig.json tailwind.config.ts postcss.config.js postcss.config.mjs ./
 
 # Build doctor-specific frontend
 ENV NEXT_PUBLIC_APP_TYPE=doctor

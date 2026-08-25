@@ -1,3 +1,5 @@
+# Build context is the repository root (`docker build -f docker/Dockerfile .`).
+
 # Python
 __pycache__/
 *.py[cod]
@@ -10,7 +12,6 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
 lib64/
 parts/
 sdist/
@@ -44,12 +45,6 @@ Thumbs.db
 
 # Git
 .git/
-.gitignore
-
-# Docker
-Dockerfile*
-docker-compose*.yml
-.dockerignore
 
 # Logs
 logs/
@@ -57,9 +52,13 @@ logs/
 
 # Database
 *.db
+*.db-wal
+*.db-shm
 *.sqlite
+*.sqlite3
 
 # Build artifacts
+.next/
 app/dist/
 app/build/
 
@@ -69,7 +68,7 @@ app/build/
 .mypy_cache/
 .ruff_cache/
 
-# Environment
+# Environment / secrets
 .env
 .env.local
 .env.development.local
@@ -80,5 +79,6 @@ app/build/
 api/reports/
 reports/
 
-# RAG index
-rag_index/
+# Generated RAG artifacts — keep committed json fixtures in the image
+rag_index/*.faiss
+rag_index/build_summary.json

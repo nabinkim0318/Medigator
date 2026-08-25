@@ -1,6 +1,6 @@
-# 🏥 BBB Medical Report API
+# Medigator research prototype
 
-[![CI/CD](https://github.com/nabinkim0318/BBB/actions/workflows/ci.yml/badge.svg)](https://github.com/nabinkim0318/BBB/actions/workflows/ci.yml)
+[![CI/CD](https://github.com/nabinkim0318/Medigator/actions/workflows/ci.yml/badge.svg)](https://github.com/nabinkim0318/Medigator/actions/workflows/ci.yml)
 [![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
 [![Next.js](https://img.shields.io/badge/Next.js-15.5.4-black.svg)](https://nextjs.org/)
 [![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
@@ -12,50 +12,84 @@ treatment, clinical use, or production. Does **not** claim HIPAA compliance.
 Demo medical-intake UI with optional RAG helpers. Suggested summaries and
 codes are research artifacts, not clinical decisions or automatic coding.
 
-## 🚀 Quick Start
+## Reproducible local demo
 
-### Option 1: Docker (Recommended)
+This is the one canonical local containerized research-prototype workflow.
+It is not a production or staging deployment.
+
+Prerequisites:
+
+- Git
+- Docker Desktop or Docker Engine with Compose v2
+- `make` and `curl` for the reusable smoke command
+
+From a clean checkout:
+
 ```bash
-# Clone and setup
-git clone <repository-url>
-cd BBB
-
-# Start with unified Docker (single frontend)
-make docker-build
+git clone https://github.com/nabinkim0318/Medigator.git
+cd Medigator
 make docker-up
-# Access: API: http://localhost:8082, Frontend: http://localhost:5173
-
-# OR start with separate frontends (local two-app demo)
-make docker-build
-make docker-up-separate
-# Access: API: http://localhost:8082, Patient: http://localhost:3000, Doctor: http://localhost:3001
 ```
 
-### Option 2: Local Development
+Expected services:
+
+| Service | Container port | Host port | Mode |
+| --- | ---: | ---: | --- |
+| FastAPI | 8082 | 8082 | local/demo API |
+| Next.js | 3000 | 3000 | development/demo server |
+
+Verify and stop:
+
 ```bash
-# Setup (one-time)
-make setup
-
-# Run unified development server
-make dev
-# Access: API: http://localhost:8082, Frontend: http://localhost:5173
-
-# OR run separate frontend services
-make api &          # Backend API (port 8082)
-make ui-patient &   # Patient Frontend (port 3000)
-make ui-doctor &    # Doctor Frontend (port 3001)
+curl -sS http://localhost:8082/health
+curl -I http://localhost:3000/
+make docker-down
 ```
 
-## 📋 Prerequisites
+The equivalent direct command is:
 
-### For Docker (Recommended)
-- Docker & Docker Compose
-- Git
+```bash
+docker compose -f docker/docker-compose.yml up --build -d
+```
 
-### For Local Development
-- Python 3.12+
-- Node.js 18+
-- Git
+Both images use the repository root as their build context. Do not run
+`cd docker && docker build .`; the Dockerfiles copy paths from the repository
+root.
+
+The API writes the canonical SQLite database to `/app/data/medigator.db`,
+bind-mounted at `data/medigator.db` on the host. The `data/` mount is writable.
+The committed `rag_index/` fixtures are read-only. `logs/` and `reports/` are
+writable generated output.
+
+RAG is disabled in this workflow, so runtime startup does not download an
+embedding model. `OPENAI_API_KEY` is optional and empty by default; `/health`
+and the Docker smoke do not call OpenAI. All inputs must be synthetic/demo
+data. `DEMO_ACCESS_CODE` defaults to `replace-me-locally`; override it in your
+shell for local use. These defaults are not production security.
+
+Run the full reusable check:
+
+```bash
+make docker-smoke
+```
+
+It builds and starts Compose, polls `GET /health` for HTTP 200 and
+`status=healthy`, checks the frontend root, performs a synthetic SQLite write,
+restarts the API container, verifies the record remains visible, and always
+shuts containers down. Existing demo rows in `data/medigator.db` are preserved.
+
+## Optional host development
+
+This path is not the clean-clone Docker reproducibility gate. It requires
+Python 3.12 and Node.js 18+:
+
+```bash
+make setup
+make dev
+```
+
+The API is at `http://localhost:8082` and the Next.js development server is at
+`http://localhost:3000`.
 
 ## 🛠️ Development
 
@@ -69,12 +103,15 @@ make api            # Run API only
 make ui-patient     # Patient Frontend (port 3000)
 make ui-doctor      # Doctor Frontend (port 3001)
 
-# Docker
-make docker-build   # Build Docker images
-make docker-up      # Start unified Docker services
-make docker-up-separate # Start separate Docker services
-make docker-down    # Stop unified Docker services
-make docker-down-separate # Stop separate Docker services
+# Docker (canonical local/demo path)
+make docker-build   # Build API and development/demo frontend images
+make docker-up      # Start API 8082 + frontend 3000
+make docker-smoke   # Full HTTP and persistence smoke
+make docker-down
+
+# Optional two-app demo; not part of the reproducibility gate
+make docker-up-separate
+make docker-down-separate
 make docker-logs    # View logs
 make docker-shell   # Open container shell
 
@@ -103,9 +140,9 @@ BBB/
 │   └── tests/             # Backend tests
 ├── src/                    # Next.js Frontend
 │   ├── app/               # App router pages
-│   │   ├── page.tsx       # Unified interface (Port 5173)
-│   │   ├── patient/       # Patient interface (Port 3000)
-│   │   └── doctor/        # Doctor interface (Port 3001)
+│   │   ├── page.tsx       # Unified demo interface
+│   │   ├── patient/       # Patient interface
+│   │   └── doctor/        # Doctor interface
 │   ├── components/        # React components
 │   └── lib/               # Utilities
 ├── docker/                 # Docker configurations
@@ -181,31 +218,14 @@ make test-hardening
 make test-llm
 ```
 
-## 🚀 Deployment
+## Environment variables
 
-### Docker (local demo)
-```bash
-# Build image
-docker build -t bbb-medical:latest .
-
-# Run container
-docker run -p 8082:8082 \
-  -e OPENAI_API_KEY=your_key \
-  -e DEMO_ACCESS_CODE=your_code \
-  bbb-medical:latest
-```
-
-### Environment Variables
-```bash
-OPENAI_API_KEY=your_openai_key
-DEMO_ACCESS_CODE=your_demo_code
-DEMO_MODE=true
-HIPAA_MODE=false   # config flag only; does not mean HIPAA compliance
-enable_rag=true
-LLM_TEMPERATURE=0.1
-LLM_TOP_P=0.9
-LLM_SEED=42
-```
+- `DB_URL`: fixed to `sqlite:///data/medigator.db` by canonical Compose.
+- `DEMO_MODE=true` and `SYNTHETIC_DATA_ONLY=true`: synthetic demo boundary.
+- `DEMO_ACCESS_CODE`: optional local override; shared demo password only.
+- `OPENAI_API_KEY`: optional; not needed for startup or smoke.
+- `ENABLE_RAG=false`: avoids model/network dependency in canonical Compose.
+- `NEXT_PUBLIC_API_URL=http://localhost:8082`: browser-visible API URL.
 
 ## 📈 Performance
 
@@ -236,7 +256,7 @@ For questions or issues:
 
 ### Latest Improvements
 - **Separate Frontend Ports**: Patient (3000) and Doctor (3001) interfaces
-- **Vercel Deployment**: Separate Vercel projects for Patient and Doctor frontends
+- **Cloud deployment**: no production or staging target is configured or verified
 - **LLM Hardening**: JSON schema validation, rule engine, normalization
 - **RAG**: chunk-id IR eval (Recall@k / MRR / nDCG@5) on 20 golden queries; MMR is not implemented
 - **Docker Support**: Local/demo container builds
@@ -261,7 +281,7 @@ For questions or issues:
 - **Framework**: FastAPI, Next.js 15.5.4
 - **Database**: SQLite at `data/medigator.db` (local research prototype). PostgreSQL is not implemented or tested.
 - **AI/ML**: OpenAI GPT-4, Sentence Transformers, FAISS
-- **Deployment**: Docker, Vercel, GitHub Actions
+- **Reproducibility**: local Docker Compose plus GitHub Actions
 - **Security**: Prototype synthetic-data boundary (not production IAM)
 
 ## 🎯 Roadmap

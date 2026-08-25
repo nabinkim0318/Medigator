@@ -11,9 +11,7 @@
     "dev:patient": "next dev -p 3000 --turbopack",
     "dev:doctor": "next dev -p 3001 --turbopack",
     "build:patient": "NEXT_PUBLIC_APP_TYPE=patient next build --turbopack",
-    "build:doctor": "NEXT_PUBLIC_APP_TYPE=doctor next build --turbopack",
-    "deploy:patient": "vercel --config vercel.patient.json",
-    "deploy:doctor": "vercel --config vercel.doctor.json"
+    "build:doctor": "NEXT_PUBLIC_APP_TYPE=doctor next build --turbopack"
   },
   "dependencies": {
     "@radix-ui/react-dropdown-menu": "^2.1.16",

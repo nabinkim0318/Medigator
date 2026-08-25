@@ -1,52 +1,64 @@
-version: '3.8'
+# Optional two-app frontend Compose file.
+# Not the canonical reproducibility path and not part of the Docker CI gate.
+# Not a production or staging deployment.
+#
+# Paths below are relative to this file (docker/). Build context `..` is the
+# repository root. Do not `cd docker && docker build .`.
+#
+#   docker compose -f docker/docker-compose-separate.yml up --build
+
+name: medigator-separate
 
 services:
-  # Backend API
   api:
-    build: .
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
     ports:
       - "8082:8082"
     environment:
-      - DB_URL=sqlite:///data/medigator.db
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - DEMO_ACCESS_CODE=${DEMO_ACCESS_CODE:-demo123}
-      - DEMO_MODE=true
-      - HIPAA_MODE=false
-      - enable_rag=true
+      DB_URL: sqlite:///data/medigator.db
+      DEMO_MODE: "true"
+      SYNTHETIC_DATA_ONLY: "true"
+      ENABLE_RAG: "false"
+      HIPAA_MODE: "false"
+      DEMO_ACCESS_CODE: ${DEMO_ACCESS_CODE:-replace-me-locally}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     volumes:
-      - ./data:/app/data
-      - ./api/reports:/app/api/reports
-      - ./logs:/app/logs
+      - ../data:/app/data
+      - ../rag_index:/app/rag_index:ro
+      - ../logs:/app/logs
+      - ../reports:/app/reports
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
+      test: ["CMD", "python", "docker/healthcheck.py"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: "no"
 
-  # Patient Frontend (Port 3000)
   patient-frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.patient
+      context: ..
+      dockerfile: docker/Dockerfile.patient
     ports:
       - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://api:8082
+      NEXT_PUBLIC_API_URL: http://localhost:8082
     depends_on:
-      - api
-    restart: unless-stopped
+      api:
+        condition: service_healthy
+    restart: "no"
 
-  # Doctor Frontend (Port 3001)
   doctor-frontend:
     build:
-      context: .
-      dockerfile: Dockerfile.doctor
+      context: ..
+      dockerfile: docker/Dockerfile.doctor
     ports:
       - "3001:3001"
     environment:
-      - NEXT_PUBLIC_API_URL=http://api:8082
+      NEXT_PUBLIC_API_URL: http://localhost:8082
     depends_on:
-      - api
-    restart: unless-stopped
+      api:
+        condition: service_healthy
+    restart: "no"

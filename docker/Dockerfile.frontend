@@ -1,23 +1,19 @@
-# Frontend Dockerfile for production build
-FROM node:18-alpine AS frontend
+# Development/demo Next.js frontend. Not a production image.
+# Build from the repository root:
+#   docker build -f docker/Dockerfile.frontend .
+FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+COPY package.json package-lock.json ./
+RUN npm ci
 
-# Install dependencies
-RUN npm install
-
-# Copy source code
+COPY next.config.ts tsconfig.json tailwind.config.ts postcss.config.js postcss.config.mjs ./
 COPY src ./src
-COPY next.config.ts ./
-COPY tsconfig.json ./
-COPY tailwind.config.ts ./
-COPY postcss.config.js ./
+COPY public ./public
 
-# Build for production
-RUN npm run build
+ENV NEXT_PUBLIC_API_URL=http://localhost:8082
 
-# Next.js with distDir: 'dist' will output to /app/dist
-# No need to copy, it's already in the right place
+EXPOSE 3000
+
+CMD ["npm", "run", "dev", "--", "-H", "0.0.0.0", "-p", "3000"]

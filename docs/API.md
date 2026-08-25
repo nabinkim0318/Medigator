@@ -134,19 +134,18 @@ Content-Type: application/json
 
 ## 🐳 Docker Integration
 
-### Unified Services
+### Canonical local/demo services
 ```bash
-# Start unified services
 make docker-up
 
 # Access:
 # - API: http://localhost:8082
-# - Frontend: http://localhost:5173
+# - Frontend: http://localhost:3000
 ```
 
-### Separate Services
+### Optional separate services
 ```bash
-# Start separate services
+# Development/demo only; not part of the reproducibility gate
 make docker-up-separate
 
 # Access:
@@ -163,10 +162,10 @@ make docker-up-separate
 export DEMO_ACCESS_CODE=demo123
 ```
 
-### API Key
+### Optional OpenAI API key
 ```bash
-# Set OpenAI API key
-export OPENAI_API_KEY=your_key_here
+# Only needed for LLM-backed requests, not startup or /health
+export OPENAI_API_KEY=<your-local-key>
 ```
 
 ## 📊 Error Handling

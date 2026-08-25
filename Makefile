@@ -9,16 +9,19 @@ API_DIR := api
 APP_DIR := .  # Next.js is at root level
 DB_URL := sqlite:///data/medigator.db
 
+COMPOSE := docker compose -f docker/docker-compose.yml
+COMPOSE_SEPARATE := docker compose -f docker/docker-compose-separate.yml
+
 # ====== Phony ======
 .PHONY: help setup venv deps ui-deps seed dev api ui test lint fmt type precommit ci \
         build-frontend build-backend build pdf demo-clean clean distclean \
-        docker-build docker-up docker-down docker-logs docker-shell test-hardening \
-        test-llm test-api
+        docker-build docker-up docker-down docker-logs docker-shell docker-smoke \
+        docker-up-separate docker-down-separate test-hardening test-llm test-api
 
 help:
 	@echo "Targets:"
 	@echo "  setup          Create venv, install deps, seed DB, install UI deps"
-	@echo "  dev            Run API (8082) + UI (5173) together"
+	@echo "  dev            Run API (8082) + UI (3000) together (host venv/npm, not Docker)"
 	@echo "  api            Run FastAPI locally (reload)"
 	@echo "  ui             Run Next.js dev server (unified)"
 	@echo "  ui-patient     Run Patient Frontend on port 3000"
@@ -35,15 +38,13 @@ help:
 	@echo "  ci             Lint + tests (CI quick gate)"
 	@echo "  build          Build prod UI + check API import"
 	@echo "  pdf            Generate a sample PDF report (api/reports/)"
-	@echo "  docker-build   Build Docker images"
-	@echo "  docker-up      Start services with Docker Compose (unified)"
-	@echo "  docker-up-separate Start separate frontend services (3000, 3001)"
-	@echo "  docker-down    Stop Docker services"
+	@echo "  docker-build   Build canonical local/demo Compose images"
+	@echo "  docker-up      Start canonical local/demo Compose (API 8082, UI 3000)"
+	@echo "  docker-smoke   Build/start, poll /health, shut down (CI gate)"
+	@echo "  docker-up-separate Optional two-app Compose (not the reproducibility gate)"
+	@echo "  docker-down    Stop canonical Docker services"
 	@echo "  docker-logs    Show Docker logs"
-	@echo "  docker-shell   Open shell in running container"
-	@echo "  deploy-patient Deploy Patient Frontend to Vercel"
-	@echo "  deploy-doctor  Deploy Doctor Frontend to Vercel"
-	@echo "  deploy-all     Deploy both frontends to Vercel"
+	@echo "  docker-shell   Open shell in the API container"
 	@echo "  clean          Remove __pycache__, caches, build artifacts"
 	@echo "  distclean      Also remove venv and node_modules"
 
@@ -72,7 +73,7 @@ seed:
 # ====== Run ======
 dev:
 	@echo "ℹ️  Starting API : http://localhost:8082"
-	@echo "ℹ️  Starting UI  : http://localhost:5173"
+	@echo "ℹ️  Starting UI  : http://localhost:3000"
 	@( cd $(API_DIR) && $(PY) -m uvicorn main:app --reload --port 8082 ) & \
 	( npm run dev )
 	@echo "⛔ Stopped dev."
@@ -157,62 +158,51 @@ pdf:
 	 (echo "API must be running: make api & then re-run make pdf"; exit 1)
 	@echo "📄 Saved: $(API_DIR)/reports/demo.pdf"
 
-# ====== Docker ======
+# ====== Docker (local/demo; repository-root build context) ======
 docker-build:
-	@echo "🐳 Building Docker images..."
-	@docker build -t bbb-medical-api:latest -f docker/Dockerfile .
-	@docker build -t bbb-medical-patient:latest -f docker/Dockerfile.patient .
-	@docker build -t bbb-medical-doctor:latest -f docker/Dockerfile.doctor .
-	@echo "✅ Docker images built."
+	@echo "Building canonical local/demo images (context = repository root)..."
+	@$(COMPOSE) build
+	@echo "Images built."
 
 docker-up:
-	@echo "🐳 Starting services with Docker Compose..."
-	@cd docker && docker compose up -d
-	@echo "✅ Services started. API: http://localhost:8082, UI: http://localhost:5173"
+	@echo "Starting local containerized research-prototype workflow..."
+	@$(COMPOSE) up --build -d
+	@echo "API: http://localhost:8082  Frontend (dev/demo): http://localhost:3000"
+	@echo "Verify: curl -sS http://localhost:8082/health"
+
+docker-smoke:
+	@chmod +x scripts/docker_smoke.sh
+	@./scripts/docker_smoke.sh
 
 docker-up-separate:
-	@echo "🐳 Starting separate frontend services..."
-	@cd docker && docker compose -f docker-compose-separate.yml up -d
-	@echo "✅ Services started. API: http://localhost:8082, Patient: http://localhost:3000, Doctor: http://localhost:3001"
+	@echo "Optional two-app Compose — not the reproducibility gate."
+	@$(COMPOSE_SEPARATE) up --build -d
+	@echo "API: http://localhost:8082  Patient: http://localhost:3000  Doctor: http://localhost:3001"
 
 docker-down:
-	@echo "🐳 Stopping Docker services..."
-	@cd docker && docker compose down
-	@echo "✅ Services stopped."
+	@echo "Stopping canonical Docker services..."
+	@$(COMPOSE) down --remove-orphans
+	@echo "Services stopped."
 
 docker-down-separate:
-	@echo "🐳 Stopping separate services..."
-	@cd docker && docker compose -f docker-compose-separate.yml down
-	@echo "✅ Services stopped."
+	@echo "Stopping optional separate services..."
+	@$(COMPOSE_SEPARATE) down --remove-orphans
+	@echo "Services stopped."
 
 docker-logs:
-	@cd docker && docker compose logs -f
+	@$(COMPOSE) logs -f
 
 docker-logs-separate:
-	@cd docker && docker compose -f docker-compose-separate.yml logs -f
+	@$(COMPOSE_SEPARATE) logs -f
 
 docker-shell:
-	@cd docker && docker compose exec api bash
-
-# ====== Deployment ======
-deploy-patient:
-	@echo "🚀 Deploying Patient Frontend to Vercel..."
-	@npm run deploy:patient
-
-deploy-doctor:
-	@echo "🚀 Deploying Doctor Frontend to Vercel..."
-	@npm run deploy:doctor
-
-deploy-all:
-	@echo "🚀 Deploying both frontends to Vercel..."
-	@npm run deploy:patient
-	@npm run deploy:doctor
+	@$(COMPOSE) exec api sh
 
 # ====== Housekeeping ======
 demo-clean:
-	@find $(API_DIR) -name "*.db" -delete || true
-	@rm -rf $(API_DIR)/reports/* || true
-	@echo "🧹 Cleaned DB and reports."
+	@rm -f data/medigator.db data/medigator.db-wal data/medigator.db-shm
+	@rm -rf reports/* api/reports/* || true
+	@echo "Cleaned local SQLite DB and generated reports."
 
 clean:
 	@find . -name "__pycache__" -type d -exec rm -rf {} + || true
