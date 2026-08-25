@@ -4,8 +4,9 @@
 
 Medigator is a synthetic-data healthcare-AI engineering prototype combining a
 structured intake workflow, schema-constrained LLM summarization with a
-deterministic template fallback, rule-based ICD/CPT suggestions, and hybrid
-evidence retrieval. The repository includes explicit response provenance,
+deterministic template fallback, rule-based ICD suggestions, local CPT
+reference lookup, and hybrid evidence retrieval. The repository includes
+explicit response provenance,
 quantitative retrieval evaluation, deny-by-default API boundaries, SQLite
 persistence, and a reproducible local Docker demo.
 
@@ -31,7 +32,7 @@ make docker-smoke    # HTTP health, frontend, SQLite write/restart/read
 - synthetic-data intake persistence in one configurable SQLite database
 - schema-constrained OpenAI summarization with deterministic template fallback
 - response provenance labels: `openai`, `fallback`, `rules`, `rag`, and `static`
-- rule/table-based ICD/CPT suggestions, not validated clinical coding
+- CSV rule-based ICD suggestions and local CPT reference lookup
 - MiniLM/FAISS and BM25 hybrid retrieval over a committed demo corpus
 - frozen chunk-level IR evaluation with regression and adversarial checks
 - blocking backend, frontend, and container smoke gates in GitHub Actions
@@ -46,7 +47,7 @@ FastAPI API ──> SQLite (data/medigator.db, configured by DB_URL)
        |
        +──> OpenAI JSON summary when configured
        |    └──> deterministic template fallback
-       +──> local rule/CSV code suggestions
+       +──> local ICD rules + CPT reference lookup
        └──> runtime retrieval: MiniLM + FAISS + BM25
             + query expansion + 0.6/0.4 weighted merge
 
@@ -64,7 +65,8 @@ model downloads. See [docs/RAG.md](docs/RAG.md).
 | --- | --- | --- |
 | Synthetic intake | Implemented | persisted demo/synthetic inputs only |
 | LLM summary | Implemented | OpenAI when configured; deterministic template fallback otherwise |
-| Rule-based code suggestions | Implemented | local lookup/rules; not clinical coding |
+| Rule-based ICD suggestions | Implemented | local CSV rules; not clinical coding |
+| CPT reference lookup | Partial | lookup route exists; `/codes` CPT matching is inactive |
 | Evidence retrieval | Implemented | optional hybrid local retriever; static cards when disabled/empty |
 | Retrieval evaluation | Evaluated with limitations | frozen 20-query, 49-chunk synthetic/demo fixture |
 | Authentication | Demo boundary only | in-memory operator sessions; not production IAM |
@@ -79,7 +81,7 @@ model downloads. See [docs/RAG.md](docs/RAG.md).
 
 The frontend provides unified patient and operator demo views. The backend
 persists synthetic intake records, produces structured summary objects, adds
-deterministic flags and code suggestions, and returns evidence cards with
+deterministic flags and ICD suggestions, and returns evidence cards with
 source provenance. Sensitive or unfinished surfaces are denied or return
 `501` rather than simulating successful clinical functionality.
 
@@ -168,6 +170,8 @@ The operator-session mechanism is a demo boundary, not production IAM. See
 
 - SQLite is the only runtime backend. PostgreSQL and SQLAlchemy are not used.
   Demo database state is disposable; no migration framework is provided.
+- `/codes` does not currently activate its loaded CPT rules; CPT values shown
+  in the UI are explicitly labeled static placeholders.
 - Some async routes perform synchronous SQLite work.
 - Runtime MiniLM/FAISS retrieval is not benchmarked by the CI surrogate.
 - The bundled corpus is small; source redistribution status is not
@@ -240,8 +244,8 @@ access-boundary safety, clinical-claim truthfulness, API provenance, retrieval
 evaluation, SQLite persistence, and Docker reproducibility. Remaining
 limitations include demo-only operator sessions, synchronous SQLite in some
 async routes, no frontend lint gate, nonblocking dependency vulnerability
-reporting, unclear corpus redistribution status, no production deployment, and
-no clinical validation.
+reporting, inactive `/codes` CPT matching, unclear corpus redistribution
+status, no production deployment, and no clinical validation.
 
 This repository is MIT-licensed; see `LICENSE`. That project license does not
 establish rights to third-party material summarized in the bundled RAG corpus.

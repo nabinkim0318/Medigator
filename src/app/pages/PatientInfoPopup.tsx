@@ -161,7 +161,7 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                     "#f59e0b"; // amber-500
                 }}
               >
-                View Diagnosis History
+                View Demo History
               </button>
               <button
                 onClick={onClose}
@@ -233,8 +233,8 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
               </InfoSection>
             )}
 
-            {/* Likely ICD-10 and CPT Codes */}
-            <InfoSection title="Likely ICD-10 and CPT Codes">
+            {/* Static demo code placeholders */}
+            <InfoSection title="Static Demo Code Placeholders">
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                 <span
                   style={{
@@ -246,7 +246,7 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                     fontWeight: "500",
                   }}
                 >
-                  ICD-10: R06.02
+                  Sample ICD-10 label: R06.02
                 </span>
                 <span
                   style={{
@@ -258,13 +258,13 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                     fontWeight: "500",
                   }}
                 >
-                  CPT: 99213
+                  Sample CPT label: 99213
                 </span>
               </div>
             </InfoSection>
 
-            {/* Suspected Conditions */}
-            <InfoSection title="Suspected Conditions">
+            {/* Static demo tags */}
+            <InfoSection title="Static Demo Tags">
               <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
                 <span
                   style={{
@@ -276,7 +276,7 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                     fontWeight: "500",
                   }}
                 >
-                  Acute Chest Pain
+                  Chest pain example
                 </span>
                 <span
                   style={{
@@ -288,13 +288,13 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                     fontWeight: "500",
                   }}
                 >
-                  Possible MI
+                  MI example tag
                 </span>
               </div>
             </InfoSection>
 
-            {/* Recommended Research */}
-            <InfoSection title="Recommended Research">
+            {/* Static research example */}
+            <InfoSection title="Static Research Example">
               <div
                 style={{
                   backgroundColor: "#fef3c7", // amber-100
@@ -307,20 +307,20 @@ const PatientInfoPopup: React.FC<PatientInfoPopupProps> = ({
                 }}
               >
                 <p style={{ margin: "0 0 12px 0" }}>
-                  <strong>Immediate Actions:</strong>
+                  <strong>Example source topics (not recommendations):</strong>
                 </p>
                 <ul style={{ margin: "0", paddingLeft: "20px" }}>
-                  <li>ECG within 10 minutes</li>
-                  <li>Cardiac enzymes (troponin)</li>
-                  <li>Chest X-ray</li>
-                  <li>Vital signs monitoring</li>
+                  <li>ECG timing</li>
+                  <li>Troponin testing</li>
+                  <li>Chest imaging</li>
+                  <li>Vital-sign documentation</li>
                 </ul>
               </div>
             </InfoSection>
 
-            {/* Supporting Medical Evidence */}
+            {/* Demo supporting evidence */}
             {evidence && (
-              <InfoSection title="Supporting Medical Evidence">
+              <InfoSection title="Demo Supporting Evidence">
                 <div
                   style={{
                     backgroundColor: "#fef3c7", // amber-100

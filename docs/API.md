@@ -20,7 +20,7 @@ OpenAPI does not mean that the security boundary permits it.
 | Demo-open | `POST /api/v1/patient/profile` | persist synthetic profile intake |
 | Demo-open | `POST /api/v1/patient/appointment` | persist synthetic appointment intake |
 | Demo-open | `POST /api/v1/summary` | structured summary with `openai` or `fallback` provenance |
-| Demo-open | `POST /api/v1/codes` | rule/table suggestions with `rules` provenance |
+| Demo-open | `POST /api/v1/codes` | CSV-based ICD suggestions with `rules` provenance; CPT matcher currently returns no rule matches |
 | Demo-open | `POST /api/v1/evidence` | RAG or static evidence cards with provenance |
 | Demo-open | `GET /api/v1/rag/status` | optional retriever status |
 | Demo-open | `POST /api/v1/rag/search` | search committed demo snippets when RAG is enabled |
