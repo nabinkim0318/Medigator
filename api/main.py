@@ -1,6 +1,6 @@
 """
 FastAPI main application
-Medical report generation and analysis API server
+Medigator research-prototype API server
 """
 
 import logging
@@ -34,7 +34,7 @@ startup_results = perform_startup_checks()
 
 
 app = FastAPI(
-    title="BBB Medical Report API",
+    title=settings.api_title,
     description=(
         f"{RESEARCH_PROTOTYPE_DISCLAIMER} "
         "OpenAPI here is a local demo surface, not a production contract. "
@@ -115,7 +115,7 @@ except Exception:
 async def root():
     """Root endpoint"""
     return {
-        "message": "BBB Medical Report API",
+        "message": settings.api_title,
         "version": "1.0.0",
         "docs": "/docs",
         "synthetic_data_only": True,

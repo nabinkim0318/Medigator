@@ -95,7 +95,7 @@ def test_evidence_endpoint():
 
 def main():
     """Run API tests"""
-    print("BBB Medical API Mock Data Test")
+    print("Medigator API Mock Data Test")
     print("=" * 50)
 
     tests = [

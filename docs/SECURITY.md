@@ -46,14 +46,17 @@ runtime dumps. The committed `rag_index/` files are treated as a demo fixture
 so search can run without an index-build API. PostgreSQL is not a runtime
 backend.
 
-## Secret / history scan
+## Historical secret / history audit
 
-Performed against audited HEAD `6bcdf146416c62d31bdfc8d95e0ee788909e2113` plus this PR. Matched values are not written here.
+The security-remediation audit was performed at
+`6bcdf146416c62d31bdfc8d95e0ee788909e2113`. This is an audit record, not a
+continuing guarantee about every future commit. Matched values are not written
+here.
 
 | Check | Verdict |
 | --- | --- |
-| Current-tree regex scan (PEM headers, `AKIA…` keys, assigned `api_key`/`secret_key` literals) | Clean for tracked source. Placeholders in `*.env.example` were allowlisted. |
-| Git history: added `*.pem` / `*.key` / `.env` / `id_rsa` / `credentials.json` | None found. |
+| Audited-tree regex scan (PEM headers, `AKIA…` keys, assigned `api_key`/`secret_key` literals) | Clean for tracked source. Placeholders in `*.env.example` were allowlisted. |
+| History through the audited commit: added `*.pem` / `*.key` / `.env` / `id_rsa` / `credentials.json` | None found. |
 | GitHub secret-scanning alerts | **NOT VERIFIED** — local `gh` authentication to github.com was invalid. |
 | Rotation | Not performed. No live third-party credential was confirmed. |
 
@@ -61,7 +64,9 @@ Performed against audited HEAD `6bcdf146416c62d31bdfc8d95e0ee788909e2113` plus t
 
 ## CI gates
 
-Frontend typecheck (`npx tsc --noEmit`) and backend tests are **blocking**.
+Backend pre-commit/lint/tests, frontend typecheck and build, and Docker HTTP
+smoke are **blocking**.
 The GitHub Actions `dependency-report` job runs `safety check` and uploads an
 artifact; it is **nonblocking** (current `safety check` reports many findings
-in the torch/transformers stack). Frontend ESLint is **absent**.
+in the torch/transformers stack). A green report job does not mean zero
+vulnerabilities. Frontend ESLint is **absent**.

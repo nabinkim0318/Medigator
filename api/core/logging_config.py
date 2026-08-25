@@ -1,6 +1,6 @@
 """
-Logging configuration for BBB Medical Report API
-Centralized logging setup with PHI protection and structured formatting
+Logging configuration for the Medigator API
+Centralized logging setup with sensitive-value filtering and structured formatting
 """
 
 import logging

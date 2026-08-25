@@ -163,7 +163,7 @@ async def test_different_inputs():
 
 async def main():
     """Main test function"""
-    print("🏥 BBB Medical LLM JSON Structure Test")
+    print("🏥 Medigator LLM JSON Structure Test")
     print("=" * 60)
 
     try:

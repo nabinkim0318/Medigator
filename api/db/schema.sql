@@ -1,4 +1,4 @@
--- BBB Medical Report Database Schema
+-- Medigator research-prototype database schema
 -- Medical report generation and analysis database schema
 
 -- Patient information table

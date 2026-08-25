@@ -14,9 +14,9 @@ COMPOSE_SEPARATE := docker compose -f docker/docker-compose-separate.yml
 
 # ====== Phony ======
 .PHONY: help setup venv deps ui-deps seed dev api ui test lint fmt type precommit ci \
-        build-frontend build-backend build pdf demo-clean clean distclean \
+        build-frontend build-backend build demo-clean clean distclean \
         docker-build docker-up docker-down docker-logs docker-shell docker-smoke \
-        docker-up-separate docker-down-separate test-hardening test-llm test-api
+        docker-up-separate docker-down-separate
 
 help:
 	@echo "Targets:"
@@ -28,16 +28,12 @@ help:
 	@echo "  ui-doctor      Run Doctor Frontend on port 3001"
 	@echo "  seed           Load CSV/JSON seeds into SQLite"
 	@echo "  test           Run backend tests"
-	@echo "  test-hardening Run hardening component tests"
-	@echo "  test-llm       Run LLM mock data tests"
-	@echo "  test-api       Run API endpoint tests"
 	@echo "  lint           Ruff lint (auto-fix), Prettier for frontend"
 	@echo "  fmt            Black + isort (backend), Prettier (frontend)"
 	@echo "  # type           mypy strict type-check (disabled)"
 	@echo "  precommit      Run all pre-commit hooks on all files"
 	@echo "  ci             Lint + tests (CI quick gate)"
-	@echo "  build          Build prod UI + check API import"
-	@echo "  pdf            Generate a sample PDF report (api/reports/)"
+	@echo "  build          Build frontend bundle + check API import"
 	@echo "  docker-build   Build canonical local/demo Compose images"
 	@echo "  docker-up      Start canonical local/demo Compose (API 8082, UI 3000)"
 	@echo "  docker-smoke   Build/start, poll /health, shut down (CI gate)"
@@ -123,22 +119,6 @@ check: precommit
 ci: lint test
 	@echo "✅ CI gate passed."
 
-# ====== Testing ======
-test-hardening:
-	@echo "🔧 Running hardening tests..."
-	@cd $(ROOT) && PYTHONPATH=$(ROOT) $(PY) tests/test_hardening.py
-	@echo "✅ Hardening tests completed."
-
-test-llm:
-	@echo "🤖 Running LLM tests..."
-	@cd $(ROOT) && PYTHONPATH=$(ROOT) $(PY) tests/test_api_mock.py
-	@echo "✅ LLM tests completed."
-
-test-api:
-	@echo "🌐 Running API tests..."
-	@cd $(ROOT) && PYTHONPATH=$(ROOT) $(PY) tests/test_api_mock.py
-	@echo "✅ API tests completed."
-
 # ====== Build / Artifacts ======
 build-frontend:
 	@npm run build
@@ -149,14 +129,6 @@ build-backend:
 
 build: build-frontend build-backend
 	@echo "✅ Build complete."
-
-# Sample PDF (assumes /report endpoint and demo session exist/seeded)
-pdf:
-	@mkdir -p $(API_DIR)/reports
-	@echo "Generating demo PDF via API…"
-	@curl -sSf http://localhost:8082/report/demo/pdf -o $(API_DIR)/reports/demo.pdf || \
-	 (echo "API must be running: make api & then re-run make pdf"; exit 1)
-	@echo "📄 Saved: $(API_DIR)/reports/demo.pdf"
 
 # ====== Docker (local/demo; repository-root build context) ======
 docker-build:
