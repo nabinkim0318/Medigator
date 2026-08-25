@@ -75,6 +75,8 @@ See `api/core/access.py` for the authoritative route classification and
 - `DEMO_ACCESS_CODE=<local shared code>`
 - optional `OPENAI_API_KEY`
 - optional `ENABLE_RAG=true`; canonical Docker sets it to `false`
+- optional `BM25_QUERY_EXPANSION=true`; defaults to `false` based on the frozen
+  retrieval fixture
 
 Start the canonical demo with `make docker-up`. The unified Next.js frontend is
 served at `http://localhost:3000`; the optional two-frontend workflow also uses

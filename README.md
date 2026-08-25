@@ -13,8 +13,9 @@ persistence, and a reproducible local Docker demo.
 **Research prototype. Synthetic/demo data only. Not for diagnosis, treatment,
 clinical use, or production. Does not claim HIPAA compliance.**
 
-The runtime retriever combines MiniLM embeddings, FAISS, BM25, query expansion,
-and a weighted hybrid merge. Its separate CI evaluation uses a frozen
+The runtime retriever combines expanded MiniLM queries, FAISS, BM25, and a
+weighted hybrid merge. BM25 lexical expansion is available but defaults off
+based on the frozen evaluation. The separate CI evaluation uses a frozen
 20-query/49-chunk fixture and dependency-cheap lexical methods; results and
 limitations are summarized under [Evaluation](#evaluation) and documented in
 [docs/RAG.md](docs/RAG.md).
@@ -49,7 +50,8 @@ FastAPI API ──> SQLite (data/medigator.db, configured by DB_URL)
        |    └──> deterministic template fallback
        +──> local ICD rules + CPT reference lookup
        └──> runtime retrieval: MiniLM + FAISS + BM25
-            + query expansion + 0.6/0.4 weighted merge
+            + vector expansion + optional BM25 lexical expansion
+            + 0.6/0.4 weighted merge
 
 CI retrieval evaluation (separate):
 BM25 + TF-IDF cosine + TF-IDF/BM25 hybrid
@@ -99,14 +101,18 @@ keyword-stuffed, and query-injection retrieval cases.
 
 Current committed-fixture snapshot:
 
-| BM25 mode | Hit@5 | Recall@1 | Recall@3 | Recall@5 | MRR | nDCG@5 |
+| BM25 variant | Hit@5 | Recall@1 | Recall@3 | Recall@5 | MRR | nDCG@5 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| Expansion off | 20/20 | 0.402 | 0.758 | 0.903 | 1.000 | 0.901 |
-| Expansion on | 20/20 | 0.250 | 0.620 | 0.755 | 0.821 | 0.709 |
+| No expansion | 20/20 | 0.402 | 0.758 | 0.903 | 1.000 | 0.901 |
+| Legacy Boolean-style expansion | 20/20 | 0.250 | 0.620 | 0.755 | 0.821 | 0.709 |
+| Fixed lexical expansion | 20/20 | 0.250 | 0.620 | 0.755 | 0.821 | 0.709 |
 
-Query expansion reduced BM25 retrieval quality on this frozen fixture; the
-repository records the regression rather than presenting expansion as
-universally beneficial.
+The legacy implementation passed generated `AND` / `OR` syntax to a
+bag-of-words tokenizer, which treated those words as BM25 terms. The fix emits
+bounded, deterministic lexical terms instead. Metrics did not improve on the
+unchanged fixture, so the contamination hypothesis does not explain the
+measured regression and runtime BM25 expansion now defaults off. Vector-query
+expansion is unchanged.
 
 Fixture identity is pinned by SHA-256:
 

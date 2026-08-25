@@ -22,7 +22,12 @@ from api.services.rag.eval import (
     rank,
     recall_at_k,
 )
-from api.services.rag.query_expand import load_synonyms
+from api.services.rag.query_expand import (
+    expand_bm25_terms,
+    expand_query_text,
+    load_synonyms,
+)
+from api.services.rag.retrieve import make_query, settings as rag_settings
 from api.services.rag.summarize import to_cards
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -229,3 +234,49 @@ def test_load_synonyms_indexes_nested_terms(tmp_path: Path):
     load_synonyms.cache_clear()
     assert "hba1c" in syn["a1c"]
     assert "hemoglobin a1c" in syn["hba1c"]
+
+
+def test_bm25_expansion_produces_bounded_lexical_terms():
+    synonyms = {
+        "a1c": ["a1c", "hemoglobin a1c", "hba1c", "hba1c"],
+    }
+
+    terms = expand_bm25_terms("chest pain a1c", synonyms)
+
+    assert terms == ["chest", "pain", "a1c", "hemoglobin", "hba1c"]
+    assert "and" not in terms
+    assert "or" not in terms
+    assert len(terms) == len(set(terms))
+    assert expand_bm25_terms("chest pain a1c", synonyms) == terms
+    assert expand_bm25_terms("chest pain a1c", synonyms, max_total=4) == [
+        "chest",
+        "pain",
+        "a1c",
+        "hemoglobin",
+    ]
+
+
+def test_bm25_expansion_preserves_user_authored_conjunctions():
+    terms = expand_bm25_terms("risk and benefit or harm", {})
+
+    assert terms == ["risk", "and", "benefit", "or", "harm"]
+
+
+def test_vector_expansion_representation_is_unchanged():
+    synonyms = {
+        "a1c": ["a1c", "hemoglobin a1c", "hba1c", "hba1c"],
+    }
+
+    assert expand_query_text("a1c", synonyms) == "a1c hemoglobin a1c hba1c"
+
+
+def test_runtime_bm25_expansion_defaults_off_without_changing_vector(monkeypatch):
+    summary = {"cc": "a1c"}
+    monkeypatch.setattr(rag_settings, "bm25_query_expansion", False)
+    expansion_off = make_query(summary)
+    monkeypatch.setattr(rag_settings, "bm25_query_expansion", True)
+    expansion_on = make_query(summary)
+
+    assert expansion_off["bm25"] == ["a1c"]
+    assert "hba1c" in expansion_on["bm25"]
+    assert expansion_off["embed"] == expansion_on["embed"]
