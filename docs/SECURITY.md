@@ -39,10 +39,12 @@ raw model output, and third-party exception payloads must not be logged.
 
 ## Runtime artifacts
 
-Ignore local SQLite files, uploads, generated PDFs/reports, logs, and FAISS
-rebuild outputs. Tracked `data/` JSON/CSV fixtures and `docs/` sources are
-synthetic demo content, not runtime dumps. The committed `rag_index/` files
-are treated as a demo fixture so search can run without an index-build API.
+Ignore local SQLite files (`data/medigator.db` and `*.db` / WAL/SHM sidecars),
+uploads, generated PDFs/reports, logs, and FAISS rebuild outputs. Tracked
+`data/` JSON/CSV fixtures and `docs/` sources are synthetic demo content, not
+runtime dumps. The committed `rag_index/` files are treated as a demo fixture
+so search can run without an index-build API. PostgreSQL is not a runtime
+backend.
 
 ## Secret / history scan
 

@@ -75,6 +75,8 @@ api/.env.*
 # ----------------------------
 *.db
 *.db-journal
+*.db-wal
+*.db-shm
 *.sqlite
 *.sqlite3
 api/copilot.db
@@ -109,6 +111,9 @@ rag_index/*.faiss
 rag_index/build_summary.json
 data/*.db
 data/*.sqlite*
+data/*.db-wal
+data/*.db-shm
+data/*.db-journal
 *.pdf
 !docs/**/*.pdf
 

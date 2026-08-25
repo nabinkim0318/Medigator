@@ -7,14 +7,14 @@ services:
     ports:
       - "8082:8082"
     environment:
-      - DB_URL=sqlite:///./api/copilot.db
+      - DB_URL=sqlite:///data/medigator.db
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - DEMO_ACCESS_CODE=${DEMO_ACCESS_CODE:-demo123}
       - DEMO_MODE=true
       - HIPAA_MODE=false
       - enable_rag=true
     volumes:
-      - ./data:/app/data:ro
+      - ./data:/app/data
       - ./api/reports:/app/api/reports
       - ./logs:/app/logs
     healthcheck:
@@ -50,6 +50,3 @@ services:
     depends_on:
       - api
     restart: unless-stopped
-
-volumes:
-  postgres_data:

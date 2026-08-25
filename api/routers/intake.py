@@ -1,11 +1,11 @@
 # api/routers/intake.py
-import sqlite3
 import uuid
 from datetime import UTC, datetime
 
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 
+from api.core.database import connect_db
 from api.services.intake.tokens import mk_token, verify
 
 router = APIRouter(prefix="/intake", tags=["intake"])
@@ -21,7 +21,7 @@ def start(body: StartIn):
     sid = str(uuid.uuid4())
     token, exp = mk_token(sid, ttl_sec=body.ttl_hours * 3600)
     expires_at = datetime.fromtimestamp(exp, tz=UTC).isoformat()
-    with sqlite3.connect("data/app.db") as c:
+    with connect_db() as c:
         c.execute(
             """INSERT INTO intake_session(id, token, status, patient_hint, expires_at)
                      VALUES(?,?,?,?,?)""",
@@ -36,7 +36,7 @@ def load(token: str):
     v = verify(token)
     if not v:
         raise HTTPException(401, "invalid token")
-    with sqlite3.connect("data/app.db") as c:
+    with connect_db() as c:
         row = c.execute(
             "SELECT id,status,expires_at FROM intake_session WHERE token=?",
             (token,),
@@ -73,7 +73,7 @@ def submit(token: str, body: SubmitIn):
     v = verify(token)
     if not v:
         raise HTTPException(401, "invalid token")
-    with sqlite3.connect("data/app.db") as c:
+    with connect_db() as c:
         row = c.execute(
             "SELECT id,status,expires_at FROM intake_session WHERE token=?",
             (token,),

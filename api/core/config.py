@@ -11,8 +11,9 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
 
-    # Database settings
-    db_url: str = "sqlite:///./copilot.db"
+    # SQLite-only local research-prototype persistence. Not PostgreSQL.
+    # Override with DB_URL (e.g. sqlite:////tmp/test.db) for tests.
+    db_url: str = "sqlite:///data/medigator.db"
 
     # API settings
     api_title: str = "BBB Medical Report API"

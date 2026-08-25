@@ -4,10 +4,16 @@ Create test patient data for development and testing
 """
 
 import json
-import sqlite3
+import os
+import sys
 import uuid
 from datetime import datetime, timedelta
 import random
+
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, project_root)
+
+from api.core.database import connect_db  # noqa: E402
 
 # Test patient data
 TEST_PATIENTS = [
@@ -207,8 +213,7 @@ TEST_PATIENTS = [
 def create_test_patients():
     """Create test patient data in the database"""
     # Connect to database
-    conn = sqlite3.connect("copilot.db")
-    conn.row_factory = sqlite3.Row
+    conn = connect_db()
     cursor = conn.cursor()
 
     # Ensure tables exist

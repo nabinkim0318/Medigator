@@ -21,7 +21,7 @@ COPY docs/ ./docs/
 
 # Set environment variables
 ENV PYTHONPATH=/app
-ENV DB_URL=sqlite:///./api/copilot.db
+ENV DB_URL=sqlite:///data/medigator.db
 
 # Expose port
 EXPOSE 8082
@@ -78,7 +78,7 @@ COPY docs/ ./docs/
 
 # Set environment variables
 ENV PYTHONPATH=/app
-ENV DB_URL=sqlite:///./api/copilot.db
+ENV DB_URL=sqlite:///data/medigator.db
 
 # Create non-root user
 RUN useradd --create-home --shell /bin/bash app

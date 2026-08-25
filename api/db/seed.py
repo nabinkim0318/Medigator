@@ -7,7 +7,6 @@ Load CSV/JSON data into SQLite database.
 import csv
 import json
 import os
-import sqlite3
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -19,16 +18,12 @@ project_root = os.path.dirname(
 sys.path.insert(0, project_root)
 
 from api.core.config import settings  # noqa: E402
+from api.core.database import connect_db, get_database_path  # noqa: E402
 
 
 def create_database():
     """Create database and tables."""
-    db_path = settings.db_url.replace("sqlite:///", "")
-
-    # Create database directory
-    os.makedirs(os.path.dirname(db_path), exist_ok=True)
-
-    conn = sqlite3.connect(db_path)
+    conn = connect_db()
     cursor = conn.cursor()
 
     # Read schema file and execute
@@ -39,7 +34,7 @@ def create_database():
     cursor.executescript(schema_sql)
     conn.commit()
 
-    print(f"[SUCCESS] Database created: {db_path}")
+    print(f"[SUCCESS] Database created: {get_database_path()}")
     return conn
 
 

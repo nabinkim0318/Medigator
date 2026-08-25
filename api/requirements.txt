@@ -3,8 +3,7 @@ fastapi==0.115.0
 uvicorn[standard]==0.30.6
 
 # --- Data & DB ---
-SQLAlchemy==2.0.36
-aiosqlite==0.20.0
+# Raw sqlite3 only. SQLAlchemy / aiosqlite are unused and are not a runtime backend.
 pydantic==2.9.1
 pydantic-settings==2.4.0
 python-multipart==0.0.9

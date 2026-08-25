@@ -34,11 +34,48 @@ make dev
          │                       │                       │
          └───────────────────────┼───────────────────────┘
                                  │
-                    ┌─────────────────┐
-                    │   Database      │
-                    │   SQLite        │
-                    └─────────────────┘
+                    ┌──────────────────────┐
+                    │ SQLite               │
+                    │ data/medigator.db    │
+                    └──────────────────────┘
 ```
+
+### Persistence
+
+Local research-prototype persistence is **SQLite only**. There is one runtime
+database:
+
+- **Path**: `data/medigator.db` (repository-relative; gitignored)
+- **Config**: `DB_URL` / `settings.db_url` (default `sqlite:///data/medigator.db`)
+- **Helper**: `api.core.database.connect_db()` / `get_database_path()`
+- **Data**: synthetic/demo fixtures only. Not a clinical record store.
+
+Tests override `settings.db_url` to a `tmp_path` SQLite file. Do not point
+tests at the repository database.
+
+PostgreSQL is **not** implemented or tested. SQLAlchemy is **not** used;
+runtime code uses the stdlib `sqlite3` helper above.
+
+Some prototype routes are `async def` but run synchronous SQLite calls.
+Async database scaling is not implemented.
+
+#### Reset / recreate policy
+
+This prototype's local DB is disposable demo state. Old files such as
+`copilot.db` and `data/app.db` are **not** migrated. After upgrading, delete
+any leftover local DB and recreate:
+
+```bash
+# Reset database (historical copilot.db / data/app.db are not read)
+rm -f data/medigator.db data/medigator.db-wal data/medigator.db-shm
+make seed
+```
+
+Importing API modules does not create the SQLite file. The file and parent
+directory are created on the first real connection (or `make seed`).
+`api.main` still runs startup checks at import; those checks do not create
+the database when the file is missing. They may still create `logs/` and
+`reports/` directories.
 
 ### Development Modes
 
@@ -229,8 +266,8 @@ make docker-build
 
 #### Database Issues
 ```bash
-# Reset database
-rm api/copilot.db
+# Reset database (do not migrate leftover copilot.db / data/app.db)
+rm -f data/medigator.db data/medigator.db-wal data/medigator.db-shm
 make seed
 ```
 

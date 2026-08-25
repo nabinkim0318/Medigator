@@ -4,11 +4,10 @@ Database and service health checks on application startup
 """
 
 import logging
-import os
-import sqlite3
 from pathlib import Path
 
 from api.core.config import settings
+from api.core.database import connect_db, get_database_path
 from api.services.rag.retrieve import USE_RAG
 
 logger = logging.getLogger(__name__)
@@ -17,10 +16,9 @@ logger = logging.getLogger(__name__)
 def check_database_connection():
     """Check database connectivity and log status"""
     try:
-        db_path = settings.db_url.replace("sqlite:///", "")
-        if os.path.exists(db_path):
-            # Test connection
-            conn = sqlite3.connect(db_path)
+        db_path = get_database_path()
+        if db_path.exists():
+            conn = connect_db()
             cursor = conn.cursor()
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
             tables = cursor.fetchall()
