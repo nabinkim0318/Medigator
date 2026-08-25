@@ -25,6 +25,11 @@ def get_database_path(db_url: str | None = None) -> Path:
     if not raw:
         return (REPO_ROOT / CANONICAL_RELATIVE_PATH).resolve()
 
+    if "://" in raw and not raw.startswith("sqlite:"):
+        raise ValueError(
+            "Only SQLite DB_URL values are supported by this research prototype"
+        )
+
     if raw.startswith("sqlite:"):
         # sqlite:///relative.db  -> relative.db
         # sqlite:////abs/path.db -> /abs/path.db

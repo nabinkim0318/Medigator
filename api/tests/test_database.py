@@ -5,6 +5,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
+import pytest
+
 from api.core.config import Settings, settings
 from api.core.database import (
     CANONICAL_RELATIVE_PATH,
@@ -94,6 +96,16 @@ def test_get_database_path_does_not_create_files(monkeypatch, tmp_path):
     assert path == target.resolve()
     assert not target.exists()
     assert not target.parent.exists()
+
+
+def test_non_sqlite_database_url_is_rejected(monkeypatch):
+    monkeypatch.setattr(
+        settings,
+        "db_url",
+        "postgresql://user:pass@localhost/medigator",
+    )
+    with pytest.raises(ValueError, match="Only SQLite"):
+        get_database_path()
 
 
 def test_obsolete_runtime_db_paths_are_absent():
