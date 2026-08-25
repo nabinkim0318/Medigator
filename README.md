@@ -15,10 +15,11 @@ clinical use, or production. Does not claim HIPAA compliance.**
 
 The runtime retriever combines expanded MiniLM queries, FAISS, BM25, and a
 weighted hybrid merge. BM25 lexical expansion is available but defaults off
-based on the frozen evaluation. The separate CI evaluation uses a frozen
-20-query/49-chunk fixture and dependency-cheap lexical methods; results and
-limitations are summarized under [Evaluation](#evaluation) and documented in
-[docs/RAG.md](docs/RAG.md).
+based on the frozen evaluation. A deterministic CI harness uses TF-IDF as a
+dependency-cheap vector surrogate; a separate offline command benchmarks the
+actual MiniLM/FAISS runtime path on the same frozen 20-query/49-chunk fixture.
+Results and limitations are summarized under [Evaluation](#evaluation) and
+documented in [docs/RAG.md](docs/RAG.md).
 
 Quick reproduction:
 
@@ -35,7 +36,7 @@ make docker-smoke    # HTTP health, frontend, SQLite write/restart/read
 - response provenance labels: `openai`, `fallback`, `rules`, `rag`, and `static`
 - CSV rule-based ICD suggestions and local CPT reference lookup
 - MiniLM/FAISS and BM25 hybrid retrieval over a committed demo corpus
-- frozen chunk-level IR evaluation with regression and adversarial checks
+- frozen chunk-level IR evaluation: CI TF-IDF/BM25 plus a separate offline MiniLM/FAISS benchmark
 - blocking backend, frontend, and container smoke gates in GitHub Actions
 
 ## Architecture
@@ -53,13 +54,17 @@ FastAPI API ──> SQLite (data/medigator.db, configured by DB_URL)
             + vector expansion + optional BM25 lexical expansion
             + 0.6/0.4 weighted merge
 
-CI retrieval evaluation (separate):
+CI retrieval evaluation (separate, blocking-CI safe):
 BM25 + TF-IDF cosine + TF-IDF/BM25 hybrid
+
+Offline runtime benchmark (separate, not CI):
+BM25 + MiniLM/FAISS + MiniLM/FAISS+BM25 hybrid
 ```
 
-The CI vector channel is TF-IDF cosine and is not a MiniLM/FAISS benchmark.
-Runtime RAG is optional and disabled in the canonical Docker workflow to avoid
-model downloads. See [docs/RAG.md](docs/RAG.md).
+TF-IDF is the deterministic CI vector surrogate. MiniLM/FAISS is the runtime
+vector benchmark. They are not the same experiment. Runtime RAG is optional
+and disabled in the canonical Docker workflow to avoid model downloads. See
+[docs/RAG.md](docs/RAG.md).
 
 ## Capability status
 
@@ -70,7 +75,7 @@ model downloads. See [docs/RAG.md](docs/RAG.md).
 | Rule-based ICD suggestions | Implemented | local CSV rules; not clinical coding |
 | CPT reference lookup | Partial | lookup route exists; `/codes` CPT matching is inactive |
 | Evidence retrieval | Implemented | optional hybrid local retriever; static cards when disabled/empty |
-| Retrieval evaluation | Evaluated with limitations | frozen 20-query, 49-chunk synthetic/demo fixture |
+| Retrieval evaluation | Evaluated with limitations | frozen 20-query/49-chunk fixture; CI TF-IDF surrogate + offline MiniLM/FAISS; not clinical IR |
 | Authentication | Demo boundary only | in-memory operator sessions; not production IAM |
 | Persistence | Implemented | local SQLite only |
 | Docker reproducibility | Verified | clean-worktree local demo workflow |
@@ -99,7 +104,30 @@ reports Recall@1/3/5, MRR, nDCG@5, document-level metrics, and Hit@5. Tests also
 verify chunk/file/offset/text-hash provenance and cover instruction-only,
 keyword-stuffed, and query-injection retrieval cases.
 
-Current committed-fixture snapshot:
+There are two deliberately different evaluation modes over the same fixture:
+
+- **CI-safe deterministic baseline:** BM25, TF-IDF cosine, and TF-IDF/BM25.
+  Fast, no MiniLM download, used in blocking tests.
+- **Offline runtime benchmark:** BM25, MiniLM/FAISS, and the actual 0.6/0.4
+  MiniLM/FAISS+BM25 hybrid. Model-dependent; not part of blocking CI.
+
+Current committed-fixture snapshot (BM25 expansion off unless noted):
+
+| Retriever | Hit@5 | Recall@5 | MRR | nDCG@5 |
+| --- | ---: | ---: | ---: | ---: |
+| BM25 | 20/20 | 0.903 | 1.000 | 0.901 |
+| TF-IDF surrogate | 20/20 | 0.851 | 1.000 | 0.861 |
+| TF-IDF/BM25 hybrid | 20/20 | 0.868 | 1.000 | 0.881 |
+| MiniLM/FAISS | 20/20 | 0.759 | 0.902 | 0.765 |
+| Runtime MiniLM/FAISS+BM25 hybrid | 20/20 | 0.774 | 1.000 | 0.826 |
+
+TF-IDF = deterministic CI surrogate. MiniLM/FAISS = runtime vector benchmark.
+On this small synthetic fixture, lexical BM25 outperforms MiniLM/FAISS, and
+the current 0.6/0.4 runtime hybrid does not beat BM25. Weights were not tuned
+against the fixture. This is not clinical IR validation and not production
+retrieval validation.
+
+BM25 expansion variants on the same fixture:
 
 | BM25 variant | Hit@5 | Recall@1 | Recall@3 | Recall@5 | MRR | nDCG@5 |
 | --- | ---: | ---: | ---: | ---: | ---: | ---: |
@@ -123,11 +151,8 @@ Fixture identity is pinned by SHA-256:
 - evaluation queries:
   `dc26206b31b78ef7da9b8fae1e9b84a6617de578c8704910ebbe2cc5aff06409`
 
-All fixture hashes are committed in `data/rag/eval_manifest.json`. The CI
-evaluation's vector channel uses TF-IDF cosine for deterministic,
-dependency-cheap comparison. It is not a benchmark of the runtime
-MiniLM/FAISS embedding channel and is not a clinical IR study. Corpus sources
-and redistribution caveats are recorded in
+All fixture hashes are committed in `data/rag/eval_manifest.json`. Corpus
+sources and redistribution caveats are recorded in
 [docs/RAG_CORPUS.md](docs/RAG_CORPUS.md).
 
 ## Reproducible local demo
@@ -181,7 +206,9 @@ The operator-session mechanism is a demo boundary, not production IAM. See
 - `/codes` does not currently activate its loaded CPT rules; CPT values shown
   in the UI are explicitly labeled static placeholders.
 - Some async routes perform synchronous SQLite work.
-- Runtime MiniLM/FAISS retrieval is not benchmarked by the CI surrogate.
+- Runtime MiniLM/FAISS: evaluated on the frozen synthetic/demo fixture; not
+  clinical IR validation and not production retrieval validation. On that
+  fixture BM25 outperforms MiniLM and the current 0.6/0.4 hybrid.
 - The bundled corpus is small; source redistribution status is not
   independently verified.
 - Operator sessions are in-memory and intended only for the local demo.
@@ -222,10 +249,22 @@ Local equivalents:
 pytest api/tests/ -k "not trio"
 ruff check api/
 ruff format --check api/
+PYTHONPATH=. python -m api.services.rag.eval
 npx tsc --noEmit
 npm run build
 make docker-smoke
 ```
+
+The MiniLM/FAISS runtime benchmark is optional and local:
+
+```bash
+PYTHONPATH=. python -m api.services.rag.eval_runtime
+```
+
+It is model-dependent. After `all-MiniLM-L6-v2` is available locally, retrieval
+evaluation does not require OpenAI, a clinical service, or a live medical API.
+CPU is sufficient. First-time execution may download the model; it is not a
+blocking CI job.
 
 ## Technical stack
 
@@ -241,9 +280,9 @@ make docker-smoke
   schema-constrained LLM summarization and deterministic fallbacks, hybrid
   FAISS/BM25 evidence retrieval, frozen quantitative IR evaluation, SQLite
   persistence, Docker reproducibility, and CI-enforced checks.
-- Added deny-by-default API boundaries, provenance labeling, retrieval metrics
-  (Recall@k, MRR, nDCG), adversarial retrieval tests, and clean-worktree Docker
-  smoke verification.
+- The deterministic CI baseline uses TF-IDF for dependency-cheap regression
+  testing, while a separate offline benchmark evaluates the actual MiniLM/FAISS
+  runtime retriever against the same frozen chunk-level relevance judgments.
 
 ## Project status
 
