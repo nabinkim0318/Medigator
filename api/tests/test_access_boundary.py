@@ -89,14 +89,28 @@ def test_disabled_sensitive_routes(client: TestClient):
         ("GET", "/api/v1/files/download/abc"),
         ("GET", "/api/v1/notifications/stats"),
         ("POST", "/api/v1/rag/build-index"),
-        ("POST", "/api/v1/llm/chat"),
-        ("POST", "/api/v1/reports/pdf"),
-        ("GET", "/api/v1/reports/demo/pdf"),
     ]
     for method, path in cases:
         res = client.request(method, path, json={})
         assert res.status_code == 403, f"{method} {path} -> {res.status_code}"
         assert res.json()["error"] == "endpoint_disabled"
+
+
+def test_placeholder_clinical_routes_are_not_implemented(client: TestClient):
+    cases = [
+        ("POST", "/api/v1/llm/chat"),
+        ("POST", "/api/v1/llm/analyze"),
+        ("POST", "/api/v1/llm/treatment-plan"),
+        ("POST", "/api/v1/reports/pdf"),
+        ("GET", "/api/v1/reports/demo/pdf"),
+        ("POST", "/api/v1/reports/analyze"),
+    ]
+    for method, path in cases:
+        res = client.request(method, path, json={})
+        assert res.status_code == 501, f"{method} {path} -> {res.status_code}"
+        body = res.json()
+        assert body["error"] == "not_implemented"
+        assert "placeholder" in body["message"].lower()
 
 
 def test_demo_open_summary(client: TestClient):

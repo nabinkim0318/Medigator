@@ -31,6 +31,15 @@ _OPERATOR_DETAIL = {
 }
 
 
+_UNIMPLEMENTED_DETAIL = {
+    "error": "not_implemented",
+    "message": (
+        "This is a placeholder clinical endpoint. It does not diagnose, treat, "
+        "or generate a real clinical report. Research prototype only."
+    ),
+}
+
+
 class AccessBoundaryMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next):
         action, rule = classify_with_rule(request.method, request.url.path)
@@ -48,6 +57,17 @@ class AccessBoundaryMiddleware(BaseHTTPMiddleware):
                 status_code=401,
             )
             return JSONResponse(status_code=401, content=_OPERATOR_DETAIL)
+
+        if action == AccessAction.UNIMPLEMENTED:
+            log_warning(
+                logger,
+                "endpoint_unimplemented",
+                method=request.method,
+                path=request.url.path,
+                status_code=501,
+                reason=(rule.note if rule else "placeholder"),
+            )
+            return JSONResponse(status_code=501, content=_UNIMPLEMENTED_DETAIL)
 
         log_warning(
             logger,

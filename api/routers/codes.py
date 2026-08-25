@@ -4,6 +4,7 @@ from typing import Any
 
 from fastapi import APIRouter, Body
 
+from api.core.provenance import provenance
 from api.services.codes import generate_codes
 
 # Get logger
@@ -22,8 +23,16 @@ def codes(
     logger.info("Code generation request received")
     try:
         result = generate_codes(summary, intake or {}, emr or {})
+        result["provenance"] = provenance(
+            source="rules",
+            provider="local-csv",
+            note="ICD/CPT lookup tables. Not automatic clinical coding.",
+        )
         logger.info(
-            f"Generated codes: {len(result.get('icd', []))} ICD, {len(result.get('cpt', []))} CPT, {len(result.get('em', []))} EM",
+            "Generated codes: %s ICD, %s CPT, %s EM",
+            len(result.get("icd", [])),
+            len(result.get("cpt", [])),
+            len(result.get("em", [])),
         )
         return result
     except Exception:

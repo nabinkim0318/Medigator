@@ -178,7 +178,14 @@ const DoctorPatientView: React.FC = () => {
         fontWeight: 600,
       }}
     >
-      {patient.initials}
+      {patient.initials ||
+        patient.name
+          .split(/\s+/)
+          .filter(Boolean)
+          .map((part) => part[0])
+          .join("")
+          .slice(0, 2)
+          .toUpperCase()}
     </div>
   );
 
@@ -729,7 +736,7 @@ const DoctorPatientView: React.FC = () => {
                           {patient.gender}
                         </td>
                         <td style={{ padding: "16px", color: "#6b7280" }}>
-                          {patient.bloodGroup}
+                          {patient.bloodGroup || patient.bloodType || "—"}
                         </td>
                         <td style={{ padding: "16px", color: "#6b7280" }}>
                           {patient.phone}

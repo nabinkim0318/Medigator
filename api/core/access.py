@@ -29,6 +29,7 @@ class AccessAction(str, Enum):
     DEMO_OPEN = "demo_open"
     OPERATOR = "operator"
     DISABLED = "disabled"
+    UNIMPLEMENTED = "unimplemented"
 
 
 @dataclass(frozen=True)
@@ -177,15 +178,15 @@ ROUTE_RULES: tuple[RouteRule, ...] = (
     _rule({"POST"}, r"^/api/v1/summary$", AccessAction.DEMO_OPEN),
     _rule({"POST"}, r"^/api/v1/evidence$", AccessAction.DEMO_OPEN),
     _rule({"POST"}, r"^/api/v1/codes$", AccessAction.DEMO_OPEN),
-    # LLM: health only. Advanced endpoints stay disabled in this prototype.
+    # LLM: health only. Advanced clinical stubs are not implemented.
     _rule({"GET"}, r"^/api/v1/llm/health$", AccessAction.DEMO_OPEN),
     _rule(
         {"GET", "POST", "PUT", "PATCH", "DELETE"},
         r"^/api/v1/llm(?:/.*)?$",
-        AccessAction.DISABLED,
-        "unauthenticated LLM/chat/report generation",
+        AccessAction.UNIMPLEMENTED,
+        "placeholder clinical LLM",
     ),
-    # Reports: lookups/health only. PDF/generate/evaluate disabled.
+    # Reports: lookups/health only. Generate/PDF stubs are not implemented.
     _rule({"GET"}, r"^/api/v1/reports/health$", AccessAction.DEMO_OPEN),
     _rule({"GET"}, r"^/api/v1/reports/rules$", AccessAction.DEMO_OPEN),
     _rule({"GET"}, r"^/api/v1/reports/symptoms/[^/]+/icd$", AccessAction.DEMO_OPEN),
@@ -193,8 +194,8 @@ ROUTE_RULES: tuple[RouteRule, ...] = (
     _rule(
         {"GET", "POST", "PUT", "PATCH", "DELETE"},
         r"^/api/v1/reports(?:/.*)?$",
-        AccessAction.DISABLED,
-        "pdf/export/generate",
+        AccessAction.UNIMPLEMENTED,
+        "placeholder report/pdf generation",
     ),
     _rule({"GET"}, r"^/api/v1/compliance$", AccessAction.PUBLIC),
 )

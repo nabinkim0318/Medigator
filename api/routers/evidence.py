@@ -11,6 +11,7 @@ from typing import Any
 
 from fastapi import APIRouter, Body
 
+from api.core.provenance import provenance
 from api.services.evidence import select_evidence as static_cards
 from api.services.rag.retrieve import USE_RAG, init_retriever, retrieve
 from api.services.rag.summarize import to_cards
@@ -124,7 +125,19 @@ async def evidence(summary: dict[str, Any] = Body(...)):
         c["rank"] = i
         c.setdefault("score", 0.0)
 
-    resp = {"items": merged}  # ← Final schema for UI
+    source = "rag" if rag else "static"
+    resp = {
+        "items": merged,
+        "provenance": provenance(
+            source=source,
+            provider="faiss" if rag else "static-cards",
+            note=(
+                "RAG retrieval over bundled demo snippets"
+                if rag
+                else "Static demo cards; RAG unused or empty"
+            ),
+        ),
+    }
     _CACHE[ck] = (now, resp)
 
     logger.info(f"Returning {len(merged)} evidence cards with ranking")
