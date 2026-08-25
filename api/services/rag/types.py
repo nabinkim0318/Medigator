@@ -21,8 +21,17 @@ class Retrieval(TypedDict):
     score: float
 
 
-class EvidenceCard(TypedDict):
+class EvidenceCard(TypedDict, total=False):
+    rank: int
+    score: float
+    chunk_id: str
+    file: str
+    start: int | None
+    end: int | None
     title: str
     snippet: str
     source: str
     link: str | None
+    year: int | str
+    section: str
+    tags: dict[str, Any]

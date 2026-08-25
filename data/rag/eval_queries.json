@@ -1,40 +1,179 @@
 [
   {
-    "id": "acs-chest-pain",
-    "query": "chest pain ACS troponin ECG ischemia",
-    "expect_file_substr": [
-      "2016_NICE_NG95_Chest-Pain.md",
-      "2021_ACC-AHA_Chest-Pain_exec.md",
-      "2023_ECG_Initial-Serial_Guidance.md",
-      "medical_guidelines.txt"
-    ]
+    "id": "heart-score",
+    "query": "HEART score History ECG Age Risk factors Troponin emergency department",
+    "relevant": {
+      "2013_HEART-Score__0000": 2,
+      "2013_HEART-Score__0001": 2,
+      "2013_HEART-Score__0002": 2,
+      "2013_HEART-Score__0003": 1,
+      "2018_ACEP_Chest-Pain-Policy__0001": 1
+    }
   },
   {
-    "id": "heart-score",
-    "query": "HEART score emergency department chest pain risk",
-    "expect_file_substr": ["2013_HEART-Score.md"]
+    "id": "heart-mace",
+    "query": "HEART low risk MACE 1.7 percent high risk 50 percent C-statistic",
+    "relevant": {
+      "2013_HEART-Score__0002": 2,
+      "2013_HEART-Score__0003": 1
+    }
+  },
+  {
+    "id": "timi",
+    "query": "TIMI risk score unstable angina NSTEMI Antman",
+    "relevant": {
+      "2000_TIMI-UA-NSTEMI__0000": 2,
+      "2000_TIMI-UA-NSTEMI__0001": 2,
+      "2000_TIMI-UA-NSTEMI__0002": 1,
+      "2021_ACC-AHA_Chest-Pain_exec__0004": 1
+    }
+  },
+  {
+    "id": "timi-cad-risk-factors",
+    "query": "TIMI three risk factors CAD hypertension diabetes smoking hyperlipidemia",
+    "relevant": {
+      "2000_TIMI-UA-NSTEMI__0001": 2,
+      "2000_TIMI-UA-NSTEMI__0000": 1
+    }
+  },
+  {
+    "id": "edacs",
+    "query": "EDACS Emergency Department Assessment of Chest Pain Score diaphoresis radiation",
+    "relevant": {
+      "2014_EDACS-Score__0000": 2,
+      "2014_EDACS-Score__0001": 2,
+      "2014_EDACS-Score__0002": 1
+    }
   },
   {
     "id": "perc-wells",
-    "query": "PERC Wells pulmonary embolism D-dimer",
-    "expect_file_substr": ["2020_PERC-Wells.md"]
+    "query": "PERC Wells pulmonary embolism D-dimer rule-out",
+    "relevant": {
+      "2020_PERC-Wells__0000": 2,
+      "2020_PERC-Wells__0001": 2,
+      "2020_PERC-Wells__0002": 2,
+      "2020_PERC-Wells__0003": 1
+    }
+  },
+  {
+    "id": "perc-criteria",
+    "query": "PERC all criteria negative PE ruled out without further testing",
+    "relevant": {
+      "2020_PERC-Wells__0002": 2,
+      "2020_PERC-Wells__0001": 1
+    }
+  },
+  {
+    "id": "esc-troponin",
+    "query": "ESC 0/1h high-sensitivity troponin NSTEMI rule-out hs-cTnI",
+    "relevant": {
+      "2025_ESC_0-1h-hsTroponin__0000": 2,
+      "2025_ESC_0-1h-hsTroponin__0001": 2,
+      "2025_ESC_0-1h-hsTroponin__0002": 1,
+      "2022_hsTroponin_0-1h_MetaReview__0000": 1
+    }
+  },
+  {
+    "id": "esc-rule-in",
+    "query": "rule-in 0h hs-cTnI 50 pg/mL delta 1h 15 pg/mL AnZhen",
+    "relevant": {
+      "2025_ESC_0-1h-hsTroponin__0001": 2,
+      "2025_ESC_0-1h-hsTroponin__0002": 1,
+      "2025_ESC_0-1h-hsTroponin__0000": 1
+    }
+  },
+  {
+    "id": "hstroponin-meta",
+    "query": "0/1-hour hs-troponin algorithm pooled NPV diagnostic accuracy systematic review",
+    "relevant": {
+      "2022_hsTroponin_0-1h_MetaReview__0000": 2,
+      "2022_hsTroponin_0-1h_MetaReview__0001": 2,
+      "2022_hsTroponin_0-1h_MetaReview__0002": 2,
+      "2022_hsTroponin_0-1h_MetaReview__0003": 1
+    }
+  },
+  {
+    "id": "nice-ng95",
+    "query": "NICE CG95 recent onset chest pain ACS ECG GTN",
+    "relevant": {
+      "2016_NICE_NG95_Chest-Pain__0000": 2,
+      "2016_NICE_NG95_Chest-Pain__0001": 2,
+      "2016_NICE_NG95_Chest-Pain__0002": 1
+    }
+  },
+  {
+    "id": "acc-aha-2021",
+    "query": "2021 ACC/AHA chest pain guideline ECG within 10 minutes noncardiac",
+    "relevant": {
+      "2021_ACC-AHA_Chest-Pain_exec__0000": 2,
+      "2021_ACC-AHA_Chest-Pain_exec__0001": 2,
+      "2021_ACC-AHA_Chest-Pain_exec__0002": 1
+    }
+  },
+  {
+    "id": "acc-aha-pathways",
+    "query": "HEART EDACS TIMI pathways compared algorithms chest pain",
+    "relevant": {
+      "2021_ACC-AHA_Chest-Pain_exec__0004": 2
+    }
+  },
+  {
+    "id": "acep-2018",
+    "query": "ACEP clinical policy non-ST-elevation ACS HEART score very low-risk",
+    "relevant": {
+      "2018_ACEP_Chest-Pain-Policy__0000": 2,
+      "2018_ACEP_Chest-Pain-Policy__0001": 2
+    }
+  },
+  {
+    "id": "ecg-serial",
+    "query": "serial ECG ED chest pain ST-elevation Sgarbossa",
+    "relevant": {
+      "2023_ECG_Initial-Serial_Guidance__0000": 2,
+      "2023_ECG_Initial-Serial_Guidance__0001": 2,
+      "2023_ECG_Initial-Serial_Guidance__0002": 2
+    }
+  },
+  {
+    "id": "noncardiac",
+    "query": "noncardiac chest pain costochondritis GERD musculoskeletal",
+    "relevant": {
+      "2010_Noncardiac-Chest-Pain_Overview__0000": 2,
+      "2010_Noncardiac-Chest-Pain_Overview__0001": 2,
+      "2010_Noncardiac-Chest-Pain_Overview__0002": 1
+    }
+  },
+  {
+    "id": "ambulatory-low-risk",
+    "query": "ambulatory low-risk chest pain discharge follow-up 72 hours ACC pathway",
+    "relevant": {
+      "2022_ACC_Ambulatory-LowRisk-Pathways__0000": 2,
+      "2022_ACC_Ambulatory-LowRisk-Pathways__0001": 2,
+      "2022_ACC_Ambulatory-LowRisk-Pathways__0002": 1
+    }
   },
   {
     "id": "diabetes-hba1c",
     "query": "HbA1c metformin type 2 diabetes monitoring",
-    "expect_file_substr": ["diabetes_management.txt"]
+    "relevant": {
+      "diabetes_management__0000": 2,
+      "diabetes_management__0001": 1
+    }
   },
   {
-    "id": "esc-troponin",
-    "query": "ESC 0/1h high-sensitivity troponin NSTEMI rule-out",
-    "expect_file_substr": [
-      "2025_ESC_0-1h-hsTroponin.md",
-      "2022_hsTroponin_0-1h_MetaReview.md"
-    ]
+    "id": "diabetes-retinopathy",
+    "query": "diabetic retinopathy nephropathy microalbumin monofilament",
+    "relevant": {
+      "diabetes_management__0001": 2,
+      "diabetes_management__0000": 1
+    }
   },
   {
-    "id": "timi",
-    "query": "TIMI unstable angina NSTEMI risk score",
-    "expect_file_substr": ["2000_TIMI-UA-NSTEMI.md"]
+    "id": "acs-protocol",
+    "query": "acute coronary syndrome aspirin nitroglycerin PCI thrombolytics",
+    "relevant": {
+      "medical_guidelines__0000": 2,
+      "medical_guidelines__0001": 1
+    }
   }
 ]

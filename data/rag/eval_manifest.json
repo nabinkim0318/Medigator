@@ -1,0 +1,24 @@
+{
+  "meta.json": "2063bdbc89d08adf662d0f93528b56986a524a87ec6af1813cb25d4b532c13b5",
+  "eval_queries.json": "dc26206b31b78ef7da9b8fae1e9b84a6617de578c8704910ebbe2cc5aff06409",
+  "synonyms.json": "1b02198c7f58a551c1478b3bd74277681547c2ee3569ddd927c47b574d1b945a",
+  "build_summary.json": "eeab7f1e3a71c503f781d734e493499339dd5bd216835180d29cbd1a61cbcf51",
+  "index.faiss": "8e8280e2a45640d1fdaa3bae671d8b666251658ed94f0e0e876d537891c86eeb",
+  "source_files": {
+    "diabetes_management.txt": "06e1b07f9a30e2f5387b737b9b44df133d78baf604919c45a22b824ec2cece70",
+    "medical_guidelines.txt": "37a605101d21a5c900c60bd1c72e75161a639778173d8bb2b3c32adbdd61848b",
+    "rag/guidelines/2016_NICE_NG95_Chest-Pain.md": "a65fa431bc11e55aa60fd78b9a06176f44607c5afa91d4ea1b8acbe3f1948a07",
+    "rag/guidelines/2018_ACEP_Chest-Pain-Policy.md": "6d081b18332219984f634ab7a227bc03ed40e4211a956f8547a92958f32aec09",
+    "rag/guidelines/2021_ACC-AHA_Chest-Pain_exec.md": "460ee712dc74d9215412ff2bc942b7bbad7c66b10cdf9bb7f6855a405628011c",
+    "rag/guidelines/2025_ESC_0-1h-hsTroponin.md": "b183036d026683c8c199d15e85940be4a7357eb1aab7ca751717692dcb15b389",
+    "rag/reviews/2000_TIMI-UA-NSTEMI.md": "b9226675b60bd452bd67f1cf221c67436c3b0dd5cc498d0cf5e727f8337f18cb",
+    "rag/reviews/2013_HEART-Score.md": "0cc6d16f00b3d19c36962e67cf2edab0a34f9a79d81ad701c7d4909672554d42",
+    "rag/reviews/2014_EDACS-Score.md": "03ee57b8740c5bb2e016b40ad78ccd2b10a06cf5c484d57b40ca13933c7d49b8",
+    "rag/reviews/2020_PERC-Wells.md": "62d17d29ad143a09d9403fe6db331c775336c84da67507aed134c9d25d0136b9",
+    "rag/tools/2010_Noncardiac-Chest-Pain_Overview.md": "cc0701040723ae8702a2ee51be26c56a0d51e3dd9d10a12aa4260eaf0953428a",
+    "rag/tools/2022_ACC_Ambulatory-LowRisk-Pathways.md": "7880b451fabc6f006edba7fcd767901bfa915e677846c2eec441fb664cb98fab",
+    "rag/tools/2022_hsTroponin_0-1h_MetaReview.md": "632aeddf5d75e6ac75abddb5a239bfb1d7bd8de21c13cb151166c9f548cecceb",
+    "rag/tools/2023_ECG_Initial-Serial_Guidance.md": "aadd9e9d72c43f2713552af6affeded410eca24b600a04b1e34b6a80b5fec5a9"
+  },
+  "source_files_combined": "7df66ea776b879576f66363f8291390f883e6ccd3029d1b100fdee6c1e0b7d96"
+}

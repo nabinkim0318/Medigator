@@ -238,7 +238,7 @@ For questions or issues:
 - **Separate Frontend Ports**: Patient (3000) and Doctor (3001) interfaces
 - **Vercel Deployment**: Separate Vercel projects for Patient and Doctor frontends
 - **LLM Hardening**: JSON schema validation, rule engine, normalization
-- **RAG**: BM25 hit@k eval on a small golden set; MMR is not implemented
+- **RAG**: chunk-id IR eval (Recall@k / MRR / nDCG@5) on 20 golden queries; MMR is not implemented
 - **Docker Support**: Local/demo container builds
 - **CI/CD Pipeline**: GitHub Actions with automated testing
 - **Test Coverage**: Comprehensive test suite with mock data

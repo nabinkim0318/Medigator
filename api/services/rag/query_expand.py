@@ -18,18 +18,33 @@ def _normalize(s: str) -> str:
     return s
 
 
+def _terms_from_entry(vals: object) -> list[str]:
+    if isinstance(vals, dict):
+        raw = vals.get("terms") or []
+        return [item for item in raw if isinstance(item, str)]
+    if isinstance(vals, list):
+        return [item for item in vals if isinstance(item, str)]
+    return []
+
+
 @lru_cache(maxsize=1)
 def load_synonyms(path: str | Path) -> dict[str, list[str]]:
-    """Load and normalize synonym dictionary"""
+    """Load synonym groups keyed by every surface form in the group."""
     p = Path(path)
     data = json.loads(p.read_text(encoding="utf-8"))
-    norm = {}
-    for k, vals in data.items():
-        nk = _normalize(k)
-        uniq = {_normalize(v) for v in vals if v.strip()}
-        # Include the key itself (self-synonym)
-        uniq.add(nk)
-        norm[nk] = sorted(uniq)
+    groups: list[set[str]] = []
+    for key, vals in data.items():
+        uniq = {_normalize(term) for term in _terms_from_entry(vals) if term.strip()}
+        uniq.add(_normalize(str(key)))
+        groups.append(uniq)
+
+    norm: dict[str, list[str]] = {}
+    for uniq in groups:
+        members = sorted(uniq)
+        for term in members:
+            merged = set(norm.get(term, []))
+            merged.update(members)
+            norm[term] = sorted(merged)
     return norm
 
 
