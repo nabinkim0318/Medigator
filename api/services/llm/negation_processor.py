@@ -184,7 +184,9 @@ class NegationProcessor:
                 }
 
                 logger.debug(
-                    f"Processed {key}: {len(positive_items)} positive, {len(negative_items)} negative"
+                    "Processed negation field: %d positive, %d negative",
+                    len(positive_items),
+                    len(negative_items),
                 )
 
             elif isinstance(value, str):

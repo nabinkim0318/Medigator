@@ -11,13 +11,25 @@ from fastapi.testclient import TestClient
 
 from api.core.access import reset_operator_sessions
 from api.core.config import settings
-from api.core.safe_logging import sanitize_text
+from api.core.logging_config import setup_logging
+from api.core.safe_logging import SensitiveLogFilter, sanitize_text
 from api.main import app
+from api.services.llm import service as llm_service_module
+from api.services.llm.service import LLMService
 
 CANARY_SSN = "123-45-6789"
 CANARY_EMAIL = "patient.leak@gmail.com"
+CANARY_PHONE = "415-555-0199"
+CANARY_UUID = "123e4567-e89b-12d3-a456-426614174000"
 CANARY_TOKEN = "super-secret-patient-token"
 CANARY_QUERY = "left-arm crushing pain with diaphoresis"
+PATIENT_LIKE_STRINGS = (
+    "Alice Wonderland",
+    "123 Maple Street",
+    "March 14 1990",
+    "metformin",
+    "sharp pain after walking upstairs",
+)
 
 
 @pytest.fixture
@@ -31,11 +43,90 @@ def client(monkeypatch, tmp_path):
 
 
 def test_sanitize_text_redacts_sensitive_patterns():
-    blob = f"token={CANARY_TOKEN} ssn={CANARY_SSN} mail={CANARY_EMAIL} Bearer abcdefghijklmnop"
+    blob = (
+        f"https://example.test/?access_token={CANARY_TOKEN}&next=value"
+        f" ssn={CANARY_SSN} mail={CANARY_EMAIL} phone={CANARY_PHONE}"
+        f" id={CANARY_UUID} Bearer abcdefghijklmnop"
+    )
     out = sanitize_text(blob)
+    assert CANARY_TOKEN not in out
     assert CANARY_SSN not in out
     assert CANARY_EMAIL not in out
+    assert CANARY_PHONE not in out
+    assert CANARY_UUID not in out
     assert "Bearer [REDACTED]" in out
+
+
+def test_sensitive_filter_is_attached_to_every_output_handler(tmp_path):
+    setup_logging(tmp_path / "logs")
+
+    for handler_name in ("console", "file", "error_file", "security_file"):
+        handler = logging.getHandlerByName(handler_name)
+        assert handler is not None
+        assert any(
+            isinstance(handler_filter, SensitiveLogFilter)
+            for handler_filter in handler.filters
+        )
+
+
+@pytest.mark.anyio
+async def test_summary_excludes_arbitrary_patient_content_from_logs(
+    monkeypatch, tmp_path, capsys
+):
+    logs_dir = tmp_path / "logs"
+    setup_logging(logs_dir)
+
+    async def fake_chat_json(**_kwargs):
+        return {
+            "hpi": "Synthetic patient reports discomfort.",
+            "ros": {
+                "cardiovascular": {"positive": [], "negative": []},
+                "respiratory": {"positive": [], "negative": []},
+                "constitutional": {"positive": [], "negative": []},
+            },
+            "pmh": [],
+            "meds": [],
+            "flags": {
+                "ischemic_features": False,
+                "dm_followup": False,
+                "labs_a1c_needed": False,
+            },
+        }
+
+    monkeypatch.setattr(llm_service_module, "chat_json", fake_chat_json)
+
+    await LLMService().summary(
+        {
+            "name": PATIENT_LIKE_STRINGS[0],
+            "address": PATIENT_LIKE_STRINGS[1],
+            "date_of_birth": PATIENT_LIKE_STRINGS[2],
+            "medications": [PATIENT_LIKE_STRINGS[3]],
+            "complaint": PATIENT_LIKE_STRINGS[4],
+        }
+    )
+
+    for handler in logging.getLogger().handlers:
+        handler.flush()
+    for logger_name in ("api", "api.services", "security"):
+        for handler in logging.getLogger(logger_name).handlers:
+            handler.flush()
+
+    console_text = capsys.readouterr().out.casefold()
+    file_text = "\n".join(
+        (logs_dir / filename).read_text(encoding="utf-8")
+        for filename in ("api.log", "error.log", "security.log")
+    ).casefold()
+
+    for patient_value in PATIENT_LIKE_STRINGS:
+        assert patient_value.casefold() not in console_text
+        assert patient_value.casefold() not in file_text
+
+    assert "event=negation_processing_completed field_count=5" in console_text
+    assert "event=negation_processing_completed field_count=5" in file_text
+
+    console_handler = logging.getHandlerByName("console")
+    assert console_handler is not None
+    console_handler.setStream(sys.__stdout__)
 
 
 def test_validation_error_does_not_log_body(client: TestClient, caplog):

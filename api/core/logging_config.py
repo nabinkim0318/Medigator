@@ -11,17 +11,22 @@ from api.core.config import settings
 from api.core.safe_logging import SensitiveLogFilter, log_info, log_warning
 
 
-def setup_logging():
+def setup_logging(logs_dir: str | Path = "logs"):
     """Setup structured logging configuration"""
 
     # Create logs directory
-    logs_dir = Path("logs")
+    logs_dir = Path(logs_dir)
     logs_dir.mkdir(exist_ok=True)
 
     # Logging configuration
     logging_config = {
         "version": 1,
         "disable_existing_loggers": False,
+        "filters": {
+            "sensitive": {
+                "()": SensitiveLogFilter,
+            },
+        },
         "formatters": {
             "standard": {
                 "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -41,13 +46,15 @@ def setup_logging():
                 "class": "logging.StreamHandler",
                 "level": "INFO",
                 "formatter": "standard",
+                "filters": ["sensitive"],
                 "stream": "ext://sys.stdout",
             },
             "file": {
                 "class": "logging.handlers.RotatingFileHandler",
                 "level": "INFO",
                 "formatter": "detailed",
-                "filename": "logs/api.log",
+                "filters": ["sensitive"],
+                "filename": str(logs_dir / "api.log"),
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 5,
                 "encoding": "utf-8",
@@ -56,7 +63,8 @@ def setup_logging():
                 "class": "logging.handlers.RotatingFileHandler",
                 "level": "ERROR",
                 "formatter": "detailed",
-                "filename": "logs/error.log",
+                "filters": ["sensitive"],
+                "filename": str(logs_dir / "error.log"),
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 5,
                 "encoding": "utf-8",
@@ -65,7 +73,8 @@ def setup_logging():
                 "class": "logging.handlers.RotatingFileHandler",
                 "level": "WARNING",
                 "formatter": "json",
-                "filename": "logs/security.log",
+                "filters": ["sensitive"],
+                "filename": str(logs_dir / "security.log"),
                 "maxBytes": 10485760,  # 10MB
                 "backupCount": 10,
                 "encoding": "utf-8",
