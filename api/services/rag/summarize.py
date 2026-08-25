@@ -36,8 +36,8 @@ def to_cards(
         # duplicate check (title, year, section combination)
         key = (
             title.lower(),
-            str(chunk.get("year", "")),
-            chunk.get("section", "").lower(),
+            str(chunk.get("year") or ""),
+            (chunk.get("section") or "").lower(),
         )
         if key in seen:
             logger.debug(f"Skipping duplicate card: {title}")
@@ -68,6 +68,10 @@ def to_cards(
             {
                 "rank": rank,
                 "score": float(r.get("score", 0.0)),
+                "chunk_id": chunk.get("id") or "",
+                "file": chunk.get("file") or "",
+                "start": chunk.get("start"),
+                "end": chunk.get("end"),
                 "title": title or source or "Evidence",
                 "snippet": snippet,
                 "source": source or title or "",
