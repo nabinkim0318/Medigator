@@ -3,22 +3,17 @@ Rule engine service
 Manage medical rules and policies.
 """
 
-import sqlite3
 from typing import Any
 
-from api.core.config import settings
+from api.core.database import connect_db
 
 
 class RulesService:
     """Rule engine service class"""
 
-    def __init__(self):
-        """Rule service initialization"""
-        self.db_path = settings.db_url.replace("sqlite:///", "")
-
     def get_connection(self):
         """Return database connection"""
-        return sqlite3.connect(self.db_path)
+        return connect_db()
 
     async def get_symptom_icd_mapping(self, symptom: str) -> list[dict[str, Any]]:
         """

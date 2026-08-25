@@ -8,7 +8,6 @@ import asyncio
 import inspect
 import json
 import logging
-import sqlite3
 import uuid
 from concurrent.futures import ThreadPoolExecutor
 
@@ -16,6 +15,7 @@ from fastapi import APIRouter, HTTPException, Body
 from pydantic import BaseModel
 
 from api.core.config import settings
+from api.core.database import connect_db
 from api.core.safe_logging import log_error, log_info, log_warning
 from api.core.synthetic import enforce_synthetic_payload, enforce_synthetic_profile
 from api.services.llm import llm_service
@@ -29,12 +29,7 @@ router = APIRouter(prefix="/patient", tags=["patient"])
 
 def _get_db_connection():
     """Get database connection"""
-    db_path = settings.db_url.replace("sqlite:///", "")
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = (
-        sqlite3.Row
-    )  # This enables column access by name: row['column_name']
-    return conn
+    return connect_db()
 
 
 def _ensure_table_exists(conn):
@@ -67,7 +62,7 @@ def _ensure_table_exists(conn):
 
 
 def _generate_llm_summary_background(
-    session_id: str, token: str, appointment_data: dict
+    session_id: str, token: str, appointment_data: dict, db_url: str | None = None
 ):
     """Generate LLM summary in background"""
     try:
@@ -96,7 +91,7 @@ def _generate_llm_summary_background(
         log_info(logger, "llm_summary_result_received")
 
         # Update AI summary status to 'done'
-        conn = _get_db_connection()
+        conn = connect_db(db_url=db_url)
         with conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -111,7 +106,7 @@ def _generate_llm_summary_background(
         log_error(logger, "llm_summary_failed")
         # Update status to 'failed' if needed
         try:
-            conn = _get_db_connection()
+            conn = connect_db(db_url=db_url)
             with conn:
                 cursor = conn.cursor()
                 cursor.execute(
@@ -125,12 +120,11 @@ def _generate_llm_summary_background(
 
 def _trigger_llm_summary_async(session_id: str, token: str, appointment_data: dict):
     """Trigger LLM summary generation asynchronously"""
-    # Use ThreadPoolExecutor to run in background
+    db_url = settings.db_url
     executor = ThreadPoolExecutor(max_workers=1)
     future = executor.submit(
-        _generate_llm_summary_background, session_id, token, appointment_data
+        _generate_llm_summary_background, session_id, token, appointment_data, db_url
     )
-    # Don't wait for completion, let it run in background
     return future
 
 
@@ -180,8 +174,7 @@ class AppointmentResponse(BaseModel):
 
 def get_db_connection():
     """Get SQLite database connection"""
-    db_path = settings.db_url.replace("sqlite:///", "")
-    return sqlite3.connect(db_path)
+    return connect_db()
 
 
 def create_appointment_table():

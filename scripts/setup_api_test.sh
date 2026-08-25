@@ -16,7 +16,7 @@ HIPAA_MODE=true
 enable_rag=true
 
 # Database
-DB_URL=sqlite:///./copilot.db
+DB_URL=sqlite:///data/medigator.db
 
 # CORS
 CORS_ORIGINS_CSV=http://localhost:5173,http://localhost:3000,http://localhost:8080

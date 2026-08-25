@@ -10,6 +10,8 @@ ROOT = Path(__file__).resolve().parents[2]
 
 REQUIRED_IGNORE_FRAGMENTS = [
     "*.db",
+    "*.db-wal",
+    "*.db-shm",
     "uploads/",
     "reports/**",
     "logs/**",

@@ -211,7 +211,7 @@ LLM_SEED=42
 
 - **Response Time**: informal local-demo target, not an SLA
 - **Concurrent Users**: not sized or promised
-- **Database**: SQLite for this prototype (optional Postgres is not a production deployment)
+- **Database**: SQLite at `data/medigator.db`. PostgreSQL is not implemented or tested.
 
 ## 🤝 Contributing
 
@@ -259,7 +259,7 @@ For questions or issues:
 
 - **Language**: Python 3.12, TypeScript
 - **Framework**: FastAPI, Next.js 15.5.4
-- **Database**: SQLite (dev), PostgreSQL (prod)
+- **Database**: SQLite at `data/medigator.db` (local research prototype). PostgreSQL is not implemented or tested.
 - **AI/ML**: OpenAI GPT-4, Sentence Transformers, FAISS
 - **Deployment**: Docker, Vercel, GitHub Actions
 - **Security**: Prototype synthetic-data boundary (not production IAM)

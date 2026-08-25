@@ -40,7 +40,7 @@ make docker-up-separate
 
 ### Backend API (Port 8082)
 - FastAPI application
-- SQLite database
+- SQLite at `data/medigator.db` (`DB_URL`; not PostgreSQL)
 - RAG system
 - Health checks
 

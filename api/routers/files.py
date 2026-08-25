@@ -5,7 +5,6 @@ Handles file uploads, downloads, and management for patient documents
 
 import logging
 import os
-import sqlite3
 import uuid
 from datetime import datetime
 from typing import Optional
@@ -14,7 +13,7 @@ from fastapi import APIRouter, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 
-from api.core.config import settings
+from api.core.database import connect_db
 
 # Get logger
 logger = logging.getLogger(__name__)
@@ -42,10 +41,7 @@ class FileInfo(BaseModel):
 
 def _get_db_connection():
     """Get database connection"""
-    db_path = settings.db_url.replace("sqlite:///", "")
-    conn = sqlite3.connect(db_path)
-    conn.row_factory = sqlite3.Row
-    return conn
+    return connect_db()
 
 
 def _ensure_files_table_exists(conn):

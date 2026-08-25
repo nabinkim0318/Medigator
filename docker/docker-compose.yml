@@ -7,14 +7,14 @@ services:
     ports:
       - "8083:8082"
     environment:
-      - DB_URL=sqlite:///./api/copilot.db
+      - DB_URL=sqlite:///data/medigator.db
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - DEMO_ACCESS_CODE=${DEMO_ACCESS_CODE:-demo123}
       - DEMO_MODE=true
       - HIPAA_MODE=false
       - enable_rag=true
     volumes:
-      - ../data:/app/data:ro
+      - ../data:/app/data
       - ../rag_index:/app/rag_index:ro
       - ../api/reports:/app/api/reports
       - ../logs:/app/logs
@@ -41,18 +41,3 @@ services:
       - ../src:/app/src
       - ../public:/app/public
     command: npm run dev
-
-  # Database (optional - for production)
-  # postgres:
-  #   image: postgres:15-alpine
-  #   environment:
-  #     POSTGRES_DB: bbb_medical
-  #     POSTGRES_USER: bbb_user
-  #     POSTGRES_PASSWORD: bbb_password
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   ports:
-  #     - "5432:5432"
-
-volumes:
-  postgres_data:

@@ -7,7 +7,7 @@ ROOT := $(PWD)
 
 API_DIR := api
 APP_DIR := .  # Next.js is at root level
-DB_URL := sqlite:///$(API_DIR)/copilot.db
+DB_URL := sqlite:///data/medigator.db
 
 # ====== Phony ======
 .PHONY: help setup venv deps ui-deps seed dev api ui test lint fmt type precommit ci \
