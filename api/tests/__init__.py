@@ -1,1 +1,1 @@
-# Test package for BBB Medical Report API
+# Test package for the Medigator research-prototype API

@@ -115,10 +115,14 @@ optional two-frontend demo and is not part of that gate.
 
 #### API Endpoints
 - **Health**: `GET /health`
-- **RAG**: `POST /rag/query`
-- **Summary**: `POST /summary`
-- **Evidence**: `GET /evidence`
-- **Report**: `POST /report/generate`
+- **Summary**: `POST /api/v1/summary`
+- **Evidence**: `POST /api/v1/evidence`
+- **Code suggestions**: `POST /api/v1/codes`
+- **RAG status/search**: `GET /api/v1/rag/status`,
+  `POST /api/v1/rag/search`
+
+OpenAPI includes disabled and placeholder routes. Consult `docs/API.md` and
+`api/core/access.py` before treating a listed route as available.
 
 #### Key Directories
 ```
@@ -132,13 +136,12 @@ api/
 
 #### Testing
 ```bash
-# Run all tests
+# Maintained backend regression suite
 make test
 
-# Run specific test categories
-make test-hardening
-make test-llm
-make test-api
+# Example focused suites
+PYTHONPATH=. pytest api/tests/test_access_boundary.py
+PYTHONPATH=. pytest api/tests/test_rag_eval.py
 ```
 
 ### Frontend Development
@@ -205,20 +208,26 @@ disabled and OpenAI is not required for startup or smoke verification.
 ## 🧪 Testing
 
 ### Test Categories
-- **Unit Tests**: Individual component testing
-- **Integration Tests**: API endpoint testing
-- **LLM Tests**: Mock and real API testing
-- **Hardening Tests**: Security and validation testing
+- **Backend regression tests**: access boundaries, persistence, provenance,
+  summary fallback, and retrieval evaluation
+- **Frontend checks**: TypeScript and Next.js build
+- **Container smoke**: API health in CI; frontend and persistence in the full
+  local smoke command
+
+The repository does not claim complete test coverage. Frontend ESLint is not
+configured, and dependency vulnerability reporting is nonblocking.
 
 ### Test Commands
 ```bash
-# All tests
+# Maintained backend suite
 make test
 
-# Specific test suites
-make test-hardening  # Security tests
-make test-llm        # LLM functionality
-make test-api        # API endpoints
+# Required frontend checks
+npx tsc --noEmit
+npm run build
+
+# Full local container smoke
+make docker-smoke
 ```
 
 ### Test Data

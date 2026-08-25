@@ -19,14 +19,18 @@ def codes(
     intake: dict[str, Any] = Body(None),
     emr: dict[str, Any] = Body(None),
 ):
-    """Research-prototype code suggestions. Not automatic clinical coding."""
+    """Research-prototype ICD suggestions; CPT rule matching is not active."""
     logger.info("Code generation request received")
     try:
         result = generate_codes(summary, intake or {}, emr or {})
         result["provenance"] = provenance(
             source="rules",
             provider="local-csv",
-            note="ICD/CPT lookup tables. Not automatic clinical coding.",
+            note=(
+                "CSV-based ICD suggestions; loaded CPT rules "
+                "currently have no active predicates. "
+                "Not automatic clinical coding."
+            ),
         )
         logger.info(
             "Generated codes: %s ICD, %s CPT, %s EM",

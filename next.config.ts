@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Vercel optimization
+  // Standalone output used by container-oriented builds.
   output: 'standalone',
   distDir: 'dist',
 

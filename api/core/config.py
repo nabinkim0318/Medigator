@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     db_url: str = "sqlite:///data/medigator.db"
 
     # API settings
-    api_title: str = "BBB Medical Report API"
+    api_title: str = "Medigator Research Prototype API"
     api_version: str = "1.0.0"
     debug: bool = False
 
@@ -44,7 +44,7 @@ class Settings(BaseSettings):
     # Leftover flag from earlier prototypes; not a compliance certification.
     HIPAA_MODE: bool = False
     # Shared demo operator password for portfolio use only — not production IAM.
-    DEMO_ACCESS_CODE: str = "HACKGT25"
+    DEMO_ACCESS_CODE: str = "replace-me-locally"
 
     # PDF settings
     PDF_OUTPUT_DIR: str = "./reports"

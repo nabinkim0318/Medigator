@@ -1,232 +1,81 @@
-# 🔌 API Documentation
+# Medigator API boundary
 
 **Research prototype.** Synthetic/demo data only. Not for diagnosis,
 treatment, clinical use, or production. Does **not** claim HIPAA compliance.
-This document is a local demo map, not a production OpenAPI contract.
+This is a local demo map, not a production API contract.
 
-BBB Medical System API endpoints and usage guide.
+- Base URL: `http://localhost:8082`
+- OpenAPI: `http://localhost:8082/docs`
+- Health: `GET /health`
+- No production API host is configured.
 
-## 🌐 Base URL
+The middleware classifies `/api/*` deny-by-default. A route appearing in
+OpenAPI does not mean that the security boundary permits it.
 
-- **Development**: `http://localhost:8082`
-- There is no production API host for this research prototype.
+## Implemented demo surfaces
 
-## 📋 Endpoints
+| Access | Method and path | Behavior |
+| --- | --- | --- |
+| Public | `GET /health` | process/config health response |
+| Demo-open | `POST /api/v1/patient/profile` | persist synthetic profile intake |
+| Demo-open | `POST /api/v1/patient/appointment` | persist synthetic appointment intake |
+| Demo-open | `POST /api/v1/summary` | structured summary with `openai` or `fallback` provenance |
+| Demo-open | `POST /api/v1/codes` | CSV-based ICD suggestions with `rules` provenance; CPT matcher currently returns no rule matches |
+| Demo-open | `POST /api/v1/evidence` | RAG or static evidence cards with provenance |
+| Demo-open | `GET /api/v1/rag/status` | optional retriever status |
+| Demo-open | `POST /api/v1/rag/search` | search committed demo snippets when RAG is enabled |
+| Demo-open | `GET /api/v1/llm/health` | LLM integration status |
+| Demo-open | `GET /api/v1/reports/health` | report-router health |
+| Demo-open | `GET /api/v1/reports/rules` | local rule metadata |
+| Demo-open | `GET /api/v1/reports/symptoms/{symptom}/icd` | local ICD lookup response |
+| Demo-open | `GET /api/v1/reports/conditions/{condition}/cpt` | local CPT lookup response |
 
-### Health Check
+Response provenance uses the sources `openai`, `fallback`, `rules`, `rag`, and
+`static`. These labels identify the implementation path; they do not establish
+medical correctness.
+
+## Demo operator boundary
+
+Selected profile reads/deletes, statistics, and analytics dashboard/trend
+routes require an in-memory operator session:
+
 ```http
-GET /health
-```
-
-**Response:**
-```json
-{
-  "status": "healthy",
-  "timestamp": "2024-01-01T00:00:00Z",
-  "version": "1.0.0"
-}
-```
-
-### RAG Query
-```http
-POST /rag/query
+POST /api/v1/auth/demo-operator
 Content-Type: application/json
 
-{
-  "query": "chest pain symptoms",
-  "limit": 5
-}
+{"access_code": "<DEMO_ACCESS_CODE>"}
 ```
 
-**Response:**
-```json
-{
-  "results": [
-    {
-      "content": "Chest pain evaluation...",
-      "score": 0.95,
-      "metadata": {
-        "source": "guidelines.md",
-        "year": 2021
-      }
-    }
-  ]
-}
-```
+Send the returned token as:
 
-### Summary Generation
 ```http
-POST /summary
-Content-Type: application/json
-
-{
-  "intake_data": {
-    "symptoms": ["chest pain", "shortness of breath"],
-    "age": 65,
-    "gender": "male"
-  }
-}
+Authorization: Bearer <operator_session>
 ```
 
-**Response:**
-```json
-{
-  "summary": {
-    "chief_complaint": "Chest pain with shortness of breath",
-    "assessment": "Possible cardiac etiology",
-    "recommendations": ["ECG", "Troponin", "Chest X-ray"]
-  }
-}
-```
+Sessions are random, process-local, expire after eight hours, and disappear on
+restart. The shared access code and operator session are a demo boundary, not
+production IAM.
 
-### Evidence Retrieval
-```http
-GET /evidence?query=chest pain&limit=3
-```
+## Disabled and unimplemented surfaces
 
-**Response:**
-```json
-{
-  "evidence": [
-    {
-      "title": "Chest Pain Guidelines",
-      "content": "Evaluation of chest pain...",
-      "relevance_score": 0.92
-    }
-  ]
-}
-```
+- Username-derived login is disabled.
+- File, notification, patient-token path reads/updates, search/export, and RAG
+  index mutation are disabled with `403`.
+- Unclassified `/api/*` routes are denied with `403`.
+- Placeholder clinical LLM and report/PDF generation routes return `501`.
+- UI navigation does not grant API access.
 
-### Report Generation
-```http
-POST /report/generate
-Content-Type: application/json
+See `api/core/access.py` for the authoritative route classification and
+[`SECURITY.md`](SECURITY.md) for the data/logging boundary.
 
-{
-  "patient_data": {
-    "name": "John Doe",
-    "age": 65,
-    "symptoms": ["chest pain"]
-  }
-}
-```
+## Local configuration
 
-**Response:**
-```json
-{
-  "report_id": "report_123",
-  "pdf_url": "/reports/report_123.pdf",
-  "status": "generated"
-}
-```
+- `DB_URL=sqlite:///data/medigator.db`
+- `DEMO_MODE=true` and `SYNTHETIC_DATA_ONLY=true`
+- `DEMO_ACCESS_CODE=<local shared code>`
+- optional `OPENAI_API_KEY`
+- optional `ENABLE_RAG=true`; canonical Docker sets it to `false`
 
-## 🔧 Frontend Integration
-
-### Patient Interface (Port 3000)
-- **Base URL**: `http://localhost:3000`
-- **API Endpoint**: `http://localhost:8082`
-- **Features**: Symptom input, report viewing
-
-### Doctor Interface (Port 3001)
-- **Base URL**: `http://localhost:3001`
-- **API Endpoint**: `http://localhost:8082`
-- **Features**: Report analysis, code generation
-
-## 🐳 Docker Integration
-
-### Canonical local/demo services
-```bash
-make docker-up
-
-# Access:
-# - API: http://localhost:8082
-# - Frontend: http://localhost:3000
-```
-
-### Optional separate services
-```bash
-# Development/demo only; not part of the reproducibility gate
-make docker-up-separate
-
-# Access:
-# - API: http://localhost:8082
-# - Patient: http://localhost:3000
-# - Doctor: http://localhost:3001
-```
-
-## 🔒 Authentication
-
-### Demo Mode
-```bash
-# Set environment variable
-export DEMO_ACCESS_CODE=demo123
-```
-
-### Optional OpenAI API key
-```bash
-# Only needed for LLM-backed requests, not startup or /health
-export OPENAI_API_KEY=<your-local-key>
-```
-
-## 📊 Error Handling
-
-### Common Error Responses
-
-#### 400 Bad Request
-```json
-{
-  "detail": "Invalid request data",
-  "error_code": "VALIDATION_ERROR"
-}
-```
-
-#### 500 Internal Server Error
-```json
-{
-  "detail": "Internal server error",
-  "error_code": "INTERNAL_ERROR"
-}
-```
-
-## 🧪 Testing
-
-### Test Endpoints
-```bash
-# Run API tests
-make test-api
-
-# Run specific test
-pytest api/tests/test_rag.py -v
-```
-
-### Mock Data
-- **Patient Data**: `data/intake/mock_patient.json`
-- **Questions**: `data/intake/mock_questions_cp.json`
-
-## 📈 Performance
-
-### Response Times
-- **Health Check**: < 100ms
-- **RAG Query**: < 2s
-- **Summary**: < 5s
-- **Report Generation**: < 10s
-
-### Rate Limits
-- **Default**: 100 requests/minute
-- **Burst**: 10 requests/second
-
-## 🔍 Monitoring
-
-### Health Checks
-```bash
-# Check API health
-curl http://localhost:8082/health
-
-# Check Docker services
-make docker-logs-separate
-```
-
-### Logging
-- **API Logs**: Console output
-- **Docker Logs**: `make docker-logs-separate`
-- **Error Logs**: Available in container logs
+Start the canonical demo with `make docker-up`. The unified Next.js frontend is
+served at `http://localhost:3000`; the optional two-frontend workflow also uses
+port 3001 but is not part of the reproducibility gate.

@@ -1,29 +1,132 @@
-# Medigator research prototype
+# Medigator
 
-[![CI/CD](https://github.com/nabinkim0318/Medigator/actions/workflows/ci.yml/badge.svg)](https://github.com/nabinkim0318/Medigator/actions/workflows/ci.yml)
-[![Python 3.12](https://img.shields.io/badge/python-3.12-blue.svg)](https://www.python.org/downloads/)
-[![Next.js](https://img.shields.io/badge/Next.js-15.5.4-black.svg)](https://nextjs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.104+-green.svg)](https://fastapi.tiangolo.com/)
-[![Docker](https://img.shields.io/badge/Docker-supported-blue.svg)](https://www.docker.com/)
+[![CI](https://github.com/nabinkim0318/Medigator/actions/workflows/ci.yml/badge.svg)](https://github.com/nabinkim0318/Medigator/actions/workflows/ci.yml)
 
-**Research prototype.** Synthetic/demo data only. Not for diagnosis,
-treatment, clinical use, or production. Does **not** claim HIPAA compliance.
+Medigator is a synthetic-data healthcare-AI engineering prototype combining a
+structured intake workflow, schema-constrained LLM summarization with a
+deterministic template fallback, rule-based ICD suggestions, local CPT
+reference lookup, and hybrid evidence retrieval. The repository includes
+explicit response provenance,
+quantitative retrieval evaluation, deny-by-default API boundaries, SQLite
+persistence, and a reproducible local Docker demo.
 
-Demo medical-intake UI with optional RAG helpers. Suggested summaries and
-codes are research artifacts, not clinical decisions or automatic coding.
+**Research prototype. Synthetic/demo data only. Not for diagnosis, treatment,
+clinical use, or production. Does not claim HIPAA compliance.**
+
+The runtime retriever combines MiniLM embeddings, FAISS, BM25, query expansion,
+and a weighted hybrid merge. Its separate CI evaluation uses a frozen
+20-query/49-chunk fixture and dependency-cheap lexical methods; results and
+limitations are summarized under [Evaluation](#evaluation) and documented in
+[docs/RAG.md](docs/RAG.md).
+
+Quick reproduction:
+
+```bash
+make docker-up       # API http://localhost:8082; UI http://localhost:3000
+make docker-smoke    # HTTP health, frontend, SQLite write/restart/read
+```
+
+## What it demonstrates
+
+- FastAPI with a deny-by-default API access boundary
+- synthetic-data intake persistence in one configurable SQLite database
+- schema-constrained OpenAI summarization with deterministic template fallback
+- response provenance labels: `openai`, `fallback`, `rules`, `rag`, and `static`
+- CSV rule-based ICD suggestions and local CPT reference lookup
+- MiniLM/FAISS and BM25 hybrid retrieval over a committed demo corpus
+- frozen chunk-level IR evaluation with regression and adversarial checks
+- blocking backend, frontend, and container smoke gates in GitHub Actions
+
+## Architecture
+
+```text
+Next.js demo UI
+       |
+       v
+FastAPI API ──> SQLite (data/medigator.db, configured by DB_URL)
+       |
+       +──> OpenAI JSON summary when configured
+       |    └──> deterministic template fallback
+       +──> local ICD rules + CPT reference lookup
+       └──> runtime retrieval: MiniLM + FAISS + BM25
+            + query expansion + 0.6/0.4 weighted merge
+
+CI retrieval evaluation (separate):
+BM25 + TF-IDF cosine + TF-IDF/BM25 hybrid
+```
+
+The CI vector channel is TF-IDF cosine and is not a MiniLM/FAISS benchmark.
+Runtime RAG is optional and disabled in the canonical Docker workflow to avoid
+model downloads. See [docs/RAG.md](docs/RAG.md).
+
+## Capability status
+
+| Area | Status | Evidence / limitation |
+| --- | --- | --- |
+| Synthetic intake | Implemented | persisted demo/synthetic inputs only |
+| LLM summary | Implemented | OpenAI when configured; deterministic template fallback otherwise |
+| Rule-based ICD suggestions | Implemented | local CSV rules; not clinical coding |
+| CPT reference lookup | Partial | lookup route exists; `/codes` CPT matching is inactive |
+| Evidence retrieval | Implemented | optional hybrid local retriever; static cards when disabled/empty |
+| Retrieval evaluation | Evaluated with limitations | frozen 20-query, 49-chunk synthetic/demo fixture |
+| Authentication | Demo boundary only | in-memory operator sessions; not production IAM |
+| Persistence | Implemented | local SQLite only |
+| Docker reproducibility | Verified | clean-worktree local demo workflow |
+| PostgreSQL | Unsupported | not implemented or tested |
+| Clinical use | Unsupported | research prototype only |
+| HIPAA compliance | Not claimed | no compliance assertion or de-identification claim |
+| Cloud deployment | Not configured | no staging or production target |
+
+## Implemented capabilities
+
+The frontend provides unified patient and operator demo views. The backend
+persists synthetic intake records, produces structured summary objects, adds
+deterministic flags and ICD suggestions, and returns evidence cards with
+source provenance. Sensitive or unfinished surfaces are denied or return
+`501` rather than simulating successful clinical functionality.
+
+Suggested summaries, flags, codes, and evidence are research artifacts. They
+are not diagnoses, treatment advice, validated coding, or clinical records.
+MMR is not implemented.
+
+## Evaluation
+
+The committed RAG evaluation uses 20 frozen synthetic queries with exact,
+graded chunk-ID relevance judgments over a committed 49-chunk corpus. It
+reports Recall@1/3/5, MRR, nDCG@5, document-level metrics, and Hit@5. Tests also
+verify chunk/file/offset/text-hash provenance and cover instruction-only,
+keyword-stuffed, and query-injection retrieval cases.
+
+Current committed-fixture snapshot:
+
+| BM25 mode | Hit@5 | Recall@1 | Recall@3 | Recall@5 | MRR | nDCG@5 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| Expansion off | 20/20 | 0.402 | 0.758 | 0.903 | 1.000 | 0.901 |
+| Expansion on | 20/20 | 0.250 | 0.620 | 0.755 | 0.821 | 0.709 |
+
+Query expansion reduced BM25 retrieval quality on this frozen fixture; the
+repository records the regression rather than presenting expansion as
+universally beneficial.
+
+Fixture identity is pinned by SHA-256:
+
+- corpus/source set:
+  `7df66ea776b879576f66363f8291390f883e6ccd3029d1b100fdee6c1e0b7d96`
+- FAISS index:
+  `8e8280e2a45640d1fdaa3bae671d8b666251658ed94f0e0e876d537891c86eeb`
+- evaluation queries:
+  `dc26206b31b78ef7da9b8fae1e9b84a6617de578c8704910ebbe2cc5aff06409`
+
+All fixture hashes are committed in `data/rag/eval_manifest.json`. The CI
+evaluation's vector channel uses TF-IDF cosine for deterministic,
+dependency-cheap comparison. It is not a benchmark of the runtime
+MiniLM/FAISS embedding channel and is not a clinical IR study. Corpus sources
+and redistribution caveats are recorded in
+[docs/RAG_CORPUS.md](docs/RAG_CORPUS.md).
 
 ## Reproducible local demo
 
-This is the one canonical local containerized research-prototype workflow.
-It is not a production or staging deployment.
-
-Prerequisites:
-
-- Git
-- Docker Desktop or Docker Engine with Compose v2
-- `make` and `curl` for the reusable smoke command
-
-From a clean checkout:
+Prerequisites are Git, Docker with Compose v2, `make`, and `curl`.
 
 ```bash
 git clone https://github.com/nabinkim0318/Medigator.git
@@ -31,263 +134,118 @@ cd Medigator
 make docker-up
 ```
 
-Expected services:
+- API: `http://localhost:8082`
+- frontend: `http://localhost:3000` (Next.js development/demo server)
+- health: `GET http://localhost:8082/health`
+- SQLite: host `data/medigator.db` mounted at `/app/data/medigator.db`
 
-| Service | Container port | Host port | Mode |
-| --- | ---: | ---: | --- |
-| FastAPI | 8082 | 8082 | local/demo API |
-| Next.js | 3000 | 3000 | development/demo server |
+`make docker-smoke` builds and starts Compose, polls health, checks the
+frontend, writes a synthetic row, restarts the API, verifies persistence, and
+shuts down. The workflow has been executed from a fresh worktree with no local
+Python/Node dependencies or pre-existing database; Docker layer cache may
+still be used.
 
-Verify and stop:
+RAG is off during this smoke, so no embedding model is downloaded. OpenAI is
+optional and neither startup nor smoke calls it. The result is a reproducible
+local containerized demo, not a production deployment. Details:
+[docker/README.md](docker/README.md).
 
-```bash
-curl -sS http://localhost:8082/health
-curl -I http://localhost:3000/
-make docker-down
+## Security and data boundary
+
+- Inputs are synthetic/demo only; `DEMO_MODE` does not make real data safe.
+- Intake writes reject obvious real-looking identifiers where practical. This
+  is not complete de-identification.
+- `/api/*` is classified deny-by-default.
+- Selected doctor/admin-style reads require a demo operator session.
+- Sensitive routes are disabled; unfinished clinical/report routes are denied
+  or return `501`.
+- Logging excludes request bodies, tokens, raw queries, model output, and
+  third-party exception payloads.
+- Authentication tokens are not transported in query strings.
+
+The operator-session mechanism is a demo boundary, not production IAM. See
+[docs/SECURITY.md](docs/SECURITY.md) for the route and logging model.
+
+## Known limitations and unsupported functionality
+
+- SQLite is the only runtime backend. PostgreSQL and SQLAlchemy are not used.
+  Demo database state is disposable; no migration framework is provided.
+- `/codes` does not currently activate its loaded CPT rules; CPT values shown
+  in the UI are explicitly labeled static placeholders.
+- Some async routes perform synchronous SQLite work.
+- Runtime MiniLM/FAISS retrieval is not benchmarked by the CI surrogate.
+- The bundled corpus is small; source redistribution status is not
+  independently verified.
+- Operator sessions are in-memory and intended only for the local demo.
+- Frontend ESLint is absent.
+- Dependency vulnerability reporting is nonblocking.
+- No production/staging deployment target or clinical validation exists.
+
+## Repository structure
+
+```text
+api/                 FastAPI backend, services, and tests
+src/                 Next.js App Router demo frontend
+api/services/rag/    runtime retrieval and evaluation logic
+data/rag/            frozen evaluation queries and hash manifest
+docs/rag/            bundled retrieval source summaries
+rag_index/           committed 49-chunk demo index
+docker/              canonical local container workflow
+docs/                API, security, RAG, and development notes
+scripts/             smoke and setup utilities
 ```
 
-The equivalent direct command is:
+## Tests and CI
+
+Blocking GitHub Actions jobs run:
+
+- backend pre-commit hooks, Ruff lint/format checks, and pytest
+- frontend TypeScript checking and a Next.js build
+- Docker HTTP smoke (API health in CI; the reusable local command also checks
+  frontend and persistence)
+
+`dependency-report` uploads the dependency scan and is nonblocking; a green job
+does not mean zero vulnerabilities. There is no configured frontend ESLint
+gate.
+
+Local equivalents:
 
 ```bash
-docker compose -f docker/docker-compose.yml up --build -d
-```
-
-Both images use the repository root as their build context. Do not run
-`cd docker && docker build .`; the Dockerfiles copy paths from the repository
-root.
-
-The API writes the canonical SQLite database to `/app/data/medigator.db`,
-bind-mounted at `data/medigator.db` on the host. The `data/` mount is writable.
-The committed `rag_index/` fixtures are read-only. `logs/` and `reports/` are
-writable generated output.
-
-RAG is disabled in this workflow, so runtime startup does not download an
-embedding model. `OPENAI_API_KEY` is optional and empty by default; `/health`
-and the Docker smoke do not call OpenAI. All inputs must be synthetic/demo
-data. `DEMO_ACCESS_CODE` defaults to `replace-me-locally`; override it in your
-shell for local use. These defaults are not production security.
-
-Run the full reusable check:
-
-```bash
+pytest api/tests/ -k "not trio"
+ruff check api/
+ruff format --check api/
+npx tsc --noEmit
+npm run build
 make docker-smoke
 ```
 
-It builds and starts Compose, polls `GET /health` for HTTP 200 and
-`status=healthy`, checks the frontend root, performs a synthetic SQLite write,
-restarts the API container, verifies the record remains visible, and always
-shuts containers down. Existing demo rows in `data/medigator.db` are preserved.
+## Technical stack
 
-## Optional host development
+- **Backend:** Python 3.12, FastAPI, Pydantic, SQLite
+- **Frontend:** Next.js 15, React 19, TypeScript, Tailwind CSS
+- **AI/retrieval:** OpenAI API integration, SentenceTransformers MiniLM,
+  FAISS, BM25, scikit-learn TF-IDF evaluation surrogate
+- **Infrastructure:** Docker, Docker Compose, GitHub Actions
 
-This path is not the clean-clone Docker reproducibility gate. It requires
-Python 3.12 and Node.js 18+:
+## Portfolio summary
 
-```bash
-make setup
-make dev
-```
+- Built a healthcare-AI research prototype with FastAPI/Next.js,
+  schema-constrained LLM summarization and deterministic fallbacks, hybrid
+  FAISS/BM25 evidence retrieval, frozen quantitative IR evaluation, SQLite
+  persistence, Docker reproducibility, and CI-enforced checks.
+- Added deny-by-default API boundaries, provenance labeling, retrieval metrics
+  (Recall@k, MRR, nDCG), adversarial retrieval tests, and clean-worktree Docker
+  smoke verification.
 
-The API is at `http://localhost:8082` and the Next.js development server is at
-`http://localhost:3000`.
+## Project status
 
-## 🛠️ Development
+**Status: portfolio/research prototype.** Core remediation covers
+access-boundary safety, clinical-claim truthfulness, API provenance, retrieval
+evaluation, SQLite persistence, and Docker reproducibility. Remaining
+limitations include demo-only operator sessions, synchronous SQLite in some
+async routes, no frontend lint gate, nonblocking dependency vulnerability
+reporting, inactive `/codes` CPT matching, unclear corpus redistribution
+status, no production deployment, and no clinical validation.
 
-### Available Commands
-
-```bash
-# Setup
-make setup          # One-time setup
-make dev            # Run API + UI together
-make api            # Run API only
-make ui-patient     # Patient Frontend (port 3000)
-make ui-doctor      # Doctor Frontend (port 3001)
-
-# Docker (canonical local/demo path)
-make docker-build   # Build API and development/demo frontend images
-make docker-up      # Start API 8082 + frontend 3000
-make docker-smoke   # Full HTTP and persistence smoke
-make docker-down
-
-# Optional two-app demo; not part of the reproducibility gate
-make docker-up-separate
-make docker-down-separate
-make docker-logs    # View logs
-make docker-shell   # Open container shell
-
-# Quality
-make test           # Run tests (excludes trio)
-make lint           # Lint code
-make fmt            # Format code
-# make type         # Type checking (disabled)
-make precommit      # Run all checks
-
-# Utilities
-make pdf            # Generate sample PDF
-make clean          # Clean caches
-make distclean      # Remove all dependencies
-```
-
-## 🏗️ Architecture
-
-```
-BBB/
-├── api/                    # FastAPI Backend (Port 8082)
-│   ├── core/              # Core functionality
-│   ├── routers/           # API endpoints
-│   ├── services/          # Business logic
-│   ├── middleware/        # Request/response processing
-│   └── tests/             # Backend tests
-├── src/                    # Next.js Frontend
-│   ├── app/               # App router pages
-│   │   ├── page.tsx       # Unified demo interface
-│   │   ├── patient/       # Patient interface
-│   │   └── doctor/        # Doctor interface
-│   ├── components/        # React components
-│   └── lib/               # Utilities
-├── docker/                 # Docker configurations
-│   ├── Dockerfile         # Backend API
-│   ├── Dockerfile.patient # Patient frontend
-│   ├── Dockerfile.doctor  # Doctor frontend
-│   └── docker-compose*.yml # Service orchestration
-├── data/                   # Sample data
-├── docs/                   # Documentation
-└── scripts/               # Utility scripts
-```
-
-## 🔧 Features
-
-### Core Functionality
-- **Demo report sketches**: research-prototype text generation, not clinical reports
-- **Symptom notes**: demo interpretation helpers, not diagnosis
-- **Code suggestions**: optional ICD-10/CPT lookup for the prototype, not automatic coding
-- **Evidence retrieval**: RAG search over bundled guideline snippets
-- **PDF export**: demo formatting with a research-prototype watermark
-
-### Technical Features
-- **FastAPI Backend**: High-performance Python API
-- **Next.js Frontend**: Modern TypeScript UI with App Router
-- **RAG Integration**: FAISS + BM25 over bundled demo snippets (see `docs/RAG.md`)
-- **Sanitized logging**: event names/status/paths only (not a HIPAA control)
-- **Error Handling**: Global exception management
-- **Health Checks**: Application monitoring
-- **Docker Support**: Local/demo container builds
-- **CI/CD Pipeline**: GitHub Actions with automated testing
-
-## 🔒 Security
-
-This is a **research prototype**, not production security and **not** for
-diagnosis, treatment, or clinical use. It does **not** claim HIPAA
-compliance. Synthetic/demo data only: `DEMO_MODE` does **not** make real
-identifiers safe. See `docs/SECURITY.md`.
-
-- **Synthetic-data guard**: obvious real identifiers are rejected on intake writes
-- **Deny-by-default API boundary**: UI routing is not authorization
-- **Operator session**: doctor/admin-style reads require `DEMO_ACCESS_CODE`
-- **Sanitized logging**: no request bodies, tokens, raw queries, or model output
-
-## 📊 API Endpoints
-
-### Core Endpoints
-- `POST /api/v1/summary` - Generate medical summary
-- `POST /api/v1/evidence` - Retrieve evidence
-- `POST /api/v1/codes` - Generate medical codes
-- `POST /api/v1/reports` - Create medical reports
-- `GET /api/v1/rag/status` - RAG system status
-
-### Health & Monitoring
-- `GET /health` - Health check
-- `GET /api/v1/llm/health` - LLM service status
-- `GET /api/v1/rag/health` - RAG service status
-
-## 🧪 Testing
-
-```bash
-# Run all tests (excludes trio tests)
-make test
-
-# Run specific test categories
-pytest api/tests/test_summary.py
-pytest api/tests/test_rag.py
-pytest api/tests/test_llm_cache.py
-
-# Run hardening tests
-make test-hardening
-
-# Run LLM tests with mock data
-make test-llm
-```
-
-## Environment variables
-
-- `DB_URL`: fixed to `sqlite:///data/medigator.db` by canonical Compose.
-- `DEMO_MODE=true` and `SYNTHETIC_DATA_ONLY=true`: synthetic demo boundary.
-- `DEMO_ACCESS_CODE`: optional local override; shared demo password only.
-- `OPENAI_API_KEY`: optional; not needed for startup or smoke.
-- `ENABLE_RAG=false`: avoids model/network dependency in canonical Compose.
-- `NEXT_PUBLIC_API_URL=http://localhost:8082`: browser-visible API URL.
-
-## 📈 Performance
-
-- **Response Time**: informal local-demo target, not an SLA
-- **Concurrent Users**: not sized or promised
-- **Database**: SQLite at `data/medigator.db`. PostgreSQL is not implemented or tested.
-
-## 🤝 Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Run tests and linting
-5. Submit a pull request
-
-## 📄 License
-
-This project is licensed under the MIT License - see the LICENSE file for details.
-
-## 🆘 Support
-
-For questions or issues:
-1. Check the documentation
-2. Review existing issues
-3. Create a new issue with detailed information
-
-## 🔧 Recent Updates
-
-### Latest Improvements
-- **Separate Frontend Ports**: Patient (3000) and Doctor (3001) interfaces
-- **Cloud deployment**: no production or staging target is configured or verified
-- **LLM Hardening**: JSON schema validation, rule engine, normalization
-- **RAG**: chunk-id IR eval (Recall@k / MRR / nDCG@5) on 20 golden queries; MMR is not implemented
-- **Docker Support**: Local/demo container builds
-- **CI/CD Pipeline**: GitHub Actions with automated testing
-- **Test Coverage**: Comprehensive test suite with mock data
-- **Security**: Enhanced PHI masking, CORS configuration
-
-### Fixed Issues
-- ✅ Trio test failures in CI/CD
-- ✅ Docker frontend build path issues
-- ✅ Python version consistency (3.12)
-- ✅ Type checking and linting errors
-- ✅ RAG performance optimization
-- ✅ Docker Compose command compatibility
-- ✅ PostCSS configuration for Tailwind CSS
-- ✅ Hardcoded file paths in code generation
-- ✅ Test type checking issues
-
-## 📊 Project Stats
-
-- **Language**: Python 3.12, TypeScript
-- **Framework**: FastAPI, Next.js 15.5.4
-- **Database**: SQLite at `data/medigator.db` (local research prototype). PostgreSQL is not implemented or tested.
-- **AI/ML**: OpenAI GPT-4, Sentence Transformers, FAISS
-- **Reproducibility**: local Docker Compose plus GitHub Actions
-- **Security**: Prototype synthetic-data boundary (not production IAM)
-
-## 🎯 Roadmap
-
-- [ ] Enhanced RAG capabilities
-- [ ] Multi-language support
-- [ ] Advanced analytics
-- [ ] Mobile application
-- [ ] Integration with EHR systems
+This repository is MIT-licensed; see `LICENSE`. That project license does not
+establish rights to third-party material summarized in the bundled RAG corpus.
