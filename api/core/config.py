@@ -56,6 +56,7 @@ class Settings(BaseSettings):
 
     # RAG settings
     enable_rag: bool = False
+    bm25_query_expansion: bool = False
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

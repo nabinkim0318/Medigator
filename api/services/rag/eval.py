@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any, Literal
 
 from api.services.rag.query_expand import (
-    bm25_or_clause,
+    expand_bm25_terms,
     expand_query_text,
     load_synonyms,
 )
@@ -152,11 +152,11 @@ def _hit_payload(item: dict[str, Any], score: float) -> dict[str, Any]:
     }
 
 
-def _bm25_scores(query: str, corpus: list[dict[str, Any]]) -> list[float]:
+def _bm25_scores(query_terms: list[str], corpus: list[dict[str, Any]]) -> list[float]:
     from rank_bm25 import BM25Okapi
 
     tokenized = [_tokenize(item.get("text") or "") for item in corpus]
-    return [float(s) for s in BM25Okapi(tokenized).get_scores(_tokenize(query))]
+    return [float(s) for s in BM25Okapi(tokenized).get_scores(query_terms)]
 
 
 def _tfidf_scores(query: str, corpus: list[dict[str, Any]]) -> list[float]:
@@ -183,10 +183,10 @@ def rank(
     *,
     mode: Mode = "bm25",
     k: int = 5,
-    query_bm25: str | None = None,
+    query_bm25: list[str] | None = None,
     query_tfidf: str | None = None,
 ) -> list[dict[str, Any]]:
-    bm25_query = query if query_bm25 is None else query_bm25
+    bm25_query = _tokenize(query) if query_bm25 is None else query_bm25
     tfidf_query = query if query_tfidf is None else query_tfidf
     if mode == "bm25":
         return _ranked_from_scores(_bm25_scores(bm25_query, corpus), corpus, k)
@@ -208,12 +208,12 @@ def rank(
     return [_hit_payload(corpus[idx], score) for idx, score in merged[:k]]
 
 
-def _expand(raw: str, syn: dict[str, list[str]], mode: Mode) -> str:
-    if not syn:
-        return raw
-    if mode == "bm25":
-        return bm25_or_clause(raw, syn)
-    return expand_query_text(raw, syn)
+def _expand_bm25(raw: str, syn: dict[str, list[str]]) -> list[str]:
+    return expand_bm25_terms(raw, syn) if syn else _tokenize(raw)
+
+
+def _expand_tfidf(raw: str, syn: dict[str, list[str]]) -> str:
+    return expand_query_text(raw, syn) if syn else raw
 
 
 def _metrics_for_row(
@@ -276,8 +276,8 @@ def evaluate(
             corpus,
             mode=mode,
             k=k,
-            query_bm25=_expand(raw, syn, "bm25"),
-            query_tfidf=_expand(raw, syn, "tfidf"),
+            query_bm25=_expand_bm25(raw, syn),
+            query_tfidf=_expand_tfidf(raw, syn),
         )
         grades = {str(cid): int(grade) for cid, grade in spec["relevant"].items()}
         metrics = _metrics_for_row(ranked, grades, k)

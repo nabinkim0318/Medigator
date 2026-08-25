@@ -7,6 +7,7 @@ from functools import lru_cache
 from pathlib import Path
 
 _WORD = re.compile(r"[A-Za-z0-9+/.-]+")
+_BM25_WORD = re.compile(r"[a-z0-9]+")
 
 
 def _normalize(s: str) -> str:
@@ -81,22 +82,35 @@ def expand_query_text(q: str, syn: dict[str, list[str]], max_total: int = 40) ->
     return " ".join(expanded)
 
 
-def bm25_or_clause(q: str, syn: dict[str, list[str]], max_per_term: int = 6) -> str:
-    """
-    Expand synonyms into OR groups for BM25 string query:
-    Example: hs-troponin -> ("hs troponin" OR "hs ctn" OR "high sensitivity troponin")
-    """
-    terms = tokenize_query(q)
-    groups = []
-    for t in terms:
-        nt = _normalize(t)
-        cand = syn.get(nt, [nt])[:max_per_term]
-        # Quote phrases containing spaces
-        cand = [f'"{c}"' if " " in c else c for c in cand]
-        group = "(" + " OR ".join(cand) + ")"
-        groups.append(group)
-    # Connect groups with AND (adjust if needed)
-    return " AND ".join(groups)
+def expand_bm25_terms(
+    q: str,
+    syn: dict[str, list[str]],
+    max_per_term: int = 6,
+    max_total: int = 40,
+) -> list[str]:
+    """Expand a query into deterministic lexical terms for bag-of-words BM25."""
+
+    def lexical_terms(text: str) -> list[str]:
+        return _BM25_WORD.findall(text.lower())
+
+    expanded: list[str] = []
+    seen: set[str] = set()
+
+    def append_terms(text: str) -> None:
+        for term in lexical_terms(text):
+            if term not in seen and len(expanded) < max_total:
+                seen.add(term)
+                expanded.append(term)
+
+    # Keep the user's terms first so expansion cannot displace the base query.
+    append_terms(q)
+    for term in tokenize_query(q):
+        normalized = _normalize(term)
+        for candidate in syn.get(normalized, [])[:max_per_term]:
+            append_terms(candidate)
+            if len(expanded) >= max_total:
+                return expanded
+    return expanded
 
 
 def boost_key_terms(

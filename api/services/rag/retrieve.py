@@ -5,7 +5,7 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Any
+from typing import Any, TypedDict
 
 try:
     from sentence_transformers import SentenceTransformer
@@ -13,8 +13,8 @@ except ImportError:  # pragma: no cover - optional when RAG deps are absent
     SentenceTransformer = None  # type: ignore
 
 from .query_expand import (
-    bm25_or_clause,
     boost_key_terms,
+    expand_bm25_terms,
     expand_query_text,
     load_synonyms,
 )
@@ -47,6 +47,12 @@ _model: SentenceTransformer | None = None
 _store: RAGStore | None = None
 _bm25: BM25Okapi | None = None
 _tokenized: list[list[str]] | None = None
+
+
+class QueryParts(TypedDict):
+    base: str
+    embed: str
+    bm25: list[str]
 
 
 def _get_model() -> SentenceTransformer:
@@ -94,7 +100,7 @@ def init_retriever() -> bool:
     return True
 
 
-def make_query(summary: dict[str, Any]) -> dict[str, str]:
+def make_query(summary: dict[str, Any]) -> QueryParts:
     """create expanded query from flags + codes/labels + HPI/ROS (domain-tagged)"""
     parts: list[str] = []
     flags = summary.get("flags", {}) or {}
@@ -139,7 +145,16 @@ def make_query(summary: dict[str, Any]) -> dict[str, str]:
 
     # Query expansion for better retrieval
     embed_query = expand_query_text(base_query, SYN, max_total=40)
-    bm25_query = bm25_or_clause(base_query, SYN, max_per_term=6)
+    bm25_query = (
+        expand_bm25_terms(
+            base_query,
+            SYN,
+            max_per_term=6,
+            max_total=40,
+        )
+        if settings.bm25_query_expansion
+        else _tokenize(base_query)
+    )
 
     # Boost key terms for ischemic features
     key_terms = (
@@ -234,10 +249,8 @@ def retrieve(summary: dict[str, Any], k: int = RAG_TOPK) -> list[Retrieval]:
         # 3) BM25 with expanded query (optional)
         bm_hits: list[tuple[int, float]] = []
         if _bm25 is not None and _tokenized is not None:
-            # Use expanded BM25 query for better keyword matching
-            q_tokens = _tokenize(bm25_query)  # use expanded query
             # BM25 scores are generated for all documents → take top n
-            scores = _bm25.get_scores(q_tokens)  # type: ignore[union-attr]
+            scores = _bm25.get_scores(bm25_query)  # type: ignore[union-attr]
             bm_hits = sorted(list(enumerate(scores)), key=lambda x: x[1], reverse=True)[
                 : max(8, k * 2)
             ]
