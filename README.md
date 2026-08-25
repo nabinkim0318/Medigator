@@ -130,7 +130,7 @@ BBB/
 ### Technical Features
 - **FastAPI Backend**: High-performance Python API
 - **Next.js Frontend**: Modern TypeScript UI with App Router
-- **RAG Integration**: FAISS + Sentence Transformers with query expansion
+- **RAG Integration**: FAISS + BM25 over bundled demo snippets (see `docs/RAG.md`)
 - **Sanitized logging**: event names/status/paths only (not a HIPAA control)
 - **Error Handling**: Global exception management
 - **Health Checks**: Application monitoring
@@ -238,7 +238,7 @@ For questions or issues:
 - **Separate Frontend Ports**: Patient (3000) and Doctor (3001) interfaces
 - **Vercel Deployment**: Separate Vercel projects for Patient and Doctor frontends
 - **LLM Hardening**: JSON schema validation, rule engine, normalization
-- **RAG Quality**: Query expansion, MMR diversity, metadata extraction
+- **RAG**: BM25 hit@k eval on a small golden set; MMR is not implemented
 - **Docker Support**: Local/demo container builds
 - **CI/CD Pipeline**: GitHub Actions with automated testing
 - **Test Coverage**: Comprehensive test suite with mock data

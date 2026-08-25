@@ -1,0 +1,40 @@
+[
+  {
+    "id": "acs-chest-pain",
+    "query": "chest pain ACS troponin ECG ischemia",
+    "expect_file_substr": [
+      "2016_NICE_NG95_Chest-Pain.md",
+      "2021_ACC-AHA_Chest-Pain_exec.md",
+      "2023_ECG_Initial-Serial_Guidance.md",
+      "medical_guidelines.txt"
+    ]
+  },
+  {
+    "id": "heart-score",
+    "query": "HEART score emergency department chest pain risk",
+    "expect_file_substr": ["2013_HEART-Score.md"]
+  },
+  {
+    "id": "perc-wells",
+    "query": "PERC Wells pulmonary embolism D-dimer",
+    "expect_file_substr": ["2020_PERC-Wells.md"]
+  },
+  {
+    "id": "diabetes-hba1c",
+    "query": "HbA1c metformin type 2 diabetes monitoring",
+    "expect_file_substr": ["diabetes_management.txt"]
+  },
+  {
+    "id": "esc-troponin",
+    "query": "ESC 0/1h high-sensitivity troponin NSTEMI rule-out",
+    "expect_file_substr": [
+      "2025_ESC_0-1h-hsTroponin.md",
+      "2022_hsTroponin_0-1h_MetaReview.md"
+    ]
+  },
+  {
+    "id": "timi",
+    "query": "TIMI unstable angina NSTEMI risk score",
+    "expect_file_substr": ["2000_TIMI-UA-NSTEMI.md"]
+  }
+]
