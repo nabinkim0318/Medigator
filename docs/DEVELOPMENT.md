@@ -1,6 +1,6 @@
-# 🛠️ Development Guide
+# Development guide
 
-This guide covers development setup and workflows for the BBB Medical System.
+This guide covers development setup and workflows for Medigator.
 
 ## 🚀 Quick Setup
 
@@ -13,14 +13,16 @@ This guide covers development setup and workflows for the BBB Medical System.
 ### Initial Setup
 ```bash
 # Clone repository
-git clone <repository-url>
-cd BBB
+git clone https://github.com/nabinkim0318/Medigator.git
+cd Medigator
 
 # One-time setup
 make setup
 
 # Start development servers
 make dev
+# API: http://localhost:8082
+# UI:  http://localhost:3000
 ```
 
 ## 🏗️ Architecture Overview
@@ -82,7 +84,7 @@ the database when the file is missing. They may still create `logs/` and
 #### 1. Unified Development (Single Frontend)
 ```bash
 make dev
-# Access: http://localhost:5173
+# Access: http://localhost:3000
 ```
 
 #### 2. Separate Frontend Development
@@ -97,14 +99,15 @@ make ui-patient
 make ui-doctor
 ```
 
-#### 3. Docker Development
+#### 3. Canonical Docker demo
 ```bash
-# Unified services
 make docker-up
-
-# Separate services (recommended)
-make docker-up-separate
+# API: http://localhost:8082
+# UI:  http://localhost:3000
 ```
+
+This is the reproducibility-gated path. `make docker-up-separate` is an
+optional two-frontend demo and is not part of that gate.
 
 ## 🔧 Development Workflow
 
@@ -180,41 +183,24 @@ make precommit
 - **Prettier**: Frontend formatting
 - **TypeScript**: Type checking
 
-## 🐳 Docker Development
+## Docker development
 
-### Service Configuration
+`docker/docker-compose.yml` is the canonical local containerized
+research-prototype workflow. The API publishes 8082:8082 and the Next.js
+development/demo frontend publishes 3000:3000. The build context is the
+repository root. It is not a production image or deployment.
 
-#### Unified Services
-```yaml
-# docker-compose.yml
-services:
-  api:        # Backend API (8082)
-  frontend:   # Single frontend (5173)
-```
-
-#### Separate Services
-```yaml
-# docker-compose-separate.yml
-services:
-  api:              # Backend API (8082)
-  patient-frontend: # Patient UI (3000)
-  doctor-frontend:  # Doctor UI (3001)
-```
-
-### Docker Commands
 ```bash
-# Build images
 make docker-build
-
-# Start services
-make docker-up-separate
-
-# View logs
-make docker-logs-separate
-
-# Stop services
-make docker-down-separate
+make docker-up
+make docker-smoke
+make docker-down
 ```
+
+Compose mounts `data/` writable at `/app/data`, so
+`data/medigator.db` persists across container restarts. `rag_index/` is
+read-only. `logs/` and `reports/` are writable generated output. RAG is
+disabled and OpenAI is not required for startup or smoke verification.
 
 ## 🧪 Testing
 
@@ -274,41 +260,23 @@ make seed
 ### Logging
 - **API Logs**: Check console output
 - **Frontend Logs**: Browser developer tools
-- **Docker Logs**: `make docker-logs-separate`
+- **Docker Logs**: `make docker-logs`
 
 ## 📊 Performance
 
 ### Optimization Tips
-- Use `--turbopack` for faster Next.js builds
-- Enable Docker layer caching
-- Use production builds for testing
+- Use `--turbopack` for faster Next.js development
+- Docker layer caching may reduce repeat build time
 
 ### Monitoring
 - Health checks: `GET /health`
 - API metrics: Available in logs
 - Frontend performance: Browser dev tools
 
-## 🚀 Deployment
+## Deployment status
 
-### Production Setup
-```bash
-# Build production images
-make docker-build
-
-# Start production services
-make docker-up-separate
-```
-
-### Environment Variables
-```bash
-# Required
-OPENAI_API_KEY=your_key_here
-DEMO_ACCESS_CODE=demo123
-
-# Optional
-DEMO_MODE=true
-HIPAA_MODE=false
-```
+No production or staging deployment target is configured or verified. The
+Docker files support only the documented local/demo workflow.
 
 ## 🤝 Contributing
 

@@ -116,21 +116,15 @@ jobs:
         name: dependency-report
         path: safety-report.json
 
-  # Docker Build and Test
-  docker:
+  # PR-visible gate: build the real image, start Uvicorn, poll real HTTP health.
+  docker-smoke:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
 
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v3
-
-    - name: Build Docker image
-      run: |
-        docker build -f docker/Dockerfile -t bbb-medical-api:latest .
-
-    - name: Test Docker image
-      run: |
-        docker run --rm bbb-medical-api:latest python -c "import api; print('Import successful')"
+    - name: Build, start, and verify API health
+      env:
+        SMOKE_FRONTEND: "0"
+        SMOKE_PERSISTENCE: "0"
+      run: make docker-smoke

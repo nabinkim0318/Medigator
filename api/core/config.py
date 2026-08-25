@@ -22,10 +22,8 @@ class Settings(BaseSettings):
 
     # CORS settings
     cors_origins: list[str] = [
-        "http://localhost:5173",
         "http://localhost:3000",
         "http://localhost:3001",
-        "http://localhost:8080",
     ]
 
     # Optional: CORS origins from environment (comma-separated)

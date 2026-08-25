@@ -1,43 +1,61 @@
+# Canonical local/demo Compose file for this research prototype.
+# Not a production or staging deployment.
+#
+# Run from the repository root (paths below are relative to this file):
+#   docker compose -f docker/docker-compose.yml up --build
+# or:
+#   make docker-up
+#
+# Build context `..` is the repository root. Do not `cd docker && docker build .`.
+
+name: medigator
+
 services:
-  # Backend API with Frontend
   api:
     build:
       context: ..
       dockerfile: docker/Dockerfile
     ports:
-      - "8083:8082"
+      - "8082:8082"
     environment:
-      - DB_URL=sqlite:///data/medigator.db
-      - OPENAI_API_KEY=${OPENAI_API_KEY}
-      - DEMO_ACCESS_CODE=${DEMO_ACCESS_CODE:-demo123}
-      - DEMO_MODE=true
-      - HIPAA_MODE=false
-      - enable_rag=true
+      DB_URL: sqlite:///data/medigator.db
+      DEMO_MODE: "true"
+      SYNTHETIC_DATA_ONLY: "true"
+      ENABLE_RAG: "false"
+      HIPAA_MODE: "false"
+      DEMO_ACCESS_CODE: ${DEMO_ACCESS_CODE:-replace-me-locally}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
     volumes:
+      # Writable runtime DB at data/medigator.db (canonical SQLite path).
       - ../data:/app/data
+      # Committed RAG fixtures; app should not rewrite them in this demo.
       - ../rag_index:/app/rag_index:ro
-      - ../api/reports:/app/api/reports
+      # Generated output (gitignored).
       - ../logs:/app/logs
+      - ../reports:/app/reports
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8082/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
-    restart: unless-stopped
-    depends_on:
-      - frontend
+      test: ["CMD", "python", "docker/healthcheck.py"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 20s
+    restart: "no"
 
-  # Frontend (production build)
   frontend:
     build:
       context: ..
       dockerfile: docker/Dockerfile.frontend
     ports:
-      - "3005:3000"
+      - "3000:3000"
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8083
+      # Browser on the host talks to the published API port.
+      NEXT_PUBLIC_API_URL: http://localhost:8082
     volumes:
+      # Source bind mounts for the development/demo frontend.
       - ../src:/app/src
       - ../public:/app/public
-    command: npm run dev
+    command: ["npm", "run", "dev", "--", "-H", "0.0.0.0", "-p", "3000"]
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: "no"
