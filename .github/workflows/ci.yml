@@ -86,8 +86,10 @@ jobs:
     - name: Build application
       run: npm run build
 
-  # Security Scanning
-  security:
+  # Dependency vulnerability report. Intentionally nonblocking:
+  # `safety check` currently reports many findings (torch/transformers stack).
+  # Making this a gate would turn this PR into a dependency-upgrade PR.
+  dependency-report:
     runs-on: ubuntu-latest
 
     steps:
@@ -103,15 +105,15 @@ jobs:
         python -m pip install --upgrade pip
         pip install safety
 
-    - name: Run security scan
+    - name: Run dependency scan (nonblocking)
       run: |
         safety check --json --output safety-report.json || true
 
-    - name: Upload security report
+    - name: Upload dependency report
       uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: security-report
+        name: dependency-report
         path: safety-report.json
 
   # Docker Build and Test

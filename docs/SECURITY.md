@@ -56,3 +56,10 @@ Performed against audited HEAD `6bcdf146416c62d31bdfc8d95e0ee788909e2113` plus t
 | Rotation | Not performed. No live third-party credential was confirmed. |
 
 `DEMO_ACCESS_CODE` is a shared demo operator password for this prototype, not a cloud credential. Do not treat it as production IAM.
+
+## CI gates
+
+Frontend typecheck (`npx tsc --noEmit`) and backend tests are **blocking**.
+The GitHub Actions `dependency-report` job runs `safety check` and uploads an
+artifact; it is **nonblocking** (current `safety check` reports many findings
+in the torch/transformers stack). Frontend ESLint is **absent**.
