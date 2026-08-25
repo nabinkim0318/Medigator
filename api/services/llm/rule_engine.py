@@ -230,14 +230,14 @@ class ClinicalRuleEngine:
                 flags[rule_name] = result
                 justifications[rule_name] = justification
 
-                logger.info(f"Flag {rule_name}: {result} - {', '.join(justification)}")
+                logger.info("Flag %s evaluated: %s", rule_name, result)
 
             except Exception as e:
                 logger.error(f"Flag calculation failed for {rule_name}: {e}")
                 flags[rule_name] = False
                 justifications[rule_name] = [f"Calculation error: {e}"]
 
-        logger.info(f"Flag calculation completed: {flags}")
+        logger.info("Flag calculation completed: %d flags", len(flags))
         return flags, justifications
 
     def get_rule_descriptions(self) -> dict[str, str]:

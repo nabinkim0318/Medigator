@@ -7,6 +7,7 @@ from typing import Any
 
 from api.core.exceptions import PlaceholderClinicalException
 from api.core.provenance import provenance
+from api.core.safe_logging import log_info
 from api.services.llm.client import chat_json
 from api.services.llm.fallback import templated as fallback_summary
 from api.services.llm.gate import guard_and_redact
@@ -46,7 +47,11 @@ class LLMService:
             processed_intake, negation_log = negation_processor.process_intake_negation(
                 normalized_intake
             )
-            log.info(f"Negation processing completed: {negation_log}")
+            log_info(
+                log,
+                "negation_processing_completed",
+                field_count=len(negation_log),
+            )
 
             # 4) Message construction with hardened prompts
             sys = SYSTEM.replace(
@@ -88,7 +93,10 @@ class LLMService:
                 summary_data = out.model_dump()
                 log.info("JSON validation successful")
             except Exception as e:
-                log.warning(f"Initial validation failed, attempting correction: {e}")
+                log.warning(
+                    "Initial validation failed, attempting correction: %s",
+                    type(e).__name__,
+                )
                 summary_data = retry_with_correction(raw)
                 log.info("JSON correction successful")
 
@@ -121,7 +129,11 @@ class LLMService:
                 ),
             }
 
-            log.info(f"Summary generation completed with flags: {calculated_flags}")
+            log_info(
+                log,
+                "summary_generation_completed",
+                field_count=len(calculated_flags),
+            )
             return summary_data
 
         except Exception as e:

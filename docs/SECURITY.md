@@ -34,8 +34,12 @@ They are not placed in query strings or shown in the UI.
 
 ## Logging
 
-Logs use event names/status/paths only. Request bodies, tokens, raw queries,
-raw model output, and third-party exception payloads must not be logged.
+Summary-path operational logs use content-free event, status, and count fields;
+they do not serialize intake, normalization/negation metadata, prompts, or raw
+model output. Request logging excludes bodies, tokens, and raw retrieval
+queries. Identifier-pattern redaction on every output handler is defense in
+depth, not complete PHI detection or de-identification, and is not a guarantee
+about arbitrary medical text.
 
 ## Runtime artifacts
 

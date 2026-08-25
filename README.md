@@ -159,8 +159,10 @@ local containerized demo, not a production deployment. Details:
 - Selected doctor/admin-style reads require a demo operator session.
 - Sensitive routes are disabled; unfinished clinical/report routes are denied
   or return `501`.
-- Logging excludes request bodies, tokens, raw queries, model output, and
-  third-party exception payloads.
+- Summary-path operational logs use content-free event/status/count fields and
+  do not serialize intake payloads, prompts, or raw model output. Request
+  logging excludes bodies, tokens, and raw retrieval queries. Handler-level
+  identifier redaction remains defense in depth, not complete PHI detection.
 - Authentication tokens are not transported in query strings.
 
 The operator-session mechanism is a demo boundary, not production IAM. See
