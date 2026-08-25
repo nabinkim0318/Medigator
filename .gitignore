@@ -119,7 +119,8 @@ data/*.db-journal
 
 # ----------------------------
 # Reports / Generated assets
-# ----------------------------reports/**
+# ----------------------------
+reports/**
 !reports/.gitkeep
 api/reports/**
 !api/reports/.gitkeep

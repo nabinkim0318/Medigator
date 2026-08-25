@@ -6,6 +6,10 @@ hybrid merge. Judgments are exact chunk ids from that metadata file.
 This does not download MiniLM, does not score FAISS query embeddings, does not
 implement MMR, and is not a clinical retrieval benchmark. `index.faiss` is
 hashed when present; the vector channel in this harness is TF-IDF cosine.
+
+The actual MiniLM/FAISS runtime path is measured separately by
+`python -m api.services.rag.eval_runtime`. That command is model-dependent
+and is not part of blocking CI.
 """
 
 from __future__ import annotations
@@ -21,7 +25,12 @@ from api.services.rag.query_expand import (
     expand_query_text,
     load_synonyms,
 )
-from api.services.rag.retrieve import _merge_scores, _tokenize
+from api.services.rag.retrieve import (
+    HYBRID_W_BM25,
+    HYBRID_W_EMB,
+    _merge_scores,
+    _tokenize,
+)
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_META = ROOT / "rag_index" / "meta.json"
@@ -202,8 +211,8 @@ def rank(
     merged = _merge_scores(
         [(i, tfidf[i]) for i in range(n)],
         [(i, bm25[i]) for i in range(n)],
-        w_emb=0.6,
-        w_bm25=0.4,
+        w_emb=HYBRID_W_EMB,
+        w_bm25=HYBRID_W_BM25,
     )
     return [_hit_payload(corpus[idx], score) for idx, score in merged[:k]]
 
@@ -216,7 +225,7 @@ def _expand_tfidf(raw: str, syn: dict[str, list[str]]) -> str:
     return expand_query_text(raw, syn) if syn else raw
 
 
-def _metrics_for_row(
+def metrics_for_row(
     ranked: list[dict[str, Any]], grades: dict[str, int], k: int
 ) -> dict[str, float]:
     ranked_ids = [str(hit.get("id") or "") for hit in ranked]
@@ -280,7 +289,7 @@ def evaluate(
             query_tfidf=_expand_tfidf(raw, syn),
         )
         grades = {str(cid): int(grade) for cid, grade in spec["relevant"].items()}
-        metrics = _metrics_for_row(ranked, grades, k)
+        metrics = metrics_for_row(ranked, grades, k)
         for key, value in metrics.items():
             metric_lists.setdefault(key, []).append(value)
         rows.append(

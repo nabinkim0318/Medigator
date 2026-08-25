@@ -66,12 +66,59 @@ without expansion. This hybrid is TF-IDF 0.6 + BM25 0.4; it is not evidence
 about runtime MiniLM/FAISS quality.
 
 The CI evaluation's vector channel uses TF-IDF cosine for deterministic,
-dependency-cheap comparison. It is not a benchmark of the runtime
-MiniLM/FAISS embedding channel and is not a clinical IR study.
+dependency-cheap comparison. It is not a MiniLM/FAISS measurement.
 
-Tests additionally verify ranked-hit `chunk_id`, file, offsets, and text hash;
-evidence-card provenance; instruction-only and keyword-stuffed poison handling;
-and that query injection cannot create corpus chunk IDs.
+## Runtime MiniLM/FAISS benchmark
+
+`api/services/rag/eval_runtime.py` measures the **actual** runtime retriever
+against the same frozen fixture:
+
+- BM25 with the current default (`BM25_QUERY_EXPANSION=false`)
+- MiniLM/FAISS using `sentence-transformers/all-MiniLM-L6-v2` and the
+  committed `IndexFlatIP` (384-d inner product) index
+- the production hybrid merge at weights **0.6 vector / 0.4 BM25**
+
+Query handling uses `make_query({"cc": query})`, so synonym expansion for the
+embedding channel and the BM25 expansion default match production. Candidate
+pooling is `max(8, k * 2)` per channel, then the production merge. Metric
+helpers are shared with `eval.py`.
+
+This command is **not** a blocking CI job. It requires SentenceTransformers
+and FAISS. The first run may download MiniLM into the local Hugging Face
+cache; after the model is available locally, retrieval evaluation does not
+require OpenAI, a clinical service, or a live external medical API. CPU is
+sufficient. If the model cannot be loaded, the process exits with
+`RUNTIME_BENCHMARK_NOT_RUN` instead of substituting TF-IDF.
+
+Observed local snapshot (Python 3.12.3, sentence-transformers 5.1.1,
+transformers 4.56.2, faiss 1.12.0, scikit-learn 1.7.2). Repeat run in the same
+environment: identical aggregate metrics and ranked chunk IDs.
+
+| Retriever | Hit@5 | Recall@1 | Recall@3 | Recall@5 | MRR | nDCG@5 |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| BM25 | 20/20 | 0.402 | 0.758 | 0.903 | 1.000 | 0.901 |
+| TF-IDF surrogate | 20/20 | 0.402 | 0.703 | 0.851 | 1.000 | 0.861 |
+| TF-IDF/BM25 hybrid | 20/20 | 0.402 | 0.770 | 0.868 | 1.000 | 0.881 |
+| MiniLM/FAISS | 20/20 | 0.348 | 0.662 | 0.759 | 0.902 | 0.765 |
+| Runtime MiniLM/FAISS+BM25 hybrid | 20/20 | 0.402 | 0.724 | 0.774 | 1.000 | 0.826 |
+
+On this fixture, BM25 is stronger than MiniLM/FAISS. The current runtime
+hybrid does not outperform BM25, so the 0.6/0.4 weighting is not justified by
+these 20 queries. Weights were not swept. Hit@5 remained 20/20 for every
+channel; MiniLM's weaker recall is ranking, not total miss. Notable MiniLM
+weaknesses include `acc-aha-2021` (MRR 0.200) and `heart-mace` (MRR 0.333).
+`heart-score` hybrid Recall@5 (0.400) was below both BM25 (0.800) and MiniLM
+(0.600).
+
+This is **Runtime MiniLM/FAISS: evaluated on the frozen synthetic/demo
+fixture**. It is not clinical IR validation, not a large-corpus study, and not
+production retrieval validation. Results can vary with model/library versions.
+
+Tests verify ranked-hit `chunk_id`, file, offsets, and text hash; evidence-card
+provenance; instruction-only and keyword-stuffed poison handling; that query
+injection cannot create corpus chunk IDs; shared metric helpers; FAISS-to-chunk
+mapping; hybrid weight reuse; index integrity failures; and that a missing
+MiniLM model exits with `RUNTIME_BENCHMARK_NOT_RUN` instead of TF-IDF.
 
 Bundled source descriptions and rights limitations are documented in
 [`RAG_CORPUS.md`](RAG_CORPUS.md). The source and artifact hashes that define
@@ -79,5 +126,6 @@ this fixture are committed in `data/rag/eval_manifest.json`.
 
 ```bash
 PYTHONPATH=. python -m api.services.rag.eval
-pytest api/tests/test_rag_eval.py -q
+PYTHONPATH=. python -m api.services.rag.eval_runtime
+pytest api/tests/test_rag_eval.py api/tests/test_rag_runtime_eval.py -q
 ```

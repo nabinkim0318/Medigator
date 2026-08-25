@@ -37,6 +37,10 @@ RAG_INDEX_DIR = os.getenv("RAG_INDEX_DIR", "rag_index")
 RAG_TOPK = int(os.getenv("RAG_TOPK", "4"))
 
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+HYBRID_W_EMB = 0.6
+HYBRID_W_BM25 = 0.4
+CANDIDATE_POOL_MIN = 8
+CANDIDATE_POOL_MULT = 2
 
 # Load synonyms for query expansion
 SYN_PATH = Path(__file__).parent.parent.parent.parent / "rag_index" / "synonyms.json"
@@ -208,6 +212,54 @@ def _merge_scores(
     return merged
 
 
+def candidate_pool_size(k: int) -> int:
+    return max(CANDIDATE_POOL_MIN, k * CANDIDATE_POOL_MULT)
+
+
+def merge_retrieval_channels(
+    emb_hits: list[tuple[int, float]],
+    bm_hits: list[tuple[int, float]],
+    *,
+    w_emb: float = HYBRID_W_EMB,
+    w_bm25: float = HYBRID_W_BM25,
+) -> list[tuple[int, float]]:
+    """Merge FAISS and BM25 candidate lists with the production empty-channel guards."""
+    if emb_hits and bm_hits:
+        return _merge_scores(emb_hits, bm_hits, w_emb=w_emb, w_bm25=w_bm25)
+    if emb_hits:
+        idxs = [i for i, _ in emb_hits]
+        norm = _minmax_norm([s for _, s in emb_hits])
+        return list(zip(idxs, norm, strict=False))
+    return list(bm_hits)
+
+
+def rank_channels(
+    query_dict: QueryParts,
+    *,
+    store: RAGStore,
+    model: Any | None,
+    bm25: Any | None,
+    k: int,
+    use_vector: bool = True,
+    use_bm25: bool = True,
+) -> list[tuple[int, float]]:
+    """Rank corpus indices using the production candidate pool and merge."""
+    pool = candidate_pool_size(k)
+    emb_hits: list[tuple[int, float]] = []
+    if use_vector:
+        if model is None:
+            raise RuntimeError("vector ranking requires an embedding model")
+        q_emb = model.encode([query_dict["embed"]], normalize_embeddings=True)
+        emb_hits = store.search(q_emb, top_k=pool)
+    bm_hits: list[tuple[int, float]] = []
+    if use_bm25 and bm25 is not None:
+        scores = bm25.get_scores(query_dict["bm25"])
+        bm_hits = sorted(list(enumerate(scores)), key=lambda x: x[1], reverse=True)[
+            :pool
+        ]
+    return merge_retrieval_channels(emb_hits, bm_hits)[:k]
+
+
 def retrieve(summary: dict[str, Any], k: int = RAG_TOPK) -> list[Retrieval]:
     """
     hybrid search: embedding(required) + BM25(optional) → weighted rerank → top-k
@@ -231,54 +283,29 @@ def retrieve(summary: dict[str, Any], k: int = RAG_TOPK) -> list[Retrieval]:
     try:
         # 1) Generate expanded queries
         query_dict = make_query(summary)
-        embed_query = query_dict["embed"]
-        bm25_query = query_dict["bm25"]
 
         logger.debug(f"Base query: {query_dict['base']}")
-        logger.debug(f"Embed query: {embed_query}")
-        logger.debug(f"BM25 query: {bm25_query}")
+        logger.debug(f"Embed query: {query_dict['embed']}")
+        logger.debug(f"BM25 query: {query_dict['bm25']}")
 
-        # 2) embedding ANN with expanded query
-        q_emb = _get_model().encode([embed_query], normalize_embeddings=True)
-        emb_hits: list[tuple[int, float]] = _store.search(
-            q_emb,
-            top_k=max(8, k * 2),
-        )  # [(idx, score)]
-        logger.info(f"Embedding search returned {len(emb_hits)} hits")
-
-        # 3) BM25 with expanded query (optional)
-        bm_hits: list[tuple[int, float]] = []
-        if _bm25 is not None and _tokenized is not None:
-            # BM25 scores are generated for all documents → take top n
-            scores = _bm25.get_scores(bm25_query)  # type: ignore[union-attr]
-            bm_hits = sorted(list(enumerate(scores)), key=lambda x: x[1], reverse=True)[
-                : max(8, k * 2)
-            ]
-
-        # 3) rerank with empty result guards
-        if emb_hits and bm_hits:
-            # both available - merge scores
-            merged = _merge_scores(emb_hits, bm_hits, w_emb=0.6, w_bm25=0.4)
-        elif emb_hits:
-            # only embedding results available
-            idxs = [i for i, _ in emb_hits]
-            norm = _minmax_norm([s for _, s in emb_hits])
-            merged = list(zip(idxs, norm, strict=False))
-        elif bm_hits:
-            # only BM25 results available - fallback
-            merged = bm_hits
-        else:
-            # no results from either method
+        merged = rank_channels(
+            query_dict,
+            store=_store,
+            model=_get_model(),
+            bm25=_bm25,
+            k=k,
+            use_vector=True,
+            use_bm25=True,
+        )
+        logger.info(f"Hybrid ranking returned {len(merged)} hits")
+        if not merged:
             return []
 
-        # 4) Top-k meta combination
-        top = merged[:k]
         results: list[Retrieval] = []
-        for idx, score in top:
+        for idx, score in merged:
             meta = _store.get_meta(
                 idx,
             )  # {'id','title','source','text','file','start','end','url',...}
-            # Retrieval type: {"chunk": meta, "score": float}
             results.append({"chunk": meta, "score": float(round(score, 4))})  # type: ignore
         return results
 

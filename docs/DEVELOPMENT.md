@@ -142,6 +142,13 @@ make test
 # Example focused suites
 PYTHONPATH=. pytest api/tests/test_access_boundary.py
 PYTHONPATH=. pytest api/tests/test_rag_eval.py
+PYTHONPATH=. pytest api/tests/test_rag_runtime_eval.py
+
+# Deterministic CI evaluator (no MiniLM download)
+PYTHONPATH=. python -m api.services.rag.eval
+
+# Optional offline MiniLM/FAISS runtime benchmark (not CI)
+PYTHONPATH=. python -m api.services.rag.eval_runtime
 ```
 
 ### Frontend Development
