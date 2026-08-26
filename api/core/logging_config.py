@@ -133,6 +133,7 @@ def setup_logging(logs_dir: str | Path = "logs"):
     log_info(logger, "demo_mode", enabled=settings.DEMO_MODE)
     log_info(logger, "synthetic_data_only", enabled=settings.SYNTHETIC_DATA_ONLY)
     log_info(logger, "rag_enabled", enabled=settings.enable_rag)
+    log_info(logger, "rag_retrieval_mode", mode=settings.rag_retrieval_mode)
 
     return logger
 

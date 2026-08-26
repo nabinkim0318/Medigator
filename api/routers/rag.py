@@ -5,6 +5,7 @@ from typing import Any
 from fastapi import APIRouter
 from pydantic import BaseModel
 
+from api.core.config import settings
 from api.core.exceptions import RAGServiceException
 from api.core.safe_logging import log_error, log_info, log_warning
 from api.services.rag import build_index, init_retriever, make_query, retrieve
@@ -227,6 +228,7 @@ async def health_check():
             "service": "rag",
             "status": "healthy" if USE_RAG else "disabled",
             "rag_enabled": USE_RAG,
+            "rag_retrieval_mode": settings.rag_retrieval_mode,
             "initialized": False,
         }
 

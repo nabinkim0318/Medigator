@@ -143,12 +143,14 @@ make test
 PYTHONPATH=. pytest api/tests/test_access_boundary.py
 PYTHONPATH=. pytest api/tests/test_rag_eval.py
 PYTHONPATH=. pytest api/tests/test_rag_runtime_eval.py
+PYTHONPATH=. pytest api/tests/test_rag_retrieval_mode.py
 
 # Deterministic CI evaluator (no MiniLM download)
 PYTHONPATH=. python -m api.services.rag.eval
 
 # Optional offline MiniLM/FAISS runtime benchmark (not CI)
 PYTHONPATH=. python -m api.services.rag.eval_runtime
+# Always scores bm25, vector, and hybrid, independent of RAG_RETRIEVAL_MODE.
 ```
 
 ### Frontend Development

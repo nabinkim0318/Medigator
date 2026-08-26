@@ -5,7 +5,7 @@ import logging
 import os
 import re
 from pathlib import Path
-from typing import Any, TypedDict
+from typing import Any, Literal, TypedDict
 
 try:
     from sentence_transformers import SentenceTransformer
@@ -41,6 +41,8 @@ HYBRID_W_EMB = 0.6
 HYBRID_W_BM25 = 0.4
 CANDIDATE_POOL_MIN = 8
 CANDIDATE_POOL_MULT = 2
+RetrievalMode = Literal["bm25", "vector", "hybrid"]
+RETRIEVAL_MODES: tuple[RetrievalMode, ...] = ("bm25", "vector", "hybrid")
 
 # Load synonyms for query expansion
 SYN_PATH = Path(__file__).parent.parent.parent.parent / "rag_index" / "synonyms.json"
@@ -57,6 +59,19 @@ class QueryParts(TypedDict):
     base: str
     embed: str
     bm25: list[str]
+
+
+def retrieval_mode_flags(mode: str) -> tuple[bool, bool]:
+    """Return ``(use_vector, use_bm25)`` for a supported retrieval mode."""
+    if mode == "bm25":
+        return False, True
+    if mode == "vector":
+        return True, False
+    if mode == "hybrid":
+        return True, True
+    raise ValueError(
+        f"unsupported RAG_RETRIEVAL_MODE={mode!r}; expected bm25 | vector | hybrid"
+    )
 
 
 def _get_model() -> SentenceTransformer:
@@ -260,14 +275,23 @@ def rank_channels(
     return merge_retrieval_channels(emb_hits, bm_hits)[:k]
 
 
-def retrieve(summary: dict[str, Any], k: int = RAG_TOPK) -> list[Retrieval]:
+def retrieve(
+    summary: dict[str, Any],
+    k: int = RAG_TOPK,
+    *,
+    mode: RetrievalMode | None = None,
+) -> list[Retrieval]:
+    """Rank chunks using the configured retrieval mode.
+
+    ``bm25`` uses BM25Okapi only. ``vector`` uses MiniLM/FAISS only.
+    ``hybrid`` keeps the existing 0.6/0.4 MiniLM+BM25 merge. MiniLM is loaded
+    only when the selected mode needs vector encoding.
     """
-    hybrid search: embedding(required) + BM25(optional) → weighted rerank → top-k
-    return: List[Retrieval] with {'chunk': meta_dict, 'score': float}
-    """
-    logger.info(f"RAG retrieval started with k={k}")
+    resolved = settings.rag_retrieval_mode if mode is None else mode
+    use_vector, use_bm25 = retrieval_mode_flags(resolved)
+    logger.info("retrieval mode=%s", resolved)
     if not USE_RAG:
-        logger.info("RAG disabled, returning empty results")
+        logger.info("retrieval skipped rag_enabled=false")
         return []
 
     if _store is None:
@@ -281,23 +305,18 @@ def retrieve(summary: dict[str, Any], k: int = RAG_TOPK) -> list[Retrieval]:
         return []
 
     try:
-        # 1) Generate expanded queries
         query_dict = make_query(summary)
-
-        logger.debug(f"Base query: {query_dict['base']}")
-        logger.debug(f"Embed query: {query_dict['embed']}")
-        logger.debug(f"BM25 query: {query_dict['bm25']}")
-
+        model = _get_model() if use_vector else None
         merged = rank_channels(
             query_dict,
             store=_store,
-            model=_get_model(),
-            bm25=_bm25,
+            model=model,
+            bm25=_bm25 if use_bm25 else None,
             k=k,
-            use_vector=True,
-            use_bm25=True,
+            use_vector=use_vector,
+            use_bm25=use_bm25,
         )
-        logger.info(f"Hybrid ranking returned {len(merged)} hits")
+        logger.info("retrieval returned %s hits", len(merged))
         if not merged:
             return []
 

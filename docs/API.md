@@ -75,6 +75,10 @@ See `api/core/access.py` for the authoritative route classification and
 - `DEMO_ACCESS_CODE=<local shared code>`
 - optional `OPENAI_API_KEY`
 - optional `ENABLE_RAG=true`; canonical Docker sets it to `false`
+- `RAG_RETRIEVAL_MODE=bm25|vector|hybrid`; demo default is `bm25` because it
+  scored highest on the committed frozen fixture. This is not a general
+  lexical-versus-semantic claim. Vector and hybrid remain optional retrieval
+  modes.
 - optional `BM25_QUERY_EXPANSION=true`; defaults to `false` based on the frozen
   retrieval fixture
 

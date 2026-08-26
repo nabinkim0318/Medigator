@@ -42,7 +42,10 @@ def check_rag_system():
 
     try:
         # Lazy loading: Defer RAG initialization to first use
-        logger.info("RAG system will be initialized on first use")
+        logger.info(
+            "RAG retrieval mode=%s; initialized on first use",
+            settings.rag_retrieval_mode,
+        )
         return True
     except Exception:
         logger.warning("RAG system check failed")
