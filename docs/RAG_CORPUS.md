@@ -47,9 +47,12 @@ metadata. Their inclusion in the retriever does not validate their content.
 - `rag_index/meta.json` stores the 49 chunk texts and source offsets.
 - `rag_index/index.faiss` stores 384-dimensional
   `sentence-transformers/all-MiniLM-L6-v2` embeddings.
-- `rag_index/build_summary.json` records 15 indexed files, while the committed
-  `meta.json` contains chunks from the 14 files listed above. The repository
-  does not preserve enough build provenance to explain that discrepancy.
+- `rag_index/build_summary.json` records the original frozen-index build:
+  15 discovered `.txt`/`.md` files, 14 with chunks, and 1 zero-chunk file.
+  The extra file is empty `docs/prompts.md` (`status=zero_chunk`,
+  `reason=empty_text`). It produced no retrieval chunks, so `meta.json`
+  contains the 14 files listed above. This is build provenance for that
+  frozen index, not a live rescan of today's `docs/` tree.
 - `data/rag/eval_queries.json` contains 20 synthetic evaluation queries with
   exact graded chunk-ID relevance judgments.
 - `data/rag/eval_manifest.json` pins source, metadata, index, synonyms, and

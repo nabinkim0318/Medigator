@@ -3,7 +3,7 @@
 RAG (Retrieval-Augmented Generation) module for medical document search.
 
 This module provides:
-- Document indexing with FAISS
+- Document indexing with FAISS and per-file build provenance
 - Runtime search modes: BM25, MiniLM/FAISS, and 0.6/0.4 hybrid
 - Evidence retrieval for medical summaries
 """

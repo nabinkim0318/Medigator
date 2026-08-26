@@ -5,6 +5,90 @@
   "chunks": 49,
   "dim": 384,
   "files_indexed": 15,
+  "files_discovered": 15,
+  "files_with_chunks": 14,
+  "files_zero_chunk": 1,
+  "files_skipped": 0,
   "index_path": "rag_index/index.faiss",
-  "meta_path": "rag_index/meta.json"
+  "meta_path": "rag_index/meta.json",
+  "files": [
+    {
+      "file": "diabetes_management.txt",
+      "status": "indexed",
+      "chunks": 2
+    },
+    {
+      "file": "medical_guidelines.txt",
+      "status": "indexed",
+      "chunks": 2
+    },
+    {
+      "file": "prompts.md",
+      "status": "zero_chunk",
+      "chunks": 0,
+      "sentences": 0,
+      "reason": "empty_text"
+    },
+    {
+      "file": "rag/guidelines/2016_NICE_NG95_Chest-Pain.md",
+      "status": "indexed",
+      "chunks": 5
+    },
+    {
+      "file": "rag/guidelines/2018_ACEP_Chest-Pain-Policy.md",
+      "status": "indexed",
+      "chunks": 4
+    },
+    {
+      "file": "rag/guidelines/2021_ACC-AHA_Chest-Pain_exec.md",
+      "status": "indexed",
+      "chunks": 5
+    },
+    {
+      "file": "rag/guidelines/2025_ESC_0-1h-hsTroponin.md",
+      "status": "indexed",
+      "chunks": 4
+    },
+    {
+      "file": "rag/reviews/2000_TIMI-UA-NSTEMI.md",
+      "status": "indexed",
+      "chunks": 3
+    },
+    {
+      "file": "rag/reviews/2013_HEART-Score.md",
+      "status": "indexed",
+      "chunks": 4
+    },
+    {
+      "file": "rag/reviews/2014_EDACS-Score.md",
+      "status": "indexed",
+      "chunks": 3
+    },
+    {
+      "file": "rag/reviews/2020_PERC-Wells.md",
+      "status": "indexed",
+      "chunks": 4
+    },
+    {
+      "file": "rag/tools/2010_Noncardiac-Chest-Pain_Overview.md",
+      "status": "indexed",
+      "chunks": 3
+    },
+    {
+      "file": "rag/tools/2022_ACC_Ambulatory-LowRisk-Pathways.md",
+      "status": "indexed",
+      "chunks": 3
+    },
+    {
+      "file": "rag/tools/2022_hsTroponin_0-1h_MetaReview.md",
+      "status": "indexed",
+      "chunks": 4
+    },
+    {
+      "file": "rag/tools/2023_ECG_Initial-Serial_Guidance.md",
+      "status": "indexed",
+      "chunks": 3
+    }
+  ],
+  "note": "files_indexed counts .txt/.md files processed at the original frozen-index build. One discovered file produced zero chunks, so meta.json contains 14 files. This describes that build, not a live rescan of docs/."
 }

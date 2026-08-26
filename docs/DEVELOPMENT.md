@@ -151,6 +151,9 @@ PYTHONPATH=. python -m api.services.rag.eval
 # Optional offline MiniLM/FAISS runtime benchmark (not CI)
 PYTHONPATH=. python -m api.services.rag.eval_runtime
 # Always scores bm25, vector, and hybrid, independent of RAG_RETRIEVAL_MODE.
+
+# Corpus file inventory without MiniLM/FAISS
+PYTHONPATH=. python -m api.services.rag.index --inventory-only
 ```
 
 ### Frontend Development
