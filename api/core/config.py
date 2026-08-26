@@ -3,6 +3,8 @@ Application settings
 Manage environment variables and default settings.
 """
 
+from typing import Literal
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -57,6 +59,8 @@ class Settings(BaseSettings):
     # RAG settings
     enable_rag: bool = False
     bm25_query_expansion: bool = False
+    # Demo default follows the strongest measured mode on the frozen fixture.
+    rag_retrieval_mode: Literal["bm25", "vector", "hybrid"] = "bm25"
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)

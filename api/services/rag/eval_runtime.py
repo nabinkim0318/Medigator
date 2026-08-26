@@ -6,7 +6,8 @@ by the deterministic CI evaluator.
 
 This module is not a CI job. It may load a local Hugging Face model cache or
 download MiniLM once. It never substitutes TF-IDF for the runtime vector
-channel. It is not a clinical IR benchmark.
+channel. It is not a clinical IR benchmark. It always scores bm25, vector,
+and hybrid independently of the application ``RAG_RETRIEVAL_MODE`` default.
 """
 
 from __future__ import annotations
@@ -17,7 +18,7 @@ import os
 import sys
 import time
 from pathlib import Path
-from typing import Any, Literal
+from typing import Any
 
 from api.core.config import settings
 from api.services.rag.eval import (
@@ -39,9 +40,12 @@ from api.services.rag.retrieve import (
     HYBRID_W_BM25,
     HYBRID_W_EMB,
     MODEL_NAME,
+    RETRIEVAL_MODES,
+    RetrievalMode,
     _tokenize,
     make_query,
     rank_channels,
+    retrieval_mode_flags,
 )
 from api.services.rag.store import RAGStore
 
@@ -62,8 +66,8 @@ except ImportError:  # pragma: no cover
 
 ROOT = Path(__file__).resolve().parents[3]
 DEFAULT_OUTPUT = ROOT / "reports" / "runtime_eval_results.json"
-RuntimeMode = Literal["bm25", "vector", "hybrid"]
-RUNTIME_MODES: tuple[RuntimeMode, ...] = ("bm25", "vector", "hybrid")
+RuntimeMode = RetrievalMode
+RUNTIME_MODES: tuple[RuntimeMode, ...] = RETRIEVAL_MODES
 STATUS_NOT_RUN = "RUNTIME_BENCHMARK_NOT_RUN"
 NOTE = (
     "Offline MiniLM/FAISS runtime benchmark on the frozen 20-query / 49-chunk "
@@ -201,17 +205,6 @@ def verify_runtime_index(
     }
 
 
-def _mode_flags(mode: RuntimeMode) -> tuple[bool, bool]:
-    if mode == "bm25":
-        return False, True
-    if mode == "vector":
-        return True, False
-    if mode == "hybrid":
-        return True, True
-    msg = f"unknown runtime ranking mode: {mode}"
-    raise ValueError(msg)
-
-
 def _build_bm25(store: RAGStore) -> Any:
     if BM25Okapi is None:
         raise RuntimeBenchmarkNotRun(
@@ -234,7 +227,7 @@ def rank_runtime(
     mode: RuntimeMode,
     k: int,
 ) -> list[dict[str, Any]]:
-    use_vector, use_lexical = _mode_flags(mode)
+    use_vector, use_lexical = retrieval_mode_flags(mode)
     query_dict = make_query({"cc": query})
     ranked = rank_channels(
         query_dict,

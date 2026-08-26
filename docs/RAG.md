@@ -5,11 +5,32 @@ This is **not** a clinical evidence service.
 
 ## What the retriever actually does
 
-When `enable_rag=true`, search is hybrid **embedding + BM25**. The embedding
-channel uses synonym query expansion and
-`sentence-transformers/all-MiniLM-L6-v2` with a committed FAISS inner-product
-index; normalized embedding and BM25 scores are merged with weights 0.6/0.4.
-BM25 expansion emits a bounded lexical term list and is disabled by default
+Runtime retrieval supports three explicit modes via `RAG_RETRIEVAL_MODE`:
+
+- `bm25` — `BM25Okapi` only; MiniLM query encoding is not required
+- `vector` — MiniLM (`sentence-transformers/all-MiniLM-L6-v2`) + committed
+  FAISS inner-product index; no BM25 contribution
+- `hybrid` — MiniLM/FAISS and BM25 merged at the existing weights **0.6
+  vector / 0.4 BM25**
+
+The current demo default is `bm25`. Vector and hybrid remain available
+experimental/evaluation modes. They are not removed and are not treated as
+broken; the frozen fixture currently ranks BM25 higher.
+
+The committed synthetic/demo fixture currently favors BM25, so the
+application uses BM25 as the default retrieval mode. This is an
+evidence-based default for this repository fixture, not a general claim about
+lexical versus semantic retrieval.
+
+On the frozen fixture:
+
+```text
+BM25 Recall@5 = 0.903    MiniLM Recall@5 = 0.759    Hybrid Recall@5 = 0.774
+BM25 nDCG@5  = 0.901    MiniLM nDCG@5  = 0.765    Hybrid nDCG@5  = 0.826
+```
+
+The embedding channel uses synonym query expansion. BM25 expansion emits a
+bounded lexical term list and is disabled by default
 (`BM25_QUERY_EXPANSION=false`) because the frozen fixture still favors the raw
 BM25 query.
 **MMR diversity is not implemented.**
@@ -104,8 +125,9 @@ environment: identical aggregate metrics and ranked chunk IDs.
 
 On this fixture, BM25 is stronger than MiniLM/FAISS. The current runtime
 hybrid does not outperform BM25, so the 0.6/0.4 weighting is not justified by
-these 20 queries. Weights were not swept. Hit@5 remained 20/20 for every
-channel; MiniLM's weaker recall is ranking, not total miss. Notable MiniLM
+these 20 queries. Weights were not swept. The demo runtime therefore defaults
+to BM25 while leaving vector and hybrid selectable. Hit@5 remained 20/20 for
+every channel; MiniLM's weaker recall is ranking, not total miss. Notable MiniLM
 weaknesses include `acc-aha-2021` (MRR 0.200) and `heart-mace` (MRR 0.333).
 `heart-score` hybrid Recall@5 (0.400) was below both BM25 (0.800) and MiniLM
 (0.600).
@@ -113,6 +135,10 @@ weaknesses include `acc-aha-2021` (MRR 0.200) and `heart-mace` (MRR 0.333).
 This is **Runtime MiniLM/FAISS: evaluated on the frozen synthetic/demo
 fixture**. It is not clinical IR validation, not a large-corpus study, and not
 production retrieval validation. Results can vary with model/library versions.
+The default-mode change does not remove those limits: 20 queries, 49 chunks,
+synthetic/demo relevance judgments, model/library version dependence, no
+production retrieval validation, and the existing corpus provenance
+discrepancy.
 
 Tests verify ranked-hit `chunk_id`, file, offsets, and text hash; evidence-card
 provenance; instruction-only and keyword-stuffed poison handling; that query

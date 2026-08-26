@@ -5,7 +5,7 @@
 Medigator is a synthetic-data healthcare-AI engineering prototype combining a
 structured intake workflow, schema-constrained LLM summarization with a
 deterministic template fallback, rule-based ICD suggestions, local CPT
-reference lookup, and hybrid evidence retrieval. The repository includes
+reference lookup, and evidence retrieval. The repository includes
 explicit response provenance,
 quantitative retrieval evaluation, deny-by-default API boundaries, SQLite
 persistence, and a reproducible local Docker demo.
@@ -13,11 +13,15 @@ persistence, and a reproducible local Docker demo.
 **Research prototype. Synthetic/demo data only. Not for diagnosis, treatment,
 clinical use, or production. Does not claim HIPAA compliance.**
 
-The runtime retriever combines expanded MiniLM queries, FAISS, BM25, and a
-weighted hybrid merge. BM25 lexical expansion is available but defaults off
-based on the frozen evaluation. A deterministic CI harness uses TF-IDF as a
+Runtime retrieval supports BM25, MiniLM/FAISS vector search, and a 0.6/0.4
+hybrid. The demo defaults to BM25 because it performed best on the committed
+frozen 20-query/49-chunk evaluation fixture; vector and hybrid modes remain
+available for experimentation. This result is fixture-specific and does not
+establish that BM25 is generally superior for healthcare or production
+retrieval. BM25 lexical expansion is available but defaults off based on the
+frozen evaluation. A deterministic CI harness uses TF-IDF as a
 dependency-cheap vector surrogate; a separate offline command benchmarks the
-actual MiniLM/FAISS runtime path on the same frozen 20-query/49-chunk fixture.
+actual MiniLM/FAISS runtime path on the same frozen fixture.
 Results and limitations are summarized under [Evaluation](#evaluation) and
 documented in [docs/RAG.md](docs/RAG.md).
 
@@ -35,7 +39,7 @@ make docker-smoke    # HTTP health, frontend, SQLite write/restart/read
 - schema-constrained OpenAI summarization with deterministic template fallback
 - response provenance labels: `openai`, `fallback`, `rules`, `rag`, and `static`
 - CSV rule-based ICD suggestions and local CPT reference lookup
-- MiniLM/FAISS and BM25 hybrid retrieval over a committed demo corpus
+- MiniLM/FAISS, BM25, and 0.6/0.4 hybrid retrieval over a committed demo corpus
 - frozen chunk-level IR evaluation: CI TF-IDF/BM25 plus a separate offline MiniLM/FAISS benchmark
 - blocking backend, frontend, and container smoke gates in GitHub Actions
 
@@ -50,9 +54,11 @@ FastAPI API ──> SQLite (data/medigator.db, configured by DB_URL)
        +──> OpenAI JSON summary when configured
        |    └──> deterministic template fallback
        +──> local ICD rules + CPT reference lookup
-       └──> runtime retrieval: MiniLM + FAISS + BM25
+       └──> runtime retrieval: selected mode
+            - BM25 (default)
+            - MiniLM/FAISS
+            - hybrid 0.6/0.4
             + vector expansion + optional BM25 lexical expansion
-            + 0.6/0.4 weighted merge
 
 CI retrieval evaluation (separate, blocking-CI safe):
 BM25 + TF-IDF cosine + TF-IDF/BM25 hybrid
@@ -74,7 +80,7 @@ and disabled in the canonical Docker workflow to avoid model downloads. See
 | LLM summary | Implemented | OpenAI when configured; deterministic template fallback otherwise |
 | Rule-based ICD suggestions | Implemented | local CSV rules; not clinical coding |
 | CPT reference lookup | Partial | lookup route exists; `/codes` CPT matching is inactive |
-| Evidence retrieval | Implemented | optional hybrid local retriever; static cards when disabled/empty |
+| Evidence retrieval | Implemented | optional local retriever; demo default BM25; vector/hybrid remain available; static cards when disabled/empty |
 | Retrieval evaluation | Evaluated with limitations | frozen 20-query/49-chunk fixture; CI TF-IDF surrogate + offline MiniLM/FAISS; not clinical IR |
 | Authentication | Demo boundary only | in-memory operator sessions; not production IAM |
 | Persistence | Implemented | local SQLite only |
@@ -123,9 +129,12 @@ Current committed-fixture snapshot (BM25 expansion off unless noted):
 
 TF-IDF = deterministic CI surrogate. MiniLM/FAISS = runtime vector benchmark.
 On this small synthetic fixture, lexical BM25 outperforms MiniLM/FAISS, and
-the current 0.6/0.4 runtime hybrid does not beat BM25. Weights were not tuned
-against the fixture. This is not clinical IR validation and not production
-retrieval validation.
+the current 0.6/0.4 runtime hybrid does not beat BM25. The application
+therefore defaults to `RAG_RETRIEVAL_MODE=bm25`. Vector and hybrid remain
+available experimental/evaluation modes. Weights were not tuned against the
+fixture. This is an evidence-based default for this repository fixture, not a
+general claim about lexical versus semantic retrieval, not clinical IR
+validation, and not production retrieval validation.
 
 BM25 expansion variants on the same fixture:
 
@@ -208,7 +217,10 @@ The operator-session mechanism is a demo boundary, not production IAM. See
 - Some async routes perform synchronous SQLite work.
 - Runtime MiniLM/FAISS: evaluated on the frozen synthetic/demo fixture; not
   clinical IR validation and not production retrieval validation. On that
-  fixture BM25 outperforms MiniLM and the current 0.6/0.4 hybrid.
+  fixture BM25 outperforms MiniLM and the current 0.6/0.4 hybrid, so the demo
+  default is BM25. Changing the default does not remove those evaluation
+  limits: 20 queries, 49 chunks, synthetic/demo judgments, model/library
+  version dependence, and no production retrieval validation.
 - The bundled corpus is small; source redistribution status is not
   independently verified.
 - Operator sessions are in-memory and intended only for the local demo.
@@ -277,9 +289,10 @@ blocking CI job.
 ## Portfolio summary
 
 - Built a healthcare-AI research prototype with FastAPI/Next.js,
-  schema-constrained LLM summarization and deterministic fallbacks, hybrid
-  FAISS/BM25 evidence retrieval, frozen quantitative IR evaluation, SQLite
-  persistence, Docker reproducibility, and CI-enforced checks.
+  schema-constrained LLM summarization and deterministic fallbacks, BM25 /
+  MiniLM/FAISS evidence retrieval with an evidence-driven demo default, frozen
+  quantitative IR evaluation, SQLite persistence, Docker reproducibility, and
+  CI-enforced checks.
 - The deterministic CI baseline uses TF-IDF for dependency-cheap regression
   testing, while a separate offline benchmark evaluates the actual MiniLM/FAISS
   runtime retriever against the same frozen chunk-level relevance judgments.

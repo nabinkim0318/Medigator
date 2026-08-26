@@ -43,6 +43,7 @@ _ALLOWED_KEYS = frozenset(
         "field_count",
         "result_count",
         "chars",
+        "mode",
     }
 )
 
