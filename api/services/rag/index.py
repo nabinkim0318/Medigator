@@ -1,6 +1,7 @@
 # api/services/rag/index.py
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import re
@@ -31,6 +32,8 @@ DEFAULT_CHUNK_OVERLAP = 200  # overlap for context preservation
 VALID_EXTS = {".txt", ".md"}  # keep it simple for hackathon
 
 SENTENCE_SPLIT = re.compile(r"(?<=[\.\!\?\n])\s+")
+ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_CORPUS_SOURCES = ROOT / "data" / "rag" / "corpus_sources.json"
 # Frozen-index extra: discovered at original build, produced no chunks.
 ORIGINAL_ZERO_CHUNK_FILES = ("prompts.md",)
 
@@ -54,6 +57,49 @@ def _iter_files(docs_dir: Path) -> Iterable[Path]:
     for p in sorted(docs_dir.rglob("*")):
         if p.is_file() and p.suffix.lower() in VALID_EXTS:
             yield p
+
+
+def load_corpus_sources(manifest_path: Path) -> list[str]:
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    sources = payload.get("sources")
+    if not isinstance(sources, list) or not sources:
+        raise ValueError(f"corpus source manifest has no sources: {manifest_path}")
+    return [str(item) for item in sources]
+
+
+def _sha256_path(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _iter_manifest_files(docs_path: Path, sources: list[str]) -> list[Path]:
+    files: list[Path] = []
+    for rel in sources:
+        candidate = Path(rel)
+        if candidate.is_absolute():
+            path = candidate
+        elif rel.startswith("docs/") or rel.startswith("docs\\"):
+            path = ROOT / rel
+        else:
+            path = docs_path / rel
+        if not path.is_file():
+            raise FileNotFoundError(f"corpus source missing: {rel}")
+        files.append(path)
+    return files
+
+
+def _discover_files(docs_path: Path, source_manifest: Path | bool | None) -> list[Path]:
+    if source_manifest is False:
+        return list(_iter_files(docs_path))
+    if source_manifest is not None:
+        return _iter_manifest_files(
+            docs_path, load_corpus_sources(Path(source_manifest))
+        )
+    default_docs = (ROOT / "docs").resolve()
+    if docs_path.resolve() == default_docs and DEFAULT_CORPUS_SOURCES.is_file():
+        return _iter_manifest_files(
+            docs_path, load_corpus_sources(DEFAULT_CORPUS_SOURCES)
+        )
+    return list(_iter_files(docs_path))
 
 
 def _read_file(path: Path) -> str:
@@ -154,10 +200,12 @@ def _file_chunks(
     sents = _sentences(raw)
     packed = _chunk_sentences(sents, chunk_size=chunk_size, overlap=overlap)
     rel = str(path.relative_to(docs_path))
+    digest = _sha256_path(path)
     if not packed:
         return [], {
             "file": rel,
             "status": "zero_chunk",
+            "sha256": digest,
             "chunks": 0,
             "sentences": len(sents),
             "reason": _zero_chunk_reason(raw, sents),
@@ -191,6 +239,7 @@ def _file_chunks(
     return chunks, {
         "file": rel,
         "status": "indexed",
+        "sha256": digest,
         "chunks": len(chunks),
         "sentences": len(sents),
     }
@@ -202,10 +251,11 @@ def inventory_corpus(
     chunk_size: int = DEFAULT_CHUNK_SIZE,
     overlap: int = DEFAULT_CHUNK_OVERLAP,
     max_docs: int | None = None,
+    source_manifest: Path | bool | None = None,
 ) -> dict[str, Any]:
     """Inventory discovered files and chunks without loading MiniLM."""
     docs_path = Path(docs_dir)
-    discovered = list(_iter_files(docs_path))
+    discovered = _discover_files(docs_path, source_manifest)
     if max_docs is None:
         to_process, skipped = discovered, []
     else:
@@ -224,6 +274,7 @@ def inventory_corpus(
             {
                 "file": str(path.relative_to(docs_path)),
                 "status": "skipped",
+                "sha256": _sha256_path(path),
                 "chunks": 0,
                 "reason": "max_docs",
             }
@@ -297,7 +348,14 @@ def frozen_index_provenance(
     for rel, n_chunks in sorted(counts.items()):
         if not rel:
             continue
-        records.append({"file": rel, "status": "indexed", "chunks": n_chunks})
+        records.append(
+            {
+                "file": rel,
+                "status": "indexed",
+                "sha256": _sha256_path(docs_path / rel),
+                "chunks": n_chunks,
+            }
+        )
     for rel in ORIGINAL_ZERO_CHUNK_FILES:
         _chunks, record = _file_chunks(
             docs_path / rel,
@@ -340,6 +398,7 @@ def build_index(
     chunk_size: int = DEFAULT_CHUNK_SIZE,
     overlap: int = DEFAULT_CHUNK_OVERLAP,
     max_docs: int | None = None,
+    source_manifest: Path | bool | None = None,
 ) -> dict[str, Any]:
     """
     Build FAISS index and metadata from local docs.
@@ -359,6 +418,7 @@ def build_index(
         chunk_size=chunk_size,
         overlap=overlap,
         max_docs=max_docs,
+        source_manifest=source_manifest,
     )
     if inventory["files_discovered"] == 0:
         logger.error("No documents found under %s (expected .txt/.md)", docs_dir)

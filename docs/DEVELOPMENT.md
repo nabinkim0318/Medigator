@@ -152,7 +152,7 @@ PYTHONPATH=. python -m api.services.rag.eval
 PYTHONPATH=. python -m api.services.rag.eval_runtime
 # Always scores bm25, vector, and hybrid, independent of RAG_RETRIEVAL_MODE.
 
-# Corpus file inventory without MiniLM/FAISS
+# Corpus file inventory without MiniLM/FAISS (uses data/rag/corpus_sources.json)
 PYTHONPATH=. python -m api.services.rag.index --inventory-only
 ```
 

@@ -53,11 +53,14 @@ metadata. Their inclusion in the retriever does not validate their content.
   `reason=empty_text`). It produced no retrieval chunks, so `meta.json`
   contains the 14 files listed above. This is build provenance for that
   frozen index, not a live rescan of today's `docs/` tree.
+- `data/rag/corpus_sources.json` is the rebuild allowlist: the same 14 files
+  that produced chunks. Future `python -m api.services.rag.index` uses this
+  list, so project docs such as `docs/API.md` are not ingested. Empty
+  `docs/prompts.md` remains in frozen build provenance only.
 - `data/rag/eval_queries.json` contains 20 synthetic evaluation queries with
   exact graded chunk-ID relevance judgments.
-- `data/rag/eval_manifest.json` pins source, metadata, index, synonyms, and
-  evaluation fixtures by SHA-256.
+- `data/rag/eval_manifest.json` pins source, metadata, index, synonyms, the
+  14-file source allowlist, and evaluation fixtures by SHA-256.
 
-The committed index is a reproducibility fixture. Rebuilding it scans supported
-files under `docs/`, so documentation changes can alter the corpus unless the
-build input is narrowed and the manifest is intentionally regenerated.
+The committed index is a reproducibility fixture. Rebuilding it uses
+`data/rag/corpus_sources.json`, not a recursive scan of all `docs/` Markdown.

@@ -15,16 +15,19 @@
     {
       "file": "diabetes_management.txt",
       "status": "indexed",
+      "sha256": "06e1b07f9a30e2f5387b737b9b44df133d78baf604919c45a22b824ec2cece70",
       "chunks": 2
     },
     {
       "file": "medical_guidelines.txt",
       "status": "indexed",
+      "sha256": "37a605101d21a5c900c60bd1c72e75161a639778173d8bb2b3c32adbdd61848b",
       "chunks": 2
     },
     {
       "file": "prompts.md",
       "status": "zero_chunk",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
       "chunks": 0,
       "sentences": 0,
       "reason": "empty_text"
@@ -32,61 +35,73 @@
     {
       "file": "rag/guidelines/2016_NICE_NG95_Chest-Pain.md",
       "status": "indexed",
+      "sha256": "a65fa431bc11e55aa60fd78b9a06176f44607c5afa91d4ea1b8acbe3f1948a07",
       "chunks": 5
     },
     {
       "file": "rag/guidelines/2018_ACEP_Chest-Pain-Policy.md",
       "status": "indexed",
+      "sha256": "6d081b18332219984f634ab7a227bc03ed40e4211a956f8547a92958f32aec09",
       "chunks": 4
     },
     {
       "file": "rag/guidelines/2021_ACC-AHA_Chest-Pain_exec.md",
       "status": "indexed",
+      "sha256": "460ee712dc74d9215412ff2bc942b7bbad7c66b10cdf9bb7f6855a405628011c",
       "chunks": 5
     },
     {
       "file": "rag/guidelines/2025_ESC_0-1h-hsTroponin.md",
       "status": "indexed",
+      "sha256": "b183036d026683c8c199d15e85940be4a7357eb1aab7ca751717692dcb15b389",
       "chunks": 4
     },
     {
       "file": "rag/reviews/2000_TIMI-UA-NSTEMI.md",
       "status": "indexed",
+      "sha256": "b9226675b60bd452bd67f1cf221c67436c3b0dd5cc498d0cf5e727f8337f18cb",
       "chunks": 3
     },
     {
       "file": "rag/reviews/2013_HEART-Score.md",
       "status": "indexed",
+      "sha256": "0cc6d16f00b3d19c36962e67cf2edab0a34f9a79d81ad701c7d4909672554d42",
       "chunks": 4
     },
     {
       "file": "rag/reviews/2014_EDACS-Score.md",
       "status": "indexed",
+      "sha256": "03ee57b8740c5bb2e016b40ad78ccd2b10a06cf5c484d57b40ca13933c7d49b8",
       "chunks": 3
     },
     {
       "file": "rag/reviews/2020_PERC-Wells.md",
       "status": "indexed",
+      "sha256": "62d17d29ad143a09d9403fe6db331c775336c84da67507aed134c9d25d0136b9",
       "chunks": 4
     },
     {
       "file": "rag/tools/2010_Noncardiac-Chest-Pain_Overview.md",
       "status": "indexed",
+      "sha256": "cc0701040723ae8702a2ee51be26c56a0d51e3dd9d10a12aa4260eaf0953428a",
       "chunks": 3
     },
     {
       "file": "rag/tools/2022_ACC_Ambulatory-LowRisk-Pathways.md",
       "status": "indexed",
+      "sha256": "7880b451fabc6f006edba7fcd767901bfa915e677846c2eec441fb664cb98fab",
       "chunks": 3
     },
     {
       "file": "rag/tools/2022_hsTroponin_0-1h_MetaReview.md",
       "status": "indexed",
+      "sha256": "632aeddf5d75e6ac75abddb5a239bfb1d7bd8de21c13cb151166c9f548cecceb",
       "chunks": 4
     },
     {
       "file": "rag/tools/2023_ECG_Initial-Serial_Guidance.md",
       "status": "indexed",
+      "sha256": "aadd9e9d72c43f2713552af6affeded410eca24b600a04b1e34b6a80b5fec5a9",
       "chunks": 3
     }
   ],

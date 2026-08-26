@@ -39,6 +39,7 @@ DEFAULT_SYNONYMS = ROOT / "rag_index" / "synonyms.json"
 DEFAULT_SUMMARY = ROOT / "rag_index" / "build_summary.json"
 DEFAULT_FAISS = ROOT / "rag_index" / "index.faiss"
 DEFAULT_MANIFEST = ROOT / "data" / "rag" / "eval_manifest.json"
+DEFAULT_CORPUS_SOURCES = ROOT / "data" / "rag" / "corpus_sources.json"
 DEFAULT_DOCS = ROOT / "docs"
 
 Mode = Literal["bm25", "tfidf", "hybrid"]
@@ -87,6 +88,7 @@ def fixture_hashes(
     summary_path: Path = DEFAULT_SUMMARY,
     faiss_path: Path = DEFAULT_FAISS,
     docs_dir: Path = DEFAULT_DOCS,
+    sources_path: Path = DEFAULT_CORPUS_SOURCES,
 ) -> dict[str, Any]:
     corpus = load_json(meta_path)
     source_files: dict[str, str | None] = {}
@@ -106,6 +108,7 @@ def fixture_hashes(
         "synonyms.json": sha256_file(synonyms_path),
         "build_summary.json": sha256_file(summary_path),
         "index.faiss": sha256_file(faiss_path),
+        "corpus_sources.json": sha256_file(sources_path),
         "source_files": source_files,
         "source_files_combined": combined.hexdigest(),
     }

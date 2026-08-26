@@ -53,6 +53,8 @@ def test_inventory_records_discovered_indexed_skipped_and_zero_chunk(tmp_path: P
     assert by_file["empty.md"]["status"] == "zero_chunk"
     assert by_file["empty.md"]["reason"] == "empty_text"
     assert by_file["empty.md"]["chunks"] == 0
+    assert by_file["keep.md"]["sha256"] == _digest(tmp_path / "keep.md")
+    assert by_file["empty.md"]["sha256"] == _digest(tmp_path / "empty.md")
     assert by_file["later.md"]["status"] == "skipped"
     assert by_file["later.md"]["reason"] == "max_docs"
     assert "notes.json" not in by_file
@@ -81,6 +83,8 @@ def test_frozen_index_fifteen_vs_fourteen_is_empty_prompts_md():
     assert "prompts.md" not in meta_files
     for rel in meta_files:
         assert records[rel]["chunks"] == sum(1 for item in meta if item["file"] == rel)
+        assert records[rel]["sha256"] == _digest(ROOT / "docs" / rel)
+    assert records["prompts.md"]["sha256"] == _digest(ROOT / "docs" / "prompts.md")
 
 
 def test_original_fifteen_file_set_explains_zero_chunk_without_minilm(tmp_path: Path):
@@ -141,3 +145,39 @@ def test_frozen_retrieval_artifacts_were_not_rebuilt():
         _digest(ROOT / "rag_index" / "build_summary.json")
         == committed["build_summary.json"]
     )
+    indexed = [item for item in live["files"] if item["status"] == "indexed"]
+    for item in indexed:
+        assert item["sha256"] == committed["source_files"][item["file"]]
+
+
+def test_default_inventory_uses_fourteen_source_manifest_not_project_docs():
+    inventory = inventory_corpus(str(ROOT / "docs"))
+    names = {item["file"] for item in inventory["files"]}
+    assert inventory["files_discovered"] == 14
+    assert inventory["files_with_chunks"] == 14
+    assert inventory["files_zero_chunk"] == 0
+    assert inventory["chunks"] == 49
+    assert "API.md" not in names
+    assert "RAG.md" not in names
+    assert "SECURITY.md" not in names
+    assert "prompts.md" not in names
+    assert "diabetes_management.txt" in names
+    assert "rag/reviews/2013_HEART-Score.md" in names
+
+
+def test_source_manifest_ignores_unrelated_docs(tmp_path: Path):
+    (tmp_path / "keep.md").write_text("Chest pain protocol.", encoding="utf-8")
+    (tmp_path / "API.md").write_text(
+        "# Project API docs should not be indexed.", encoding="utf-8"
+    )
+    manifest = tmp_path / "corpus_sources.json"
+    manifest.write_text(
+        json.dumps({"schema_version": 1, "sources": ["keep.md"]}),
+        encoding="utf-8",
+    )
+    inventory = inventory_corpus(str(tmp_path), source_manifest=manifest)
+    names = {item["file"] for item in inventory["files"]}
+    assert names == {"keep.md"}
+    assert inventory["files_discovered"] == 1
+    assert inventory["files_with_chunks"] == 1
+    assert "API.md" not in names
