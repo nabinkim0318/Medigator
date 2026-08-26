@@ -137,8 +137,9 @@ fixture**. It is not clinical IR validation, not a large-corpus study, and not
 production retrieval validation. Results can vary with model/library versions.
 The default-mode change does not remove those limits: 20 queries, 49 chunks,
 synthetic/demo relevance judgments, model/library version dependence, no
-production retrieval validation, and the existing corpus provenance
-discrepancy.
+production retrieval validation. The former 15-vs-14 file count is explained:
+empty `docs/prompts.md` was discovered at the original index build and
+produced zero chunks. Third-party corpus rights remain unverified.
 
 Tests verify ranked-hit `chunk_id`, file, offsets, and text hash; evidence-card
 provenance; instruction-only and keyword-stuffed poison handling; that query

@@ -113,6 +113,7 @@ def test_fixture_hashes_match_committed_manifest():
     assert live["source_files"] == committed["source_files"]
     assert live["source_files_combined"] == committed["source_files_combined"]
     assert live["build_summary.json"] == committed["build_summary.json"]
+    assert live["corpus_sources.json"] == committed["corpus_sources.json"]
     if committed.get("index.faiss") and live.get("index.faiss"):
         assert live["index.faiss"] == committed["index.faiss"]
 

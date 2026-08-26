@@ -1,9 +1,11 @@
 # api/services/rag/index.py
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import re
+from collections import Counter
 from collections.abc import Iterable
 from dataclasses import asdict, dataclass
 from pathlib import Path
@@ -30,6 +32,10 @@ DEFAULT_CHUNK_OVERLAP = 200  # overlap for context preservation
 VALID_EXTS = {".txt", ".md"}  # keep it simple for hackathon
 
 SENTENCE_SPLIT = re.compile(r"(?<=[\.\!\?\n])\s+")
+ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_CORPUS_SOURCES = ROOT / "data" / "rag" / "corpus_sources.json"
+# Frozen-index extra: discovered at original build, produced no chunks.
+ORIGINAL_ZERO_CHUNK_FILES = ("prompts.md",)
 
 
 @dataclass
@@ -51,6 +57,49 @@ def _iter_files(docs_dir: Path) -> Iterable[Path]:
     for p in sorted(docs_dir.rglob("*")):
         if p.is_file() and p.suffix.lower() in VALID_EXTS:
             yield p
+
+
+def load_corpus_sources(manifest_path: Path) -> list[str]:
+    payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+    sources = payload.get("sources")
+    if not isinstance(sources, list) or not sources:
+        raise ValueError(f"corpus source manifest has no sources: {manifest_path}")
+    return [str(item) for item in sources]
+
+
+def _sha256_path(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def _iter_manifest_files(docs_path: Path, sources: list[str]) -> list[Path]:
+    files: list[Path] = []
+    for rel in sources:
+        candidate = Path(rel)
+        if candidate.is_absolute():
+            path = candidate
+        elif rel.startswith("docs/") or rel.startswith("docs\\"):
+            path = ROOT / rel
+        else:
+            path = docs_path / rel
+        if not path.is_file():
+            raise FileNotFoundError(f"corpus source missing: {rel}")
+        files.append(path)
+    return files
+
+
+def _discover_files(docs_path: Path, source_manifest: Path | bool | None) -> list[Path]:
+    if source_manifest is False:
+        return list(_iter_files(docs_path))
+    if source_manifest is not None:
+        return _iter_manifest_files(
+            docs_path, load_corpus_sources(Path(source_manifest))
+        )
+    default_docs = (ROOT / "docs").resolve()
+    if docs_path.resolve() == default_docs and DEFAULT_CORPUS_SOURCES.is_file():
+        return _iter_manifest_files(
+            docs_path, load_corpus_sources(DEFAULT_CORPUS_SOURCES)
+        )
+    return list(_iter_files(docs_path))
 
 
 def _read_file(path: Path) -> str:
@@ -132,6 +181,216 @@ def _title_from_path(p: Path) -> str:
     return p.stem.replace("_", " ").replace("-", " ").strip().title()
 
 
+def _zero_chunk_reason(raw: str, sents: list[str]) -> str:
+    if not raw.strip():
+        return "empty_text"
+    if not sents:
+        return "no_sentences"
+    return "no_chunks"
+
+
+def _file_chunks(
+    path: Path,
+    docs_path: Path,
+    *,
+    chunk_size: int,
+    overlap: int,
+) -> tuple[list[DocChunk], dict[str, Any]]:
+    raw = _read_file(path)
+    sents = _sentences(raw)
+    packed = _chunk_sentences(sents, chunk_size=chunk_size, overlap=overlap)
+    rel = str(path.relative_to(docs_path))
+    digest = _sha256_path(path)
+    if not packed:
+        return [], {
+            "file": rel,
+            "status": "zero_chunk",
+            "sha256": digest,
+            "chunks": 0,
+            "sentences": len(sents),
+            "reason": _zero_chunk_reason(raw, sents),
+        }
+
+    title = _title_from_path(path)
+    year = None
+    matched = re.search(r"(19|20)\d{2}", path.name)
+    if matched:
+        year = int(matched.group(0))
+    tags_json = {
+        "type": "guideline" if "guideline" in path.name.lower() else "document"
+    }
+    chunks: list[DocChunk] = []
+    for index, (txt, start, end) in enumerate(packed):
+        chunks.append(
+            DocChunk(
+                id=f"{path.stem}__{index:04d}",
+                title=title,
+                source=title,
+                text=txt,
+                file=rel,
+                start=start,
+                end=end,
+                url=None,
+                year=year,
+                section=None,
+                tags_json=tags_json,
+            )
+        )
+    return chunks, {
+        "file": rel,
+        "status": "indexed",
+        "sha256": digest,
+        "chunks": len(chunks),
+        "sentences": len(sents),
+    }
+
+
+def inventory_corpus(
+    docs_dir: str = "docs",
+    *,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    overlap: int = DEFAULT_CHUNK_OVERLAP,
+    max_docs: int | None = None,
+    source_manifest: Path | bool | None = None,
+) -> dict[str, Any]:
+    """Inventory discovered files and chunks without loading MiniLM."""
+    docs_path = Path(docs_dir)
+    discovered = _discover_files(docs_path, source_manifest)
+    if max_docs is None:
+        to_process, skipped = discovered, []
+    else:
+        to_process, skipped = discovered[:max_docs], discovered[max_docs:]
+
+    records: list[dict[str, Any]] = []
+    all_chunks: list[DocChunk] = []
+    for path in to_process:
+        chunks, record = _file_chunks(
+            path, docs_path, chunk_size=chunk_size, overlap=overlap
+        )
+        records.append(record)
+        all_chunks.extend(chunks)
+    for path in skipped:
+        records.append(
+            {
+                "file": str(path.relative_to(docs_path)),
+                "status": "skipped",
+                "sha256": _sha256_path(path),
+                "chunks": 0,
+                "reason": "max_docs",
+            }
+        )
+    records.sort(key=lambda item: str(item["file"]))
+    with_chunks = sum(1 for item in records if item["status"] == "indexed")
+    zero_chunk = sum(1 for item in records if item["status"] == "zero_chunk")
+    skipped_count = sum(1 for item in records if item["status"] == "skipped")
+    logger.info(
+        "corpus inventory discovered=%s with_chunks=%s zero_chunk=%s skipped=%s",
+        len(discovered),
+        with_chunks,
+        zero_chunk,
+        skipped_count,
+    )
+    return {
+        "docs_dir": str(docs_path),
+        "files_discovered": len(discovered),
+        "files_indexed": len(to_process),
+        "files_with_chunks": with_chunks,
+        "files_zero_chunk": zero_chunk,
+        "files_skipped": skipped_count,
+        "chunks": len(all_chunks),
+        "files": records,
+        "all_chunks": all_chunks,
+    }
+
+
+def summary_from_inventory(
+    inventory: dict[str, Any],
+    *,
+    model_name: str = MODEL_NAME,
+    dim: int | None = None,
+    out_dir: str = "rag_index",
+) -> dict[str, Any]:
+    """Public build-summary payload (no chunk texts)."""
+    out_path = Path(out_dir)
+    payload = {
+        "docs_dir": inventory["docs_dir"],
+        "out_dir": str(out_path),
+        "model": model_name,
+        "chunks": inventory["chunks"],
+        "dim": dim,
+        "files_indexed": inventory["files_indexed"],
+        "files_discovered": inventory["files_discovered"],
+        "files_with_chunks": inventory["files_with_chunks"],
+        "files_zero_chunk": inventory["files_zero_chunk"],
+        "files_skipped": inventory["files_skipped"],
+        "index_path": str(out_path / "index.faiss"),
+        "meta_path": str(out_path / "meta.json"),
+        "files": inventory["files"],
+    }
+    return payload
+
+
+def frozen_index_provenance(
+    *,
+    meta_path: str | Path = "rag_index/meta.json",
+    docs_dir: str | Path = "docs",
+    out_dir: str = "rag_index",
+    model_name: str = MODEL_NAME,
+    dim: int = 384,
+    chunk_size: int = DEFAULT_CHUNK_SIZE,
+    overlap: int = DEFAULT_CHUNK_OVERLAP,
+) -> dict[str, Any]:
+    """Explain the committed index build: 15 discovered files, 14 with chunks."""
+    docs_path = Path(docs_dir)
+    meta = json.loads(Path(meta_path).read_text(encoding="utf-8"))
+    counts = Counter(str(item.get("file") or "") for item in meta)
+    records: list[dict[str, Any]] = []
+    for rel, n_chunks in sorted(counts.items()):
+        if not rel:
+            continue
+        records.append(
+            {
+                "file": rel,
+                "status": "indexed",
+                "sha256": _sha256_path(docs_path / rel),
+                "chunks": n_chunks,
+            }
+        )
+    for rel in ORIGINAL_ZERO_CHUNK_FILES:
+        _chunks, record = _file_chunks(
+            docs_path / rel,
+            docs_path,
+            chunk_size=chunk_size,
+            overlap=overlap,
+        )
+        records.append(record)
+    records.sort(key=lambda item: str(item["file"]))
+    with_chunks = sum(1 for item in records if item["status"] == "indexed")
+    zero_chunk = sum(1 for item in records if item["status"] == "zero_chunk")
+    processed = with_chunks + zero_chunk
+    return {
+        "docs_dir": str(docs_path),
+        "out_dir": out_dir,
+        "model": model_name,
+        "chunks": len(meta),
+        "dim": dim,
+        "files_indexed": processed,
+        "files_discovered": processed,
+        "files_with_chunks": with_chunks,
+        "files_zero_chunk": zero_chunk,
+        "files_skipped": 0,
+        "index_path": str(Path(out_dir) / "index.faiss"),
+        "meta_path": str(Path(out_dir) / "meta.json"),
+        "files": records,
+        "note": (
+            "files_indexed counts .txt/.md files processed at the original "
+            "frozen-index build. One discovered file produced zero chunks, so "
+            "meta.json contains 14 files. This describes that build, not a live "
+            "rescan of docs/."
+        ),
+    }
+
+
 def build_index(
     docs_dir: str = "docs",
     out_dir: str = "rag_index",
@@ -139,6 +398,7 @@ def build_index(
     chunk_size: int = DEFAULT_CHUNK_SIZE,
     overlap: int = DEFAULT_CHUNK_OVERLAP,
     max_docs: int | None = None,
+    source_manifest: Path | bool | None = None,
 ) -> dict[str, Any]:
     """
     Build FAISS index and metadata from local docs.
@@ -147,108 +407,55 @@ def build_index(
     if SentenceTransformer is None or faiss is None or np is None:
         raise RuntimeError("RAG index dependencies are not installed")
     logger.info(
-        f"Parameters: chunk_size={chunk_size}, overlap={overlap}, max_docs={max_docs}"
+        "index build chunk_size=%s overlap=%s max_docs=%s",
+        chunk_size,
+        overlap,
+        max_docs,
     )
 
-    docs_path = Path(docs_dir)
-    out_path = Path(out_dir)
-    out_path.mkdir(parents=True, exist_ok=True)
-
-    files = list(_iter_files(docs_path))
-    if max_docs is not None:
-        files = files[:max_docs]
-
-    if not files:
-        logger.error(f"No documents found under {docs_path} (expected .txt/.md)")
-        raise RuntimeError(f"No documents found under {docs_path} (expected .txt/.md)")
-
-    logger.info(f"Found {len(files)} documents to process")
-    model = SentenceTransformer(model_name)
-    logger.info(f"Loaded model: {model_name}")
-
-    all_chunks: list[DocChunk] = []
-    all_texts: list[str] = []
-
-    for fi, f in enumerate(files):
-        logger.info(f"Processing file {fi + 1}/{len(files)}: {f.name}")
-        raw = _read_file(f)
-        sents = _sentences(raw)
-        chs = _chunk_sentences(sents, chunk_size=chunk_size, overlap=overlap)
-        title = _title_from_path(f)
-        source = title  # simple source label
-        logger.debug(f"File {f.name}: {len(chs)} chunks created")
-
-        # 5. Fill metadata fields (year/section/tags)
-        year = None
-        m = re.search(r"(19|20)\d{2}", f.name)
-        if m:
-            year = int(m.group(0))
-
-        # Tag inference based on filename
-        tags_json = {
-            "type": "guideline" if "guideline" in f.name.lower() else "document"
-        }
-
-        for ci, (txt, start, end) in enumerate(chs):
-            cid = f"{f.stem}__{ci:04d}"
-            all_chunks.append(
-                DocChunk(
-                    id=cid,
-                    title=title,
-                    source=source,
-                    text=txt,
-                    file=str(f.relative_to(docs_path)),
-                    start=start,
-                    end=end,
-                    url=None,
-                    year=year,
-                    section=None,
-                    tags_json=tags_json,
-                ),
-            )
-            all_texts.append(txt)
-
-    if not all_texts:
+    inventory = inventory_corpus(
+        docs_dir,
+        chunk_size=chunk_size,
+        overlap=overlap,
+        max_docs=max_docs,
+        source_manifest=source_manifest,
+    )
+    if inventory["files_discovered"] == 0:
+        logger.error("No documents found under %s (expected .txt/.md)", docs_dir)
+        raise RuntimeError(f"No documents found under {docs_dir} (expected .txt/.md)")
+    all_chunks: list[DocChunk] = inventory["all_chunks"]
+    if not all_chunks:
         logger.error("No chunks produced. Check your documents or chunking parameters.")
         raise RuntimeError(
             "No chunks produced. Check your documents or chunking parameters."
         )
 
-    logger.info(f"Total chunks created: {len(all_chunks)}")
-    logger.info("Generating embeddings...")
-
-    # Embeddings
-    embeddings = model.encode(all_texts, batch_size=64, show_progress_bar=True)
+    model = SentenceTransformer(model_name)
+    logger.info("Loaded model: %s", model_name)
+    embeddings = model.encode(
+        [chunk.text for chunk in all_chunks],
+        batch_size=64,
+        show_progress_bar=True,
+    )
     embeddings = np.asarray(embeddings).astype("float32")
     embeddings = _normalize(embeddings)
+    dim = int(embeddings.shape[1])
 
-    d = embeddings.shape[1]
-    logger.info(f"Embedding dimension: {d}")
-
-    index = faiss.IndexFlatIP(d)  # cosine via normalized vectors
+    index = faiss.IndexFlatIP(dim)
     index.add(embeddings)
-    logger.info("FAISS index created and populated")
 
-    # Persist
-    logger.info("Saving index and metadata...")
+    out_path = Path(out_dir)
+    out_path.mkdir(parents=True, exist_ok=True)
     faiss.write_index(index, str(out_path / "index.faiss"))
-
-    meta = [asdict(ch) for ch in all_chunks]
     (out_path / "meta.json").write_text(
-        json.dumps(meta, ensure_ascii=False, indent=2),
+        json.dumps(
+            [asdict(chunk) for chunk in all_chunks], ensure_ascii=False, indent=2
+        ),
         encoding="utf-8",
     )
-
-    summary = {
-        "docs_dir": str(docs_path),
-        "out_dir": str(out_path),
-        "model": model_name,
-        "chunks": len(all_chunks),
-        "dim": d,
-        "files_indexed": len(files),
-        "index_path": str(out_path / "index.faiss"),
-        "meta_path": str(out_path / "meta.json"),
-    }
+    summary = summary_from_inventory(
+        inventory, model_name=model_name, dim=dim, out_dir=out_dir
+    )
     (out_path / "build_summary.json").write_text(
         json.dumps(summary, ensure_ascii=False, indent=2),
         encoding="utf-8",
@@ -274,7 +481,44 @@ def load_index(out_dir: str = "rag_index") -> tuple[faiss.Index, list[dict[str, 
     return index, meta
 
 
+def main(argv: list[str] | None = None) -> int:
+    import argparse
+    import sys
+
+    parser = argparse.ArgumentParser(
+        description="Build or inventory the local RAG corpus. Inventory does not load MiniLM."
+    )
+    parser.add_argument("--docs-dir", default="docs")
+    parser.add_argument("--out-dir", default="rag_index")
+    parser.add_argument("--max-docs", type=int, default=None)
+    parser.add_argument(
+        "--inventory-only",
+        action="store_true",
+        help="Record discovered/indexed/zero_chunk/skipped files without embedding",
+    )
+    args = parser.parse_args(argv)
+    if args.inventory_only:
+        inventory = inventory_corpus(args.docs_dir, max_docs=args.max_docs)
+        print(
+            json.dumps(
+                summary_from_inventory(inventory, out_dir=args.out_dir), indent=2
+            )
+        )
+        return 0
+    try:
+        print(
+            json.dumps(
+                build_index(
+                    docs_dir=args.docs_dir, out_dir=args.out_dir, max_docs=args.max_docs
+                ),
+                indent=2,
+            )
+        )
+    except RuntimeError as exc:
+        print(str(exc), file=sys.stderr)
+        return 1
+    return 0
+
+
 if __name__ == "__main__":
-    # Quick CLI build: python -m api.services.rag.index
-    info = build_index()
-    print(json.dumps(info, indent=2, ensure_ascii=False))
+    raise SystemExit(main())

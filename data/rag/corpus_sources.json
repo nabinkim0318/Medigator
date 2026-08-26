@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "note": "Rebuild allowlist for the frozen 14-source demo corpus. Empty docs/prompts.md is legacy build provenance only and is not a future source.",
+  "sources": [
+    "docs/diabetes_management.txt",
+    "docs/medical_guidelines.txt",
+    "docs/rag/guidelines/2016_NICE_NG95_Chest-Pain.md",
+    "docs/rag/guidelines/2018_ACEP_Chest-Pain-Policy.md",
+    "docs/rag/guidelines/2021_ACC-AHA_Chest-Pain_exec.md",
+    "docs/rag/guidelines/2025_ESC_0-1h-hsTroponin.md",
+    "docs/rag/reviews/2000_TIMI-UA-NSTEMI.md",
+    "docs/rag/reviews/2013_HEART-Score.md",
+    "docs/rag/reviews/2014_EDACS-Score.md",
+    "docs/rag/reviews/2020_PERC-Wells.md",
+    "docs/rag/tools/2010_Noncardiac-Chest-Pain_Overview.md",
+    "docs/rag/tools/2022_ACC_Ambulatory-LowRisk-Pathways.md",
+    "docs/rag/tools/2022_hsTroponin_0-1h_MetaReview.md",
+    "docs/rag/tools/2023_ECG_Initial-Serial_Guidance.md"
+  ]
+}

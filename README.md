@@ -222,7 +222,10 @@ The operator-session mechanism is a demo boundary, not production IAM. See
   limits: 20 queries, 49 chunks, synthetic/demo judgments, model/library
   version dependence, and no production retrieval validation.
 - The bundled corpus is small; source redistribution status is not
-  independently verified.
+  independently verified. The original 15-vs-14 file count is empty
+  `docs/prompts.md` (discovered, zero chunks), not a missing indexed
+  guideline. Rebuilds use `data/rag/corpus_sources.json` (14 files) rather
+  than scanning every Markdown file under `docs/`.
 - Operator sessions are in-memory and intended only for the local demo.
 - Frontend ESLint is absent.
 - Dependency vulnerability reporting is nonblocking.
@@ -234,7 +237,7 @@ The operator-session mechanism is a demo boundary, not production IAM. See
 api/                 FastAPI backend, services, and tests
 src/                 Next.js App Router demo frontend
 api/services/rag/    runtime retrieval and evaluation logic
-data/rag/            frozen evaluation queries and hash manifest
+data/rag/            frozen evaluation queries, source allowlist, and hash manifest
 docs/rag/            bundled retrieval source summaries
 rag_index/           committed 49-chunk demo index
 docker/              canonical local container workflow
